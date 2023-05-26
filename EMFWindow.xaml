@@ -1,0 +1,80 @@
+﻿<Window x:Class="ntra_missions.EMFWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ntra_missions"
+        mc:Ignorable="d"
+        Title="EMFWindow" Height="600" Width="1200" Background="LightGray">
+    <Grid >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100"/>
+            <RowDefinition/>
+            <RowDefinition Height="75"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Background="#000080">
+            <Image Source="Photos\NTRA_white1.png" VerticalAlignment="Center" Height="200"  HorizontalAlignment="Left"/>
+            <Label Name="headerLabel" Content="Add EMF Points" Style="{StaticResource headerLabelStyle}" HorizontalAlignment="Center"/>
+        </Grid>
+
+        <ScrollViewer Grid.Row="1" Margin="48">
+            <StackPanel Name="mainStackPanel">
+
+                <Grid Name="firstPointGrid" Margin = "24">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <WrapPanel Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Label Content="Name: " Style="{StaticResource labelStyleBlack}" />
+                        <TextBox Name="nameTextBox" Style="{StaticResource textboxStyle}"/>
+                    </WrapPanel>
+                    
+                    <WrapPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Label Content="Area: " Style="{StaticResource labelStyleBlack}"/>
+                        <TextBox Name="areaTextBox" Style="{StaticResource textboxStyle}" />
+                    </WrapPanel>
+                    
+                    <WrapPanel Grid.Row="0" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Label Content="District: " Style="{StaticResource labelStyleBlack}"/>
+                        <TextBox Name="districtTextBox" Style="{StaticResource textboxStyle}" />
+                    </WrapPanel>
+
+                    <WrapPanel Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Label Content="Lat: " Style="{StaticResource labelStyleBlack}"/>
+                        <TextBox Name="latTextBox" Style="{StaticResource textboxStyle}" PreviewTextInput="NumberValidationTextBox"/>
+                    </WrapPanel>
+
+                    <WrapPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Label Content="Long: " Style="{StaticResource labelStyleBlack}"/>
+                        <TextBox Name="longTextBox" Style="{StaticResource textboxStyle}" PreviewTextInput="NumberValidationTextBox"/>
+                    </WrapPanel>
+
+                    <WrapPanel Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Label Content="Status: " Style="{StaticResource labelStyleBlack}"/>
+                        <ComboBox Name="statusComboBox" Style="{StaticResource comboBoxStyle}" IsEnabled ="False"/>
+                    </WrapPanel>
+
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0" Name="addPointButton" Content="Add Point"  Style="{StaticResource buttonStyle}" FontWeight="DemiBold" Click='OnButtonClickAddPoint'/>
+            <Button Grid.Column="1" Name="finishButton" Content="Save Changes"  Style="{StaticResource buttonStyle}" FontWeight="DemiBold" Click='OnButtonClickSaveChanges'/>
+        </Grid>
+    </Grid>
+</Window>

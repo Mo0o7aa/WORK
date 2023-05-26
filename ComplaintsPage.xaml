@@ -1,0 +1,133 @@
+﻿<Page x:Class="ntra_missions.ComplaintsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ntra_missions"
+      mc:Ignorable="d" 
+      Title="ComplaintsPage">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="150"/>
+            <RowDefinition Height="100"/>
+            <RowDefinition/>
+            <RowDefinition Height="100"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Background="#000080">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="250"/>
+            </Grid.ColumnDefinitions>
+
+            <WrapPanel>
+                <Grid Name="mainMenuGrid" Background="LightGray" VerticalAlignment="Stretch" Width="70" IsHitTestVisible="True" MouseEnter="MouseEnterMainMenu" MouseLeave="MouseLeaveMainMenu" ToolTip="Main Menu" MouseLeftButtonDown="OnClickMainMenu" Cursor="Hand">
+                    <Image Name="menuItemImage" Source="Photos\tab_icon.png" Height="50" Width="50"/>
+                </Grid>
+
+                <MenuItem Name="tabMenuButton" Visibility="Collapsed">
+                    <MenuItem.ContextMenu>
+                        <ContextMenu Closed="OnClosedMenuContectMenu">
+                            <MenuItem Header="DashBoard" Name="dashboardMenuItem" Click="DashboardMenuSelection"/>
+                            <MenuItem Header="Employees" Name="EmployeeMenuItem" Click="employeeMenuSelection"/>
+                            <MenuItem Header="Companies" Name="CompanyMenuItem" Click="CompanyMenuSelection"/>
+                            <MenuItem Header="Company Equipment" Name="CompanyEquipmentMenuItem" Click="CompanyEquipmentMenuSelection"/>
+                            <MenuItem Header="Sites" Name="sitesMenuItem" Click="SitesMenuSelection"/>
+                            <MenuItem Header="EMF" Name="emfMenuItem" Click="emfMenuSelection"/>
+                            <MenuItem Header="Complaints" Name="ComplaintsMenuItem" IsChecked="True" IsHitTestVisible="False"/>
+                            <MenuItem Header="Monitoring Missions" Name="monitoringMenuItem" Click="MonitoringMenuSelection"/>
+                            <MenuItem Header="Inspection Missions" Name="inspectionMenuItem" Click="InspectionMenuSelection"/>
+                        </ContextMenu>
+                    </MenuItem.ContextMenu>
+                </MenuItem>
+
+                <Image Source="Photos\NTRA_white1.png" VerticalAlignment="Center" Height="200"  HorizontalAlignment="Left"/>
+            </WrapPanel>
+
+            <Grid Name="userNameGrid" Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <Label Grid.Row="0" Name="userNameLabel" Foreground="White" FontSize="20" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="Username:"/>
+                <Button Grid.Row="1" Name="logoutButton" Content="Sign out" Style="{StaticResource buttonStyle}" VerticalAlignment="Bottom" Background="LightGray" FontWeight="Bold" Foreground="#000080" Click="OnClickLogoutButton"/>
+            </Grid>
+
+            <Button Grid.Column="1" Name="changePasswordButton" Content="Change Password" VerticalAlignment="Bottom" FontWeight="Bold" Style="{StaticResource negativeButtonStyle}" Width="200" Click="OnClickChangePasswordButton"/>
+
+        </Grid>
+
+        <!--<ScrollViewer Grid.Row="1">
+        <WebBrowser  x:Name="wbMaps" Source="https://www.google.com/maps" GotTouchCapture="wbMaps_GotTouchCapture" Navigated="wbMaps_Navigated" Navigating="wbMaps_Navigating"/>
+        </ScrollViewer>-->
+
+        <Label Grid.Row="1" Style="{StaticResource headerLabelStyle}" Content="Complaints" HorizontalAlignment="Center" Foreground="#000080"/>
+
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="400"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <ScrollViewer Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="24" VerticalScrollBarVisibility="Auto">
+                <Grid >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="70"/>
+                        <RowDefinition Height="70"/>
+                        <RowDefinition Height="70"/>
+                        <RowDefinition Height="70"/>
+                        <RowDefinition Height="70"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <CheckBox Grid.Row="0" Grid.Column="0" Name="searchCheckBox" Content="Search"  Style="{StaticResource checkBoxStyle}" Checked="OnCheckSearchCheckBox" Unchecked="OnUncheckSearchCheckBox"/>
+                    <CheckBox Grid.Row="1" Grid.Column="0" Name="yearCheckBox" Content="Year" Style="{StaticResource checkBoxStyle}" Checked="OnCheckYearCheckBox" Unchecked="OnUncheckYearCheckBox"/>
+                    <CheckBox Grid.Row="2" Grid.Column="0" Name="monthCheckBox" Content="Month" Style="{StaticResource checkBoxStyle}" Checked="OnCheckMonthChheckBox" Unchecked="OnUncheckMonthCheckBox"/>
+                    <CheckBox Grid.Row="3" Grid.Column="0" Name="companyCheckBox" Content="Company" Style="{StaticResource checkBoxStyle}" Checked="OnCheckCompanyCheckBox" Unchecked="OnUncheckCompanyCheckBox"/>
+                    <CheckBox Grid.Row="4" Grid.Column="0" Name="statusCheckBox" Content="Status" Style="{StaticResource checkBoxStyle}" Checked="OnCheckStatusCheckBox" Unchecked="OnUncheckStatusCheckBox"/>
+
+
+                    <TextBox Grid.Row="0" Grid.Column="1" Name="searchTextBox"  Style="{StaticResource miniTextboxStyle}" IsEnabled='False' TextChanged="OnTextChangedSearchTextBox"/>
+                    <ComboBox Grid.Row="1" Grid.Column="1" Name="yearComboBox" Style="{StaticResource miniComboBoxStyle}" IsEnabled='False' SelectionChanged="OnSelChangedYearCombo"/>
+                    <ComboBox Grid.Row="2" Grid.Column="1" Name="monthComboBox" Style="{StaticResource miniComboBoxStyle}" IsEnabled='False' SelectionChanged="OnSelChangedMonthCombo"/>
+                    <ComboBox Grid.Row="3" Grid.Column="1" Name="companyComboBox" Style="{StaticResource miniComboBoxStyle}" IsEnabled='False' SelectionChanged="OnSelChangedCompanyCombo"/>
+                    <ComboBox Grid.Row="4" Grid.Column="1" Name="statusComboBox" Style="{StaticResource miniComboBoxStyle}" IsEnabled='False' SelectionChanged="OnSelChangedStatusCombo"/>
+
+                </Grid>
+            </ScrollViewer>
+
+            <Grid Grid.Column="1" Margin="12">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left">
+                    <Border Name="listViewBorder" CornerRadius="0,30,0,0" BorderThickness="3" BorderBrush="#000080" Background="White" Width="150" MouseLeftButtonDown="OnClickListView">
+                        <Label Style="{StaticResource mediumLabelStyle}" Content="List View" Foreground="#000080" HorizontalAlignment="Left" FontWeight="Bold"/>
+                    </Border>
+                    <Border Name="tableViewBorder" CornerRadius="0,30,0,0" BorderThickness="3" BorderBrush="#000080" Background="#000080" Width="150" MouseLeftButtonDown="OnClickTableView">
+                        <Label Style="{StaticResource mediumLabelStyle}" Content="Table View" Foreground="White" HorizontalAlignment="Left" FontWeight="Bold"/>
+                    </Border>
+                </StackPanel>
+
+                <ScrollViewer Grid.Row="1" Name="listViewScrollViewer" VerticalContentAlignment="Stretch" >
+                    <StackPanel Name="complaintsStackPanel" Background="White"/>
+                </ScrollViewer>
+                <ScrollViewer Grid.Row="1" Name="tableViewScrollViewer"  Visibility="Collapsed" HorizontalScrollBarVisibility="Auto">
+                    <Grid Name="complaintsGrid" Background="White" ShowGridLines="True"/>
+
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+
+        <Button Grid.Row="3" Style="{StaticResource buttonStyle}" Content="Add" Click="OnBtnClickAdd"/>
+    </Grid>
+</Page>
