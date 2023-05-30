@@ -19,18 +19,36 @@ namespace ntra_missions
 
         //private String sqlConnectionString = @"Data Source=DESKTOP-8BK374U;User=sa;Password=ntra1234;Initial Catalog=NTRA;Integrated Security=True";
         //private String sqlConnectionString = @"Data Source=DESKTOP-8BK374U,1433;User=sa;Password=ntra1234;Initial Catalog=NTRA;";
+        //the one underneeth was selected when connecting from ayman
         //private String sqlConnectionString = @"Server=DESKTOP-8BK374U,1433;Initial Catalog=NTRA;User=sa;Password=ntra1234;";
 
         //private String sqlConnectionString = @"Server=192.168.56.1,1433;Initial Catalog=NTRA;User=sa;Password=ntra1234;";
         //private String sqlConnectionString = @"Server=172.20.10.3,1433;Initial Catalog=NTRA;User=sa;Password=ntra1234;";
 
 
+        //private String sqlConnectionString = @"Server=192.168.56.1,1433;Initial Catalog=NTRA;User=sa;Password=ntra1234;";
+
+        //private String sqlConnectionString = @"Server = DESKTOP-8BK374U,1433;Database=NTRA;Trusted_Connection=True;User=sa;Password=ntra1234";
+        //private String sqlConnectionString = @"Server = DESKTOP-8BK374U\SQLEXPRESS;Database=NTRA;Trusted_Connection=True";
+
+
         /// <summary>
         /// TEST FOR NEW SQL DATABASE EXRESS both are working fine
         /// </summary>
 
-        private String sqlConnectionString = @"Server = DESKTOP-8BK374U\SQLEXPRESS,1433;Database=NTRA;Trusted_Connection=True;User=sa;Password=ntra1234";
-        //private String sqlConnectionString = @"Server = DESKTOP-8BK374U\SQLEXPRESS;Database=NTRA;Trusted_Connection=True";
+        //private String sqlConnectionString = @"Server = tcp:10.165.42.87,1433;Database=NTRA;Trusted_Connection=True;User=sa;Password=ntra1234";
+        //private String sqlConnectionString = @"Server = tcp:DESKTOP-8BK374U,1433;Database=NTRA;User=sa;Password=ntra1234";
+
+        //private String sqlConnectionString = @"Server = tcp:SQLEXPRESS,1433;Database=NTRA;User=sa;Password=ntra1234";
+
+
+        ////trying on my work pc
+
+
+        private String sqlConnectionString = @"Server=GIZA-ASAMEH\SQLEXPRESS,1433;Initial Catalog=NTRA;User=sa;Password=NTRA@1234!;";
+
+        //private String sqlConnectionString = @"Server = tcp:169.254.67.19,1433;Database=NTRA;Trusted_Connection=True;User=sa;Password=ntra1234";
+
 
         private SqlConnection sqlConnection = null;
         private SqlCommand sqlCommand = null;
