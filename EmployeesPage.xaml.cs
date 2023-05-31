@@ -256,7 +256,7 @@ namespace ntra_missions
 
                 ////update info here
 
-                selectedEmployee.SetEmployeeUserName(employeeNameTextBox.Text);
+                selectedEmployee.SetEmployeeName(employeeNameTextBox.Text);
 
                 selectedEmployee.SetEmloyeeDepartmentId(departments[employeeDepartmentComboBox.SelectedIndex].key);
                 selectedEmployee.SetEmployeeDepartment(departments[employeeDepartmentComboBox.SelectedIndex].value);

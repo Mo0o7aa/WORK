@@ -178,7 +178,7 @@ namespace ntra_missions
         
                 Label missionIdLabel = new Label();
                 missionIdLabel.Content = missions[i].mission_id;
-                missionIdLabel.Style = (Style)FindResource("stackPanelHeaderLabelStyle");
+                missionIdLabel.Style = (Style)FindResource("stackPanelHeaderLabelStyleBlue");
                 missionIdLabel.Width = 500;
         
                 //logoWrapPanel.Children.Add(logo);
@@ -348,7 +348,7 @@ namespace ntra_missions
 
                 Label vehichleValueLabel = new Label();
                 vehichleValueLabel.Content = missions[i].vehichle;
-                vehichleValueLabel.Style = (Style)FindResource("mediumLabelStyle");
+                vehichleValueLabel.Style = (Style)FindResource("wideLabelStyle");
 
                 vehichleWrapPanel.Children.Add(vehicleLabel);
                 vehichleWrapPanel.Children.Add(vehichleValueLabel);

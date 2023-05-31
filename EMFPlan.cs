@@ -117,7 +117,7 @@ namespace ntra_missions
                     tempPoint.emf_status = sqlDatabase.rows[i].sql_string[10];
                     if (tempBand.band_serial != 0)
                     {
-                        tempBand.band = sqlDatabase.rows[i].sql_string[11];
+                        tempBand.band_name = sqlDatabase.rows[i].sql_string[11];
                         tempBand.average_power_density = Double.Parse(sqlDatabase.rows[i].sql_string[12]);
                         tempBand.max_power_density = Double.Parse(sqlDatabase.rows[i].sql_string[13]);
 

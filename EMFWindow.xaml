@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ntra_missions"
         mc:Ignorable="d"
-        Title="EMFWindow" Height="600" Width="1200" Background="LightGray">
+        Title="EMFWindow" Height="700" Width="1200" Background="LightGray">
     <Grid >
         <Grid.RowDefinitions>
             <RowDefinition Height="100"/>
@@ -21,16 +21,17 @@
         <ScrollViewer Grid.Row="1" Margin="48">
             <StackPanel Name="mainStackPanel">
 
-                <Grid Name="firstPointGrid" Margin = "24">
+                <Grid Name="firstPointGrid" Margin = "24" >
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
+                        <RowDefinition Height="80"/>
+                        <RowDefinition Height="80"/>
+                        <RowDefinition Height="80"/>
+                        <RowDefinition Height="80"/>
                     </Grid.RowDefinitions>
 
                     <WrapPanel Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -63,17 +64,34 @@
                         <ComboBox Name="statusComboBox" Style="{StaticResource comboBoxStyle}" IsEnabled ="False"/>
                     </WrapPanel>
 
+                    <WrapPanel Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Label Content="Actual &#10;Lat: " Style="{StaticResource labelStyleBlack}"/>
+                        <TextBox Name="actualLatTextBox" Style="{StaticResource textboxStyle}"/>
+                    </WrapPanel>
+                    
+                    <WrapPanel Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Label Content="Actual &#10;Long: " Style="{StaticResource labelStyleBlack}"/>
+                        <TextBox Name="actualLongTextBox" Style="{StaticResource textboxStyle}"/>
+                    </WrapPanel>
+
+                    <WrapPanel Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Label Content="Reading &#10;Date: " Style="{StaticResource labelStyleBlack}"/>
+                        <DatePicker Name="dateDatePicker" Style="{StaticResource datePickerStyle}" IsTodayHighlighted="True"/>
+                    </WrapPanel>
+
+                    <Image Grid.Row="3" Grid.ColumnSpan="3" Name="addPointReadingImage" Source="\Photos\plus_icon.png" Height="30" Width="30" ToolTip="Add New Reading" HorizontalAlignment="Center" VerticalAlignment="Center" MouseLeftButtonDown="OnClickAddReading"/>
                 </Grid>
+
+                
             </StackPanel>
         </ScrollViewer>
 
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
-                <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="0" Name="addPointButton" Content="Add Point"  Style="{StaticResource buttonStyle}" FontWeight="DemiBold" Click='OnButtonClickAddPoint'/>
+            <Button Grid.Column="0" Name="addPointButton" Content="Add Point"  Style="{StaticResource buttonStyle}" FontWeight="DemiBold" Click='OnButtonClickAddPoint' Visibility="Collapsed"/>
             <Button Grid.Column="1" Name="finishButton" Content="Save Changes"  Style="{StaticResource buttonStyle}" FontWeight="DemiBold" Click='OnButtonClickSaveChanges'/>
         </Grid>
     </Grid>

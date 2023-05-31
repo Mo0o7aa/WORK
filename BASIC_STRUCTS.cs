@@ -278,31 +278,31 @@ namespace ntra_missions
         public struct COMPANY_START_AND_STOP_FREQUENCY_STRUCT
         {
             public int serial;
-            public int start_frequency;
+            public Decimal start_frequency;
             public int start_frequency_unit_id;
             public String start_frequency_unit;
-            public int stop_frequency;
+            public Decimal stop_frequency;
             public int stop_frequency_unit_id;
             public String stop_frequency_unit;
             public long start_factor;
             public long stop_factor;
-            public long max;
-            public long min;
+            public Decimal max;
+            public Decimal min;
         };
 
         public struct COMPANY_CENTRE_FREQUENCY_BW_STRUCT
         {
             public int serial;
-            public int centre_frequency;
+            public Decimal centre_frequency;
             public int centre_frequency_unit_id;
             public String centre_frequency_unit;
-            public int bandwidth;
+            public Decimal bandwidth;
             public int bandwidth_unit_id;
             public String bandwidth_unit;
             public long cf_factor;
             public long bw_factor;
-            public long max;
-            public long min;
+            public Decimal max;
+            public Decimal min;
         };
 
         public struct BAND_UNIT_STRUCT
@@ -327,6 +327,8 @@ namespace ntra_missions
             public String actual_latitude;
             public String actual_longitude;
 
+            public DateTime date;
+
             public List<EMF_BAND_STRUCT> bands;
         };
 
@@ -350,9 +352,11 @@ namespace ntra_missions
         {
             public int emf_point_serial;
             public int band_serial;
-            public String band;
+            public int band;
+            public String band_name;
             public double average_power_density;
             public double max_power_density;
+
         };
 
 

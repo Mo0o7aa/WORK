@@ -503,20 +503,21 @@ namespace ntra_missions
                 for(int j = 0; j < emfPoints[i].bands.Count; j++)
                 {
                     Grid currentGrid = new Grid();
-                    currentGrid.ColumnDefinitions.Add(new ColumnDefinition());
-                    currentGrid.ColumnDefinitions.Add(new ColumnDefinition());
-                    currentGrid.ColumnDefinitions.Add(new ColumnDefinition());
+                    currentGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(300)});
+                    currentGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(400)});
+                    currentGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(400)});
+                    currentGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(300)});
 
 
                     WrapPanel bandWrapPanel = new WrapPanel();
 
                     Label bandLabel = new Label();
-                    bandLabel.Style = (Style)FindResource("wideLabelStyleBlack");
+                    bandLabel.Style = (Style)FindResource("labelStyleBlack");
                     bandLabel.Content = "Band: ";
 
                     Label bandLabelValue = new Label();
                     bandLabelValue.Style = (Style)FindResource("stackPanelLabelStyle");
-                    bandLabelValue.Content = emfPoints[i].bands[j].band;
+                    bandLabelValue.Content = emfPoints[i].bands[j].band_name;
 
                     bandWrapPanel.Children.Add(bandLabel);
                     bandWrapPanel.Children.Add(bandLabelValue);
@@ -557,6 +558,22 @@ namespace ntra_missions
 
                     currentGrid.Children.Add(maxWrapPanel);
                     Grid.SetColumn(maxWrapPanel, 2);
+
+                    WrapPanel dateWrapPanel = new WrapPanel();
+
+                    Label dateLabel = new Label();
+                    dateLabel.Style = (Style)FindResource("labelStyleBlack");
+                    dateLabel.Content = "Date: ";
+
+                    Label dateLabelValue = new Label();
+                    dateLabelValue.Style = (Style)FindResource("stackPanelLabelStyle");
+                    dateLabelValue.Content = emfPoints[i].date;
+
+                    dateWrapPanel.Children.Add(dateLabel);
+                    dateWrapPanel.Children.Add(dateLabelValue);
+
+                    currentGrid.Children.Add(dateWrapPanel);
+                    Grid.SetColumn(dateWrapPanel, 3);
 
                     bandStackPanel.Children.Add(currentGrid);
                 }
@@ -803,9 +820,9 @@ namespace ntra_missions
 
                 expander.Content = expanderstackPanel;
 
-                grid.Children.Add(expander);
-                Grid.SetRow(expander, 0);
-                Grid.SetColumn(expander, 3);
+                //grid.Children.Add(expander);
+                //Grid.SetRow(expander, 0);
+                //Grid.SetColumn(expander, 3);
 
                 StackPanel pointsStackPanel = new StackPanel() { Margin = new Thickness(12)};
 

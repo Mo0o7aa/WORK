@@ -29,13 +29,17 @@ namespace ntra_missions
         private String actualLatitude;
         private String actualLongitude;
 
-        private List<BASIC_STRUCTS.EMF_BAND_STRUCT> pointBands;
+        private DateTime readingDate;
+
+        public List<BASIC_STRUCTS.EMF_BAND_STRUCT> pointBands;
 
         public EMF()
         {
             sqlDatabase = new SQLServer();
 
             pointBands = new List<BASIC_STRUCTS.EMF_BAND_STRUCT>();
+
+            readingDate = DateTime.MinValue;
         }
 
         public bool InitializePoint(int mPointSerial)
@@ -47,6 +51,8 @@ namespace ntra_missions
             String sqlQueryPart1 = @"select emf_points.serial as point_serial,
 	                                        emf_point_bands.serial as band_serial,
 	                                        emf_points.status,
+											emf_point_bands.band,
+	                                        emf_points.reading_date,
 	                                        emf_points.name,
 	                                        emf_points.area,
 	                                        emf_points.district,
@@ -54,7 +60,7 @@ namespace ntra_missions
 	                                        emf_points.longitude,
 	                                        emf_points.actual_long,
 	                                        emf_points.actual_lat,
-	                                        emf_point_bands.band,
+	                                        emf_bands.band,
 	                                        emf_point_bands.average_power_density,
 	                                        emf_point_bands.max_power_density,
                         	                emf_point_status.status
@@ -63,13 +69,16 @@ namespace ntra_missions
                         on emf_points.serial = emf_point_bands.point_serial
                         left join NTRA.dbo.emf_point_status
                         on emf_points.status = emf_point_status.id
-                        where emf_points.serial = ";
+						left join NTRA.dbo.emf_bands
+						on emf_point_bands.band = emf_bands.id
+                        where emf_points.serial =";
 
             sqlQuery = sqlQueryPart1;
             sqlQuery += mPointSerial;
 
             BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT SQL_COLUMN_COUNT_STRUCT = new BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT();
-            SQL_COLUMN_COUNT_STRUCT.sql_int = 3;
+            SQL_COLUMN_COUNT_STRUCT.sql_int = 4;
+            SQL_COLUMN_COUNT_STRUCT.sql_datetime = 1;
             SQL_COLUMN_COUNT_STRUCT.sql_string = 11;
 
             if (!sqlDatabase.GetRows(sqlQuery, SQL_COLUMN_COUNT_STRUCT))
@@ -88,6 +97,8 @@ namespace ntra_missions
                 actualLatitude = sqlDatabase.rows[0].sql_string[6];
                 status = sqlDatabase.rows[0].sql_string[10];
 
+                readingDate = sqlDatabase.rows[0].sql_datetime[0];
+
                 pointBands.Clear();
 
                 for (int i = 0; i < sqlDatabase.rows.Count; i++)
@@ -97,11 +108,12 @@ namespace ntra_missions
                     tempPointBands.emf_point_serial = serial;
                     if (sqlDatabase.rows[i].sql_string[7] != "")
                     {
-                        tempPointBands.band = sqlDatabase.rows[i].sql_string[7];
                         tempPointBands.average_power_density = Double.Parse(sqlDatabase.rows[i].sql_string[8]);
                         tempPointBands.max_power_density = Double.Parse(sqlDatabase.rows[i].sql_string[9]);
+                        tempPointBands.band_name = sqlDatabase.rows[i].sql_string[7];
+                        tempPointBands.band = sqlDatabase.rows[i].sql_int[3];
 
-                        if (tempPointBands.band != "")
+                        if (tempPointBands.band_name != "")
                             pointBands.Add(tempPointBands);
                     }
                 }
@@ -114,18 +126,64 @@ namespace ntra_missions
             return true;
         }
 
+        public bool CheckPointStatus()
+        {
+            String sqlQuery = string.Empty;
+
+            String sqlQueryPart1 = @"select point_serial from NTRA.dbo.emf_point_bands where point_serial = ";
+
+            sqlQuery = sqlQueryPart1;
+            sqlQuery += serial;
+
+            BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT SQL_COLUMN_COUNT_STRUCT = new BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT();
+            SQL_COLUMN_COUNT_STRUCT.sql_int = 1;
+
+            if (!sqlDatabase.GetRows(sqlQuery, SQL_COLUMN_COUNT_STRUCT))
+                return false;
+
+            if (sqlDatabase.rows.Count != 0)
+            {
+                sqlQuery = "update NTRA.dbo.emf_points set status = ";
+                sqlQuery += BASIC_STRUCTS.CLOSED_EMF_POINT_STATUS;
+                sqlQuery += " where serial = ";
+                sqlQuery += serial;
+
+                if (!sqlDatabase.InsertRows(sqlQuery))
+                    return false;
+
+                return true;
+            }
+            else
+            {
+                sqlQuery = "update NTRA.dbo.emf_points set status = ";
+                sqlQuery += BASIC_STRUCTS.OPEN_EMF_POINT_STATUS;
+                sqlQuery += " where serial = ";
+                sqlQuery += serial;
+
+                if (!sqlDatabase.InsertRows(sqlQuery))
+                    return false;
+
+                return true;
+            }
+
+        }
+
         public bool InsertIntoEMFPoints()
         {
             String sqlQuery = "insert into NTRA.dbo.emf_points values(";
-            sqlQuery += serial + ",'";
-            sqlQuery += name + "','";
-            sqlQuery += area + "','";
+            sqlQuery += serial + ",N'";
+            sqlQuery += name + "',N'";
+            sqlQuery += area + "',N'";
             sqlQuery += district + "','";
             sqlQuery += latitude + "','";
             sqlQuery += longitude + "','";
             sqlQuery += actualLongitude + "','";
             sqlQuery += actualLatitude + "',";
-            sqlQuery += statusId + ", getdate());";
+            sqlQuery += statusId + ",getdate(),'";
+            if (readingDate == DateTime.MinValue)
+                sqlQuery += "');";
+            else
+                sqlQuery += readingDate + "');";
 
             if (!sqlDatabase.InsertRows(sqlQuery))
                 return false;
@@ -139,8 +197,8 @@ namespace ntra_missions
             {
                 String sqlQuery = "insert into NTRA.dbo.emf_point_bands values(";
                 sqlQuery += serial + ",";
-                sqlQuery += (i + 1) + ",'";
-                sqlQuery += pointBands[i].band + "','";
+                sqlQuery += (i + 1) + ",";
+                sqlQuery += pointBands[i].band + ",'";
                 sqlQuery += pointBands[i].average_power_density.ToString() + "','";
                 sqlQuery += pointBands[i].max_power_density.ToString() + "',getdate());";
 
@@ -180,14 +238,19 @@ namespace ntra_missions
 
         public bool EditEMFPoint()
         {
-            String sqlQuery = "update NTRA.dbo.emf_points set name = '";
-            sqlQuery += name + "' , area = '";
-            sqlQuery += area + "' , district = '";
+            String sqlQuery = "update NTRA.dbo.emf_points set name = N'";
+            sqlQuery += name + "' , area = N'";
+            sqlQuery += area + "' , district = N'";
             sqlQuery += district + "' , latitude = '";
             sqlQuery += latitude + "' , longitude = '";
             sqlQuery += longitude + "' , actual_long = '";
             sqlQuery += actualLongitude + "' , actual_lat = '";
-            sqlQuery += actualLatitude + "' , status = ";
+            sqlQuery += actualLatitude;
+            if(readingDate != DateTime.MinValue)
+            {
+                sqlQuery += "' ,reading_date = '" + readingDate;
+            }
+            sqlQuery += "', status = ";
             sqlQuery += statusId + " where serial = ";
             sqlQuery += serial;
 
@@ -280,6 +343,11 @@ namespace ntra_missions
             missionDate = mDate;
         }
 
+        public void SetReadingDate(DateTime mDate)
+        {
+            readingDate = mDate;
+        }
+
         public void SetAveragePowerDensiity(double mAveragePowerDensity)
         {
             averagePowerDensity = mAveragePowerDensity;
@@ -308,6 +376,16 @@ namespace ntra_missions
         public void SetStatus(String mStatus)
         {
             status = mStatus;
+        }
+
+        public void SetPointBands(ref  List<BASIC_STRUCTS.EMF_BAND_STRUCT> mList)
+        {
+            pointBands.Clear();
+
+            for(int i = 0; i < mList.Count; i++)
+            {
+                pointBands.Add(mList[i]);
+            }
         }
 
         public int GetSerial()
@@ -344,6 +422,11 @@ namespace ntra_missions
             return missionDate;
         }
 
+        public DateTime GetReadingDate()
+        {
+            return readingDate;
+        }
+
         public Double GetAveragePowerDensiity()
         {
             return averagePowerDensity;
@@ -373,6 +456,20 @@ namespace ntra_missions
         public String GetStatus()
         {
             return status;
+        }
+        public void GetPointBands(ref List<BASIC_STRUCTS.EMF_BAND_STRUCT> mList)
+        {
+            mList.Clear();
+
+            for (int i = 0; i < pointBands.Count; i++)
+            {
+                mList.Add(pointBands[i]);
+            }
+        }
+
+        public List<BASIC_STRUCTS.EMF_BAND_STRUCT> GetPointBands()
+        {
+            return pointBands;
         }
     }
 }

@@ -180,6 +180,17 @@
             <Setter Property="FontWeight" Value="Bold"/>
         </Style>
 
+        <Style x:Key="miniStackPanelLabelStyleTitle" TargetType="Label">
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Width" Value="100"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
         <Style x:Key="stackPanelLabelStyle" TargetType="Label">
             <Setter Property="Foreground" Value="#000080"/>
             <Setter Property="FontSize" Value="16"/>
@@ -202,14 +213,36 @@
             <Setter Property="FontWeight" Value="Bold"/>
         </Style>
 
-        <Style x:Key="stackPanelHeaderLabelStyle" TargetType="Label">
+        <Style x:Key="mediumStackPanelLabelStyle" TargetType="Label">
             <Setter Property="Foreground" Value="#000080"/>
-            <Setter Property="FontSize" Value="28"/>
+            <Setter Property="FontSize" Value="14"/>
             <Setter Property="HorizontalAlignment" Value="Left"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            <Setter Property="Width" Value="300"/>
+            <Setter Property="Width" Value="200"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+        <Style x:Key="stackPanelHeaderLabelStyle" TargetType="Label">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#000080"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="Height" Value="70"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+        <Style x:Key="stackPanelHeaderLabelStyleBlue" TargetType="Label">
+            <Setter Property="Foreground" Value="#000080"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
             <Setter Property="Height" Value="70"/>
             <Setter Property="FontWeight" Value="Bold"/>
         </Style>
@@ -217,11 +250,12 @@
         <Style x:Key="stackPanelSecondaryHeaderLabelStyle" TargetType="Label">
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="Background" Value="#000080"/>
-            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontSize" Value="18"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="Height" Value="70"/>
             <Setter Property="FontWeight" Value="Bold"/>
         </Style>
         

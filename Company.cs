@@ -50,18 +50,18 @@ namespace ntra_missions
                                             contacts.id as contact_id,
                                             company_centre_frequency.serial as cf_serial,
                                             company_start_stop_frequency.serial as start_stop_serial,
-                                            company_centre_frequency.centre_frequency,
 											company_centre_frequency.centre_frequency_unit,
-                                            company_centre_frequency.bandwidth,
 											company_centre_frequency.bandwidth_unit,
-											company_start_stop_frequency.start_frequency,
 											company_start_stop_frequency.start_frequency_unit,
-											company_start_stop_frequency.stop_frequency,
 											company_start_stop_frequency.stop_frequency_unit,
 											get_centre_frequency_unit.factor as cf_factor,
 											get_bw_unit.factor as bw_factor,
 											get_start_frequency_unit.factor as start_freq_factor,
 											get_stop_frequency_unit.factor as stop_freq_factor,
+                                            company_centre_frequency.centre_frequency,
+                                            company_centre_frequency.bandwidth,
+											company_start_stop_frequency.start_frequency,
+											company_start_stop_frequency.stop_frequency,
                                             companies.name as company_name,
                                             company_field_of_work.field_of_work as work_field,
                                             contact_name,
@@ -96,8 +96,9 @@ namespace ntra_missions
             sqlQuery += mSerial;
 
             BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT SQL_COLUMN_COUNT_STRUCT = new BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT();
-            SQL_COLUMN_COUNT_STRUCT.sql_int = 14;
+            SQL_COLUMN_COUNT_STRUCT.sql_int = 10;
             SQL_COLUMN_COUNT_STRUCT.sql_bigint = 4;
+            SQL_COLUMN_COUNT_STRUCT.sql_decimal = 4;
             SQL_COLUMN_COUNT_STRUCT.sql_string = 9;
 
             if (!sqlDatabase.GetRows(sqlQuery, SQL_COLUMN_COUNT_STRUCT))
@@ -144,11 +145,13 @@ namespace ntra_missions
                     {
                         BASIC_STRUCTS.COMPANY_CENTRE_FREQUENCY_BW_STRUCT centre_frequencies = new BASIC_STRUCTS.COMPANY_CENTRE_FREQUENCY_BW_STRUCT();
 
+
+                        centre_frequencies.centre_frequency = sqlDatabase.rows[i].sql_decimal[0];
+                        centre_frequencies.bandwidth = sqlDatabase.rows[i].sql_decimal[1];
+
                         centre_frequencies.serial = sqlDatabase.rows[i].sql_int[4];
-                        centre_frequencies.centre_frequency = sqlDatabase.rows[i].sql_int[6];
-                        centre_frequencies.centre_frequency_unit_id = sqlDatabase.rows[i].sql_int[7];
-                        centre_frequencies.bandwidth = sqlDatabase.rows[i].sql_int[8];
-                        centre_frequencies.bandwidth_unit_id = sqlDatabase.rows[i].sql_int[9];
+                        centre_frequencies.centre_frequency_unit_id = sqlDatabase.rows[i].sql_int[6];
+                        centre_frequencies.bandwidth_unit_id = sqlDatabase.rows[i].sql_int[7];
                         
                         centre_frequencies.cf_factor = sqlDatabase.rows[i].sql_bigint[0];
                         centre_frequencies.bw_factor = sqlDatabase.rows[i].sql_bigint[1];
@@ -156,8 +159,8 @@ namespace ntra_missions
                         centre_frequencies.centre_frequency_unit = sqlDatabase.rows[i].sql_string[5];
                         centre_frequencies.bandwidth_unit = sqlDatabase.rows[i].sql_string[6];
 
-                        centre_frequencies.max = ((centre_frequencies.centre_frequency * int.Parse(centre_frequencies.cf_factor.ToString())) + (centre_frequencies.bandwidth * int.Parse(centre_frequencies.bw_factor.ToString())));
-                        centre_frequencies.min = ((centre_frequencies.centre_frequency * int.Parse(centre_frequencies.cf_factor.ToString())) - (centre_frequencies.bandwidth * int.Parse(centre_frequencies.bw_factor.ToString())));
+                        centre_frequencies.max = (centre_frequencies.centre_frequency * centre_frequencies.cf_factor) + (centre_frequencies.bandwidth * centre_frequencies.bw_factor);
+                        centre_frequencies.min = (centre_frequencies.centre_frequency * centre_frequencies.cf_factor) - (centre_frequencies.bandwidth * centre_frequencies.bw_factor);
 
                         if(i == 0 || !companyCFandBW.Exists(x1 => x1.serial == centre_frequencies.serial))
                             companyCFandBW.Add(centre_frequencies);
@@ -166,11 +169,13 @@ namespace ntra_missions
                     {
                         BASIC_STRUCTS.COMPANY_START_AND_STOP_FREQUENCY_STRUCT start_frequencies = new BASIC_STRUCTS.COMPANY_START_AND_STOP_FREQUENCY_STRUCT();
 
+
+                        start_frequencies.start_frequency = sqlDatabase.rows[i].sql_decimal[2];
+                        start_frequencies.stop_frequency = sqlDatabase.rows[i].sql_decimal[3];
+
                         start_frequencies.serial = sqlDatabase.rows[i].sql_int[5];
-                        start_frequencies.start_frequency = sqlDatabase.rows[i].sql_int[10];
-                        start_frequencies.start_frequency_unit_id = sqlDatabase.rows[i].sql_int[11];
-                        start_frequencies.stop_frequency = sqlDatabase.rows[i].sql_int[12];
-                        start_frequencies.stop_frequency_unit_id = sqlDatabase.rows[i].sql_int[13];
+                        start_frequencies.start_frequency_unit_id = sqlDatabase.rows[i].sql_int[8];
+                        start_frequencies.stop_frequency_unit_id = sqlDatabase.rows[i].sql_int[9];
                         
                         start_frequencies.start_factor = sqlDatabase.rows[i].sql_bigint[2];
                         start_frequencies.stop_factor = sqlDatabase.rows[i].sql_bigint[3];

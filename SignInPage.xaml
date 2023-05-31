@@ -27,12 +27,12 @@
 
             <WrapPanel Grid.Row="0" VerticalAlignment="Center" Margin="12">
                 <Label Content="Username: " Width="135" Foreground="#000080" FontSize="22"/>
-                <TextBox Name="usernameTextBox" Style="{StaticResource textboxStyle}" Text="asameh"/>
+                <TextBox Name="usernameTextBox" Style="{StaticResource textboxStyle}" />
             </WrapPanel>
             
             <WrapPanel Grid.Row="1" VerticalAlignment="Center" Margin="12">
                 <Label Content="Password: " Width="135" Foreground="#000080" FontSize="22"/>
-                <PasswordBox Name="passwordTextBox" Style="{StaticResource passworsboxStyle}" Password="1234"/>
+                <PasswordBox Name="passwordTextBox" Style="{StaticResource passworsboxStyle}" />
             </WrapPanel>
 
             <Button Grid.Row="2" Name="signInButton" Click="OnBtnClickSignIn" Content="Sign In" Style="{StaticResource buttonStyle}" />

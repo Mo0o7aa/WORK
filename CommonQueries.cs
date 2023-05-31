@@ -225,6 +225,37 @@ namespace ntra_missions
             return true;
         }
 
+        public bool GetEMFBands(ref List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT> mList)
+        {
+            mList.Clear();
+
+            String sqlQueryPart1 = "select id, band from NTRA.dbo.emf_bands";
+
+            String sqlQuery = string.Empty;
+            sqlQuery = sqlQueryPart1;
+
+            BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT SQL_COLUMN_COUNT_STRUCT = new BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT();
+            SQL_COLUMN_COUNT_STRUCT.sql_int = 1;
+            SQL_COLUMN_COUNT_STRUCT.sql_string = 1;
+
+            if (!sqlDatabase.GetRows(sqlQuery, SQL_COLUMN_COUNT_STRUCT))
+                return false;
+
+            if (sqlDatabase.rows.Count != 0)
+            {
+                for (int i = 0; i < sqlDatabase.rows.Count; i++)
+                {
+                    BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT temp = new BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT();
+                    temp.key = sqlDatabase.rows[i].sql_int[0];
+                    temp.value = sqlDatabase.rows[i].sql_string[0];
+
+                    mList.Add(temp);
+                }
+            }
+
+            return true;
+        }
+
         public bool GetActionsTaken(ref List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT> mList)
         {
             mList.Clear();
@@ -1297,18 +1328,18 @@ namespace ntra_missions
                                             contacts.id,
 											company_centre_frequency.serial as cf_serial,
                                             company_start_stop_frequency.serial as start_stop_serial,
-                                            company_centre_frequency.centre_frequency,
 											company_centre_frequency.centre_frequency_unit,
-                                            company_centre_frequency.bandwidth,
 											company_centre_frequency.bandwidth_unit,
-											company_start_stop_frequency.start_frequency,
 											company_start_stop_frequency.start_frequency_unit,
-											company_start_stop_frequency.stop_frequency,
 											company_start_stop_frequency.stop_frequency_unit,
 											get_centre_frequency_unit.factor as cf_factor,
 											get_bw_unit.factor as bw_factor,
 											get_start_frequency_unit.factor as start_freq_factor,
 											get_stop_frequency_unit.factor as stop_freq_factor,
+											company_start_stop_frequency.start_frequency,
+											company_start_stop_frequency.stop_frequency,
+                                            company_centre_frequency.centre_frequency,
+                                            company_centre_frequency.bandwidth,
                                             companies.name as company_name,
                                             company_field_of_work.field_of_work as work_field,
 									        contact_name, phone,
@@ -1343,8 +1374,9 @@ namespace ntra_missions
             sqlQuery = sqlQueryPart1;
 
             BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT SQL_COLUMN_COUNT_STRUCT = new BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT();
-            SQL_COLUMN_COUNT_STRUCT.sql_int = 14;
+            SQL_COLUMN_COUNT_STRUCT.sql_int = 10;
             SQL_COLUMN_COUNT_STRUCT.sql_bigint = 4;
+            SQL_COLUMN_COUNT_STRUCT.sql_decimal = 4;
             SQL_COLUMN_COUNT_STRUCT.sql_string = 10;
 
             if (!sqlDatabase.GetRows(sqlQuery, SQL_COLUMN_COUNT_STRUCT))
@@ -1384,10 +1416,8 @@ namespace ntra_missions
 
                     if (cf_BW == true)
                     {
-                        centre_frequencies.centre_frequency = sqlDatabase.rows[i].sql_int[6];
-                        centre_frequencies.centre_frequency_unit_id = sqlDatabase.rows[i].sql_int[7];
-                        centre_frequencies.bandwidth = sqlDatabase.rows[i].sql_int[8];
-                        centre_frequencies.bandwidth_unit_id = sqlDatabase.rows[i].sql_int[9];
+                        centre_frequencies.centre_frequency_unit_id = sqlDatabase.rows[i].sql_int[6];
+                        centre_frequencies.bandwidth_unit_id = sqlDatabase.rows[i].sql_int[7];
 
                         centre_frequencies.cf_factor = sqlDatabase.rows[i].sql_bigint[0];
                         centre_frequencies.bw_factor = sqlDatabase.rows[i].sql_bigint[1];
@@ -1395,14 +1425,18 @@ namespace ntra_missions
 
                     if (start_stop == true)
                     {
-                        start_frequencies.start_frequency = sqlDatabase.rows[i].sql_int[10];
-                        start_frequencies.start_frequency_unit_id = sqlDatabase.rows[i].sql_int[11];
-                        start_frequencies.stop_frequency = sqlDatabase.rows[i].sql_int[12];
-                        start_frequencies.stop_frequency_unit_id = sqlDatabase.rows[i].sql_int[13];
+                        start_frequencies.start_frequency_unit_id = sqlDatabase.rows[i].sql_int[8];
+                        start_frequencies.stop_frequency_unit_id = sqlDatabase.rows[i].sql_int[9];
 
                         start_frequencies.start_factor = sqlDatabase.rows[i].sql_bigint[2];
                         start_frequencies.stop_factor = sqlDatabase.rows[i].sql_bigint[3];
                     }
+
+
+                    start_frequencies.start_frequency = sqlDatabase.rows[i].sql_decimal[0];
+                    start_frequencies.stop_frequency = sqlDatabase.rows[i].sql_decimal[1];
+                    centre_frequencies.centre_frequency = sqlDatabase.rows[i].sql_decimal[2];
+                    centre_frequencies.bandwidth = sqlDatabase.rows[i].sql_decimal[3];
 
                     tempCompany.company_name = sqlDatabase.rows[i].sql_string[0];
                     tempCompany.company_field_of_work = sqlDatabase.rows[i].sql_string[1];
@@ -1467,8 +1501,10 @@ namespace ntra_missions
             mList.Clear();
 
             String sqlQueryPart1 = @"select emf_points.serial as point_serial,
-	                                        emf_point_bands.serial as band_serial,
+	                                        emf_point_bands.serial,
 	                                        emf_points.status,
+	                                        emf_point_bands.band,
+	                                        emf_points.reading_date,
 	                                        emf_points.name,
 	                                        emf_points.area,
 	                                        emf_points.district,
@@ -1476,22 +1512,25 @@ namespace ntra_missions
 	                                        emf_points.longitude,
 	                                        emf_points.actual_long,
 	                                        emf_points.actual_lat,
-	                                        emf_point_bands.band,
 	                                        emf_point_bands.average_power_density,
 	                                        emf_point_bands.max_power_density,
-                        	                emf_point_status.status
+                        	                emf_point_status.status,
+											emf_bands.band
                         from NTRA.dbo.emf_points
                         left join NTRA.dbo.emf_point_bands
                         on emf_points.serial = emf_point_bands.point_serial
                         left join NTRA.dbo.emf_point_status
                         on emf_points.status = emf_point_status.id
+						left join NTRA.dbo.emf_bands
+						on emf_point_bands.band = emf_bands.id
                         Order by emf_points.serial DESC";
 
             String sqlQuery = string.Empty;
             sqlQuery = sqlQueryPart1;
 
             BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT SQL_COLUMN_COUNT_STRUCT = new BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT();
-            SQL_COLUMN_COUNT_STRUCT.sql_int = 3;
+            SQL_COLUMN_COUNT_STRUCT.sql_int = 4;
+            SQL_COLUMN_COUNT_STRUCT.sql_datetime = 1;
             SQL_COLUMN_COUNT_STRUCT.sql_string = 11;
 
             if (!sqlDatabase.GetRows(sqlQuery, SQL_COLUMN_COUNT_STRUCT))
@@ -1510,7 +1549,8 @@ namespace ntra_missions
                     tempPoint.emf_serial = sqlDatabase.rows[i].sql_int[0];
                     tempBand.band_serial = sqlDatabase.rows[i].sql_int[1];
                     tempPoint.emf_status_id = sqlDatabase.rows[i].sql_int[2];
-                    
+
+                    tempPoint.date = sqlDatabase.rows[i].sql_datetime[0];
 
                     tempPoint.name = sqlDatabase.rows[i].sql_string[0];
                     tempPoint.area = sqlDatabase.rows[i].sql_string[1];
@@ -1519,13 +1559,15 @@ namespace ntra_missions
                     tempPoint.longitude = sqlDatabase.rows[i].sql_string[4];
                     tempPoint.actual_longitude = sqlDatabase.rows[i].sql_string[5];
                     tempPoint.actual_latitude = sqlDatabase.rows[i].sql_string[6];
-                    tempBand.band = sqlDatabase.rows[i].sql_string[7];
+
                     if (tempBand.band_serial != 0)
                     {
-                        tempBand.average_power_density = Double.Parse(sqlDatabase.rows[i].sql_string[8]);
-                        tempBand.max_power_density = Double.Parse(sqlDatabase.rows[i].sql_string[9]);
+                        tempBand.average_power_density = Double.Parse(sqlDatabase.rows[i].sql_string[7]);
+                        tempBand.max_power_density = Double.Parse(sqlDatabase.rows[i].sql_string[8]);
+                        tempBand.band_name = sqlDatabase.rows[i].sql_string[10];
+                        tempBand.band = sqlDatabase.rows[i].sql_int[3];
                     }
-                    tempPoint.emf_status = sqlDatabase.rows[i].sql_string[10];
+                    tempPoint.emf_status = sqlDatabase.rows[i].sql_string[9];
                     
                     if (i != 0 && mList.Exists(x1 => x1.emf_serial == tempPoint.emf_serial))
                     {
@@ -1556,6 +1598,7 @@ namespace ntra_missions
 		                                     emf_plans.status as plan_status_id,
 		                                     emf_plans.assigned_engineer as assigned_engineer_id,
 		                                     emf_points.status as point_status_id,
+		                                     emf_point_bands.band,
 
                                              emf_plans.deadline_date,
 
@@ -1570,7 +1613,7 @@ namespace ntra_missions
 		                                     emf_points.actual_lat,
 		                                     emf_points.actual_long,
 		                                     emf_point_status.status as point_status,
-		                                     emf_point_bands.band,
+											 emf_bands.band,
 		                                     emf_point_bands.average_power_density,
 		                                     emf_point_bands.max_power_density
                         from NTRA.dbo.emf_plans
@@ -1586,13 +1629,15 @@ namespace ntra_missions
                         on emf_points.status = emf_point_status.id
                         left join NTRA.dbo.emf_point_bands
                         on emf_points.serial = emf_point_bands.point_serial
+						left join NTRA.dbo.emf_bands
+						on emf_point_bands.band = emf_bands.id
                         Order by emf_plans.serial DESC";
 
             String sqlQuery = string.Empty;
             sqlQuery = sqlQueryPart1;
 
             BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT SQL_COLUMN_COUNT_STRUCT = new BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT();
-            SQL_COLUMN_COUNT_STRUCT.sql_int = 6;
+            SQL_COLUMN_COUNT_STRUCT.sql_int = 7;
             SQL_COLUMN_COUNT_STRUCT.sql_datetime = 1;
             SQL_COLUMN_COUNT_STRUCT.sql_string = 14;
 
@@ -1618,6 +1663,7 @@ namespace ntra_missions
                     tempPlan.status_id = sqlDatabase.rows[i].sql_int[3];
                     tempPlan.assigned_engineer_id = sqlDatabase.rows[i].sql_int[4];
                     tempPoint.emf_status_id = sqlDatabase.rows[i].sql_int[5];
+                    tempBand.band = sqlDatabase.rows[i].sql_int[6];
 
 
                     tempPlan.plan_name = sqlDatabase.rows[i].sql_string[0];
@@ -1633,9 +1679,10 @@ namespace ntra_missions
                     tempPoint.emf_status = sqlDatabase.rows[i].sql_string[10];
                     if (tempBand.band_serial != 0)
                     {
-                        tempBand.band = sqlDatabase.rows[i].sql_string[11];
+                        tempBand.band_name = sqlDatabase.rows[i].sql_string[11];
                         tempBand.average_power_density = Double.Parse(sqlDatabase.rows[i].sql_string[12]);
                         tempBand.max_power_density = Double.Parse(sqlDatabase.rows[i].sql_string[13]);
+                        tempBand.band = sqlDatabase.rows[i].sql_int[6];
 
                         tempPoint.bands.Add(tempBand);
                     }
@@ -2121,6 +2168,48 @@ namespace ntra_missions
                     else
                         mList.Add(tempComplaint);
                 }
+            }
+
+            return true;
+        }
+
+        public bool CheckEMFPointNameExists(String mName)
+        {
+            String sqlQueryPart1 = "select serial from NTRA.dbo.emf_points where name = '" + mName + "';";
+
+            String sqlQuery = string.Empty;
+            sqlQuery = sqlQueryPart1;
+
+            BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT SQL_COLUMN_COUNT_STRUCT = new BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT();
+            SQL_COLUMN_COUNT_STRUCT.sql_int = 1;
+
+            if (!sqlDatabase.GetRows(sqlQuery, SQL_COLUMN_COUNT_STRUCT))
+                return false;
+
+            if (sqlDatabase.rows.Count != 0)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public bool CheckSiteNameExists(int mCompanySerial, String mName)
+        {
+            String sqlQueryPart1 = "select serial from NTRA.dbo.company_sites where company_serial = " + mCompanySerial + " and site_number = '" + mName + "';";
+
+            String sqlQuery = string.Empty;
+            sqlQuery = sqlQueryPart1;
+
+            BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT SQL_COLUMN_COUNT_STRUCT = new BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT();
+            SQL_COLUMN_COUNT_STRUCT.sql_int = 1;
+
+            if (!sqlDatabase.GetRows(sqlQuery, SQL_COLUMN_COUNT_STRUCT))
+                return false;
+
+            if (sqlDatabase.rows.Count != 0)
+            {
+                return false;
             }
 
             return true;

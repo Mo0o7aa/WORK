@@ -87,7 +87,7 @@
 
                     <CheckBox Grid.Row="0" Grid.Column="0" Name="searchCheckBox" Content="Search &#10;Name" Checked="OnCheckSearchCheckBox" Unchecked="OnUncheckSearchCheckBox" Style="{StaticResource checkBoxStyle}"/>
                     <CheckBox Grid.Row="1" Grid.Column="0" Name="fieldOfWorkCheckBox" Content="Field of &#10;work" Checked="OnCheckFieldCheckBox" Unchecked="OnUncheckFieldCheckBox" Style="{StaticResource checkBoxStyle}"/>
-                    <CheckBox Grid.Row="2" Grid.Column="0" Name="bandsCheckBox" Content="Bands" Checked="OnCheckBandsCheckBox" Unchecked="OnUncheckBandsCheckBox" Style="{StaticResource checkBoxStyle}"/>
+                    <CheckBox Grid.Row="2" Grid.Column="0" Name="bandsCheckBox" Content="Frequency:" Checked="OnCheckBandsCheckBox" Unchecked="OnUncheckBandsCheckBox" Style="{StaticResource checkBoxStyle}"/>
 
 
                     <TextBox Grid.Row="0" Grid.Column="1" Name="searchTextBox" TextChanged="OnTextChangedSearchTextBox" Style="{StaticResource miniTextboxStyle}" IsEnabled='False'/>

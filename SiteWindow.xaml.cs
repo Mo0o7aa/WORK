@@ -159,6 +159,13 @@ namespace ntra_missions
             }
 
             site.SetSiteNumber(siteNumberTextBox.Text);
+
+            if(!commonQueries.CheckSiteNameExists(site.GetCompanySerial(), site.GetSiteNumber()))
+            {
+                MessageBox.Show("Site " + site.GetSiteNumber() + " already exists for company " + site.GetCompanyName() + "!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
             site.SetRegion(regionTextBox.Text);
             site.SetLat(latTextBox.Text);
             site.SetLong(longTextBox.Text);

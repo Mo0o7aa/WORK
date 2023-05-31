@@ -52,12 +52,12 @@
                     <TextBox Name="regionTextBox" Style="{StaticResource textboxStyle}" Margin="12,0,0,0"/>
                 </WrapPanel>
 
-                <WrapPanel Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <WrapPanel Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <Label Content="Lat: " Style="{StaticResource labelStyleBlack}"/>
                     <TextBox Name="latTextBox" Style="{StaticResource textboxStyle}" Margin="12,0,0,0" PreviewTextInput="NumberValidationTextBox"/>
                 </WrapPanel>
 
-                <WrapPanel Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <WrapPanel Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <Label Content="Long: " Style="{StaticResource labelStyleBlack}"/>
                     <TextBox Name="longTextBox" Style="{StaticResource textboxStyle}" Margin="12,0,0,0" PreviewTextInput="NumberValidationTextBox"/>
                 </WrapPanel>

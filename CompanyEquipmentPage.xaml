@@ -34,6 +34,8 @@
                             <MenuItem Header="Employees" Name="EmployeeMenuItem" Click="employeeMenuSelection"/>
                             <MenuItem Header="Companies" Name="CompanyMenuItem" Click="CompanyMenuSelection"/>
                             <MenuItem Header="Company Equipment" Name="CompanyEquipmentMenuItem" IsChecked="True" IsHitTestVisible="False"/>
+                            <MenuItem Header="Sites" Name="sitesMenuItem" Click="SitesMenuSelection"/>
+                            <MenuItem Header="EMF" Name="emfMenuItem" Click="emfMenuSelection"/>
                             <MenuItem Header="Complaints" Name="ComplaintsMenuItem" Click="ComplaintsMenuSelection"/>
                             <MenuItem Header="Monitoring Missions" Name="monitoringMenuItem" Click="MonitoringMenuSelection"/>
                             <MenuItem Header="Inspection Missions" Name="inspectionMenuItem" Click="InspectionMenuSelection"/>

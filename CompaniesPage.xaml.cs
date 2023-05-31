@@ -30,6 +30,9 @@ namespace ntra_missions
         private List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT> bands;
         private List<BASIC_STRUCTS.BAND_UNIT_STRUCT> bandUnits;
 
+        private Expander currentExpander;
+        private Expander previousExpander;
+
         public CompaniesPage(ref Employee mLoggedInUser)
         {
             commonQueries = new CommonQueries();
@@ -106,7 +109,7 @@ namespace ntra_missions
 
                     for (int j = 0; j < companies[i].cf_and_bw_frequencies.Count; j++)
                     {
-                        if ((long.Parse(bandTextBox.Text.ToString()) * long.Parse(bandUnits[bandsComboBox.SelectedIndex].factor.ToString())) <= companies[i].cf_and_bw_frequencies[j].max && (long.Parse(bandTextBox.Text.ToString()) * long.Parse(bandUnits[bandsComboBox.SelectedIndex].factor.ToString())) >= companies[i].cf_and_bw_frequencies[j].min)
+                        if ((Decimal.Parse(bandTextBox.Text.ToString()) * long.Parse(bandUnits[bandsComboBox.SelectedIndex].factor.ToString())) <= companies[i].cf_and_bw_frequencies[j].max && (Decimal.Parse(bandTextBox.Text.ToString()) * long.Parse(bandUnits[bandsComboBox.SelectedIndex].factor.ToString())) >= companies[i].cf_and_bw_frequencies[j].min)
                         {
                             band = true;
                             break;
@@ -115,7 +118,7 @@ namespace ntra_missions
 
                     for (int j = 0; j < companies[i].start_and_stop_frequencies.Count; j++)
                     {
-                        if ((long.Parse(bandTextBox.Text.ToString()) * long.Parse(bandUnits[bandsComboBox.SelectedIndex].factor.ToString())) <= companies[i].start_and_stop_frequencies[j].max && (long.Parse(bandTextBox.Text.ToString()) * long.Parse(bandUnits[bandsComboBox.SelectedIndex].factor.ToString())) >= companies[i].start_and_stop_frequencies[j].min)
+                        if ((Decimal.Parse(bandTextBox.Text.ToString()) * long.Parse(bandUnits[bandsComboBox.SelectedIndex].factor.ToString())) <= companies[i].start_and_stop_frequencies[j].max && (Decimal.Parse(bandTextBox.Text.ToString()) * long.Parse(bandUnits[bandsComboBox.SelectedIndex].factor.ToString())) >= companies[i].start_and_stop_frequencies[j].min)
                         {
                             band = true;
                             break;
@@ -138,6 +141,7 @@ namespace ntra_missions
                 border.Child = tempGrid;
 
                 Expander expander = new Expander();
+                expander.Expanded += OnExpandExpander;
                 expander.Tag = companies[i].company_serial;
                 expander.Margin = new Thickness(12);
                 expander.VerticalAlignment = VerticalAlignment.Top;
@@ -167,7 +171,7 @@ namespace ntra_missions
                 Grid.SetColumn(tempStackPanel, 0);
 
                 Label companyNameLabel = new Label();
-                companyNameLabel.Style = (Style)FindResource("stackPanelHeaderLabelStyle");
+                companyNameLabel.Style = (Style)FindResource("stackPanelHeaderLabelStyleBlue");
                 companyNameLabel.HorizontalAlignment = HorizontalAlignment.Stretch;
                 companyNameLabel.HorizontalContentAlignment = HorizontalAlignment.Center;
                 //companyNameLabel.Foreground = Brushes.White;
@@ -181,7 +185,7 @@ namespace ntra_missions
 
                 Label workFieldLabelTitle = new Label();
                 workFieldLabelTitle.Content = "Work field: ";
-                workFieldLabelTitle.Style = (Style)FindResource("wideStackPanelLabelStyleTitle");
+                workFieldLabelTitle.Style = (Style)FindResource("miniStackPanelLabelStyleTitle");
 
                 Label workFieldLabel = new Label();
                 workFieldLabel.Style = (Style)FindResource("wideStackPanelLabelStyle");
@@ -192,77 +196,6 @@ namespace ntra_missions
 
                 tempStackPanel.Children.Add(workFieldWrapPanel);
 
-                for(int j = 0; j < companies[i].cf_and_bw_frequencies.Count; j++)
-                {
-                    Grid tempCFGrid = new Grid() { HorizontalAlignment = HorizontalAlignment.Center};
-                    tempCFGrid.ColumnDefinitions.Add(new ColumnDefinition());
-                    tempCFGrid.ColumnDefinitions.Add(new ColumnDefinition());
-                    tempCFGrid.ColumnDefinitions.Add(new ColumnDefinition());
-                    tempCFGrid.ColumnDefinitions.Add(new ColumnDefinition());
-
-                    Label cfLabel = new Label() { Style = (Style)FindResource("labelStyle")};
-                    cfLabel.Content = "Centre Freq.: ";
-
-                    Label cfLabelValue = new Label() { Style = (Style)FindResource("mediumLabelStyleBlack") };
-                    cfLabelValue.Content = companies[i].cf_and_bw_frequencies[j].centre_frequency + companies[i].cf_and_bw_frequencies[j].centre_frequency_unit;
-
-
-                    Label bwLabel = new Label() { Style = (Style)FindResource("labelStyle") };
-                    bwLabel.Content = "Bandwidth: ";
-
-                    Label bwLabelValue = new Label() { Style = (Style)FindResource("mediumLabelStyleBlack") };
-                    bwLabelValue.Content = companies[i].cf_and_bw_frequencies[j].bandwidth + companies[i].cf_and_bw_frequencies[j].bandwidth_unit;
-
-                    tempCFGrid.Children.Add(cfLabel);
-                    Grid.SetColumn(cfLabel, 0);
-
-                    tempCFGrid.Children.Add(cfLabelValue);
-                    Grid.SetColumn(cfLabelValue, 1);
-
-                    tempCFGrid.Children.Add(bwLabel);
-                    Grid.SetColumn(bwLabel, 2);
-
-                    tempCFGrid.Children.Add(bwLabelValue);
-                    Grid.SetColumn(bwLabelValue, 3);
-
-                    tempStackPanel.Children.Add(tempCFGrid);
-                }
-
-                for (int j = 0; j < companies[i].start_and_stop_frequencies.Count; j++)
-                {
-                    Grid tempStartGrid = new Grid() { HorizontalAlignment = HorizontalAlignment.Center };
-                    tempStartGrid.ColumnDefinitions.Add(new ColumnDefinition());
-                    tempStartGrid.ColumnDefinitions.Add(new ColumnDefinition());
-                    tempStartGrid.ColumnDefinitions.Add(new ColumnDefinition());
-                    tempStartGrid.ColumnDefinitions.Add(new ColumnDefinition());
-
-                    Label cfLabel = new Label() { Style = (Style)FindResource("labelStyle") };
-                    cfLabel.Content = "Start Freq.: ";
-
-                    Label cfLabelValue = new Label() { Style = (Style)FindResource("mediumLabelStyleBlack") };
-                    cfLabelValue.Content = companies[i].start_and_stop_frequencies[j].start_frequency + " " + companies[i].start_and_stop_frequencies[j].start_frequency_unit;
-
-
-                    Label bwLabel = new Label() { Style = (Style)FindResource("labelStyle") };
-                    bwLabel.Content = "Stop Freq.: ";
-
-                    Label bwLabelValue = new Label() { Style = (Style)FindResource("mediumLabelStyleBlack") };
-                    bwLabelValue.Content = companies[i].start_and_stop_frequencies[j].stop_frequency + " " + companies[i].start_and_stop_frequencies[j].stop_frequency_unit;
-
-                    tempStartGrid.Children.Add(cfLabel);
-                    Grid.SetColumn(cfLabel, 0);
-
-                    tempStartGrid.Children.Add(cfLabelValue);
-                    Grid.SetColumn(cfLabelValue, 1);
-
-                    tempStartGrid.Children.Add(bwLabel);
-                    Grid.SetColumn(bwLabel, 2);
-
-                    tempStartGrid.Children.Add(bwLabelValue);
-                    Grid.SetColumn(bwLabelValue, 3);
-
-                    tempStackPanel.Children.Add(tempStartGrid);
-                }
 
                 Grid contactsGrid = new Grid();
 
@@ -273,9 +206,9 @@ namespace ntra_missions
                     Grid tempContactGrid = new Grid();
                     tempContactGrid.RowDefinitions.Add(new RowDefinition());
 
+                    tempContactGrid.ColumnDefinitions.Add(new ColumnDefinition() );
                     tempContactGrid.ColumnDefinitions.Add(new ColumnDefinition());
-                    tempContactGrid.ColumnDefinitions.Add(new ColumnDefinition());
-                    tempContactGrid.ColumnDefinitions.Add(new ColumnDefinition());
+                    tempContactGrid.ColumnDefinitions.Add(new ColumnDefinition() );
 
                     //Label contactHeaderLabel = new Label();
                     //contactHeaderLabel.Style = (Style)FindResource("stackPanelHeaderLabelStyle");
@@ -288,12 +221,12 @@ namespace ntra_missions
                     //Grid.SetRow(contactHeaderLabel, 0);
                     //Grid.SetColumnSpan(contactHeaderLabel, 3);
 
-                    StackPanel nameStackPanel = new StackPanel();
-                    nameStackPanel.Orientation = Orientation.Vertical;
+                    WrapPanel nameStackPanel = new WrapPanel();
 
                     Label contactNameLabelTitle = new Label();
                     contactNameLabelTitle.Content = "Name: ";
-                    contactNameLabelTitle.Style = (Style)FindResource("wideStackPanelLabelStyleTitle");
+                    //contactNameLabelTitle.Style = (Style)FindResource("wideStackPanelLabelStyleTitle");
+                    contactNameLabelTitle.Style = (Style)FindResource("miniStackPanelLabelStyleTitle");
 
                     Label contactNameLabel = new Label();
                     contactNameLabel.Style = (Style)FindResource("stackPanelLabelStyle");
@@ -306,12 +239,11 @@ namespace ntra_missions
                     Grid.SetRow(nameStackPanel, 0);
                     Grid.SetColumn(nameStackPanel, 0);
 
-                    StackPanel numberStackPanel = new StackPanel();
-                    numberStackPanel.Orientation = Orientation.Vertical;
+                    WrapPanel numberStackPanel = new WrapPanel();
 
                     Label contactNumberLabelTitle = new Label();
                     contactNumberLabelTitle.Content = "Number: ";
-                    contactNumberLabelTitle.Style = (Style)FindResource("wideStackPanelLabelStyleTitle");
+                    contactNumberLabelTitle.Style = (Style)FindResource("miniStackPanelLabelStyleTitle");
 
                     Label contactNumberLabel = new Label();
                     contactNumberLabel.Style = (Style)FindResource("stackPanelLabelStyle");
@@ -324,12 +256,11 @@ namespace ntra_missions
                     Grid.SetRow(numberStackPanel, 0);
                     Grid.SetColumn(numberStackPanel, 1);
 
-                    StackPanel emailStackPanel = new StackPanel();
-                    emailStackPanel.Orientation = Orientation.Vertical;
+                    WrapPanel emailStackPanel = new WrapPanel();
 
                     Label contactEmailLabelTitle = new Label();
                     contactEmailLabelTitle.Content = "Email: ";
-                    contactEmailLabelTitle.Style = (Style)FindResource("wideStackPanelLabelStyleTitle");
+                    contactEmailLabelTitle.Style = (Style)FindResource("miniStackPanelLabelStyleTitle");
 
                     Label contactEmailLabel = new Label();
                     contactEmailLabel.Style = (Style)FindResource("wideStackPanelLabelStyle");
@@ -348,7 +279,146 @@ namespace ntra_missions
 
                 tempStackPanel.Children.Add(contactsGrid);
 
+                //StackPanel tempCFStackPanel = new StackPanel();
+                //
+                //for (int j = 0; j < companies[i].cf_and_bw_frequencies.Count; j++)
+                //{
+                //    Grid tempCFGrid = new Grid() { HorizontalAlignment = HorizontalAlignment.Center, Visibility = Visibility.Collapsed };
+                //    tempCFGrid.ColumnDefinitions.Add(new ColumnDefinition());
+                //    tempCFGrid.ColumnDefinitions.Add(new ColumnDefinition());
+                //    tempCFGrid.ColumnDefinitions.Add(new ColumnDefinition());
+                //    tempCFGrid.ColumnDefinitions.Add(new ColumnDefinition());
+                //
+                //    Label cfLabel = new Label() { Style = (Style)FindResource("labelStyle") };
+                //    cfLabel.Content = "Centre Freq.: ";
+                //
+                //    Label cfLabelValue = new Label() { Style = (Style)FindResource("mediumLabelStyleBlack") };
+                //    cfLabelValue.Content = companies[i].cf_and_bw_frequencies[j].centre_frequency + companies[i].cf_and_bw_frequencies[j].centre_frequency_unit;
+                //
+                //
+                //    Label bwLabel = new Label() { Style = (Style)FindResource("labelStyle") };
+                //    bwLabel.Content = "Bandwidth: ";
+                //
+                //    Label bwLabelValue = new Label() { Style = (Style)FindResource("mediumLabelStyleBlack") };
+                //    bwLabelValue.Content = companies[i].cf_and_bw_frequencies[j].bandwidth + companies[i].cf_and_bw_frequencies[j].bandwidth_unit;
+                //
+                //    tempCFGrid.Children.Add(cfLabel);
+                //    Grid.SetColumn(cfLabel, 0);
+                //
+                //    tempCFGrid.Children.Add(cfLabelValue);
+                //    Grid.SetColumn(cfLabelValue, 1);
+                //
+                //    tempCFGrid.Children.Add(bwLabel);
+                //    Grid.SetColumn(bwLabel, 2);
+                //
+                //    tempCFGrid.Children.Add(bwLabelValue);
+                //    Grid.SetColumn(bwLabelValue, 3);
+                //
+                //
+                //    tempCFStackPanel.Children.Add(tempCFGrid);
+                //
+                //
+                //}
+                //
+                //if(tempCFStackPanel.Children.Count > 0)
+                //{
+                //    
+                //
+                //    Label showCompanyFreqLabel = new Label();
+                //    showCompanyFreqLabel.Style = (Style)FindResource("mediumLabelStyle");
+                //    showCompanyFreqLabel.Content = "Show Company Freq.";
+                //    showCompanyFreqLabel.Background = (Brush)brushConverter.ConvertFrom("#000080");
+                //    showCompanyFreqLabel.Foreground = Brushes.White;
+                //    showCompanyFreqLabel.MouseLeftButtonDown += OnClickShowCompanyFrequency;
+                //    tempStackPanel.Children.Add(showCompanyFreqLabel);
+                //
+                //    tempStackPanel.Children.Add(tempCFStackPanel);
+                //}
+                //
+                //StackPanel tempStartAndStopStackPanel = new StackPanel();
+                //
+                //for (int j = 0; j < companies[i].start_and_stop_frequencies.Count; j++)
+                //{
+                //    Grid tempStartGrid = new Grid() { HorizontalAlignment = HorizontalAlignment.Center, Visibility = Visibility.Collapsed };
+                //    tempStartGrid.ColumnDefinitions.Add(new ColumnDefinition());
+                //    tempStartGrid.ColumnDefinitions.Add(new ColumnDefinition());
+                //    tempStartGrid.ColumnDefinitions.Add(new ColumnDefinition());
+                //    tempStartGrid.ColumnDefinitions.Add(new ColumnDefinition());
+                //
+                //    Label cfLabel = new Label() { Style = (Style)FindResource("labelStyle") };
+                //    cfLabel.Content = "Start Freq.: ";
+                //
+                //    Label cfLabelValue = new Label() { Style = (Style)FindResource("mediumLabelStyleBlack") };
+                //    cfLabelValue.Content = companies[i].start_and_stop_frequencies[j].start_frequency + " " + companies[i].start_and_stop_frequencies[j].start_frequency_unit;
+                //
+                //
+                //    Label bwLabel = new Label() { Style = (Style)FindResource("labelStyle") };
+                //    bwLabel.Content = "Stop Freq.: ";
+                //
+                //    Label bwLabelValue = new Label() { Style = (Style)FindResource("mediumLabelStyleBlack") };
+                //    bwLabelValue.Content = companies[i].start_and_stop_frequencies[j].stop_frequency + " " + companies[i].start_and_stop_frequencies[j].stop_frequency_unit;
+                //
+                //    tempStartGrid.Children.Add(cfLabel);
+                //    Grid.SetColumn(cfLabel, 0);
+                //
+                //    tempStartGrid.Children.Add(cfLabelValue);
+                //    Grid.SetColumn(cfLabelValue, 1);
+                //
+                //    tempStartGrid.Children.Add(bwLabel);
+                //    Grid.SetColumn(bwLabel, 2);
+                //
+                //    tempStartGrid.Children.Add(bwLabelValue);
+                //    Grid.SetColumn(bwLabelValue, 3);
+                //
+                //    tempStartAndStopStackPanel.Children.Add(tempStartGrid);
+                //}
+                //
+                //if(tempStartAndStopStackPanel.Children.Count > 0)
+                //{
+                //    Label showCompanyFreqLabel = new Label();
+                //    showCompanyFreqLabel.Style = (Style)FindResource("mediumLabelStyle");
+                //    showCompanyFreqLabel.Content = "Show Company Freq.";
+                //    showCompanyFreqLabel.Background = (Brush)brushConverter.ConvertFrom("#000080");
+                //    showCompanyFreqLabel.Foreground = Brushes.White;
+                //    showCompanyFreqLabel.MouseLeftButtonDown += OnClickShowCompanyFrequency;
+                //    
+                //    tempStackPanel.Children.Add(showCompanyFreqLabel);
+                //
+                //    tempStackPanel.Children.Add(tempStartAndStopStackPanel);
+                //}
+
                 companiesStackPanel.Children.Add(border);
+            }
+        }
+
+        private void OnExpandExpander(object sender, RoutedEventArgs e)
+        {
+            previousExpander = currentExpander;
+            currentExpander = (Expander)sender;
+
+            if (previousExpander != null && previousExpander != currentExpander)
+                previousExpander.IsExpanded = false;
+        }
+
+        private void OnClickShowCompanyFrequency(object sender, MouseButtonEventArgs e)
+        {
+            Label currentLabel = (Label)sender;
+
+            if(currentLabel.Visibility == Visibility.Visible)
+            {
+                StackPanel currentStackPanel = (StackPanel)currentLabel.Parent;
+                currentLabel.Visibility = Visibility.Collapsed;
+
+                StackPanel freqGrid = (StackPanel)currentStackPanel.Children[currentStackPanel.Children.Count - 1];
+                freqGrid.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                StackPanel currentStackPanel = (StackPanel)currentLabel.Parent;
+                currentLabel.Visibility = Visibility.Visible;
+
+                StackPanel freqGrid = (StackPanel)currentStackPanel.Children[currentStackPanel.Children.Count - 1];
+                freqGrid.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -361,57 +431,38 @@ namespace ntra_missions
 
             BrushConverter brushConverter = new BrushConverter();
 
-            Grid tempHeaderGrid = new Grid();
+            Grid tempHeaderGrid = new Grid() ;
             tempHeaderGrid.ShowGridLines = true;
 
-            tempHeaderGrid.ColumnDefinitions.Add(new ColumnDefinition());
-            tempHeaderGrid.ColumnDefinitions.Add(new ColumnDefinition(){ Width = new GridLength(300) });
-            tempHeaderGrid.ColumnDefinitions.Add(new ColumnDefinition(){ Width = new GridLength(700) });
-            tempHeaderGrid.ColumnDefinitions.Add(new ColumnDefinition(){ Width = new GridLength(700) });
-            tempHeaderGrid.ColumnDefinitions.Add(new ColumnDefinition(){ Width = new GridLength(700) });
+            tempHeaderGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(200) });
+            tempHeaderGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(200) });
+            tempHeaderGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(600) });
+            tempHeaderGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(400) });
 
             ///////////HEADER//////
 
             Label companyNameHeader = new Label();
             companyNameHeader.Style = (Style)FindResource("stackPanelHeaderLabelStyle");
             companyNameHeader.Content = "Company Name";
-            companyNameHeader.Foreground = Brushes.White;
-            companyNameHeader.Background = (Brush)brushConverter.ConvertFrom("#000080");
-            companyNameHeader.HorizontalAlignment = HorizontalAlignment.Stretch;
             companyNameHeader.HorizontalContentAlignment = HorizontalAlignment.Center;
 
             Label workFieldHeader = new Label();
             workFieldHeader.Style = (Style)FindResource("stackPanelHeaderLabelStyle");
             workFieldHeader.Content = "Workfield";
-            workFieldHeader.Foreground = Brushes.White;
-            workFieldHeader.Background = (Brush)brushConverter.ConvertFrom("#000080");
-            workFieldHeader.HorizontalAlignment = HorizontalAlignment.Stretch;
             workFieldHeader.HorizontalContentAlignment = HorizontalAlignment.Center;
 
 
-            Label contact1Header = new Label();
-            contact1Header.Style = (Style)FindResource("stackPanelHeaderLabelStyle");
-            contact1Header.Content = "Contact 1";
-            contact1Header.Foreground = Brushes.White;
-            contact1Header.Background = (Brush)brushConverter.ConvertFrom("#000080");
-            contact1Header.Width = 700;
-            contact1Header.HorizontalContentAlignment = HorizontalAlignment.Center;
+            Label contactsHeader = new Label();
+            contactsHeader.Style = (Style)FindResource("stackPanelHeaderLabelStyle");
+            contactsHeader.Content = "Contacts";
+            contactsHeader.HorizontalContentAlignment = HorizontalAlignment.Center;
 
-            Label contact2Header = new Label();
-            contact2Header.Style = (Style)FindResource("stackPanelHeaderLabelStyle");
-            contact2Header.Content = "Contact 2";
-            contact2Header.Foreground = Brushes.White;
-            contact2Header.Background = (Brush)brushConverter.ConvertFrom("#000080");
-            contact2Header.Width = 700;
-            contact2Header.HorizontalContentAlignment = HorizontalAlignment.Center;
-
-            Label contact3Header = new Label();
-            contact3Header.Style = (Style)FindResource("stackPanelHeaderLabelStyle");
-            contact3Header.Content = "Contact 3";
-            contact3Header.Foreground = Brushes.White;
-            contact3Header.Background = (Brush)brushConverter.ConvertFrom("#000080");
-            contact3Header.Width = 700;
-            contact3Header.HorizontalContentAlignment = HorizontalAlignment.Center;
+            Label frequencyHeader = new Label();
+            frequencyHeader.Style = (Style)FindResource("stackPanelHeaderLabelStyle");
+            frequencyHeader.Content = "Frequencies";
+            frequencyHeader.Foreground = Brushes.White;
+            frequencyHeader.Background = (Brush)brushConverter.ConvertFrom("#000080");
+            frequencyHeader.HorizontalContentAlignment = HorizontalAlignment.Center;
 
             tempHeaderGrid.Children.Add(companyNameHeader);
             Grid.SetColumn(companyNameHeader, 0);
@@ -419,14 +470,11 @@ namespace ntra_missions
             tempHeaderGrid.Children.Add(workFieldHeader);
             Grid.SetColumn(workFieldHeader, 1);
 
-            tempHeaderGrid.Children.Add(contact1Header);
-            Grid.SetColumn(contact1Header, 2);
+            tempHeaderGrid.Children.Add(contactsHeader);
+            Grid.SetColumn(contactsHeader, 2);
 
-            tempHeaderGrid.Children.Add(contact2Header);
-            Grid.SetColumn(contact2Header, 3);
-
-            tempHeaderGrid.Children.Add(contact3Header);
-            Grid.SetColumn(contact3Header, 4);
+            tempHeaderGrid.Children.Add(frequencyHeader);
+            Grid.SetColumn(frequencyHeader, 3);
 
 
             companiesGrid.Children.Add(tempHeaderGrid);
@@ -449,16 +497,41 @@ namespace ntra_missions
                         continue;
                 }
 
+                if (bandsCheckBox.IsChecked == true && bandsComboBox.SelectedIndex != -1 && bandTextBox.Text != "")
+                {
+                    bool band = false;
+
+                    for (int j = 0; j < companies[i].cf_and_bw_frequencies.Count; j++)
+                    {
+                        if ((Decimal.Parse(bandTextBox.Text.ToString()) * long.Parse(bandUnits[bandsComboBox.SelectedIndex].factor.ToString())) <= companies[i].cf_and_bw_frequencies[j].max && (Decimal.Parse(bandTextBox.Text.ToString()) * long.Parse(bandUnits[bandsComboBox.SelectedIndex].factor.ToString())) >= companies[i].cf_and_bw_frequencies[j].min)
+                        {
+                            band = true;
+                            break;
+                        }
+                    }
+
+                    for (int j = 0; j < companies[i].start_and_stop_frequencies.Count; j++)
+                    {
+                        if ((Decimal.Parse(bandTextBox.Text.ToString()) * long.Parse(bandUnits[bandsComboBox.SelectedIndex].factor.ToString())) <= companies[i].start_and_stop_frequencies[j].max && (Decimal.Parse(bandTextBox.Text.ToString()) * long.Parse(bandUnits[bandsComboBox.SelectedIndex].factor.ToString())) >= companies[i].start_and_stop_frequencies[j].min)
+                        {
+                            band = true;
+                            break;
+                        }
+                    }
+
+                    if (band == false)
+                        continue;
+                }
+
                 companiesGrid.RowDefinitions.Add(new RowDefinition());
 
                 Grid tempCompaniesGrid = new Grid();
                 tempCompaniesGrid.ShowGridLines = true;
 
+                tempCompaniesGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(200) });
+                tempCompaniesGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(200) });
+                tempCompaniesGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(600) });
                 tempCompaniesGrid.ColumnDefinitions.Add(new ColumnDefinition());
-                tempCompaniesGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(300) });
-                tempCompaniesGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(700) });
-                tempCompaniesGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(700) });
-                tempCompaniesGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(700) });
 
 
                 Label companyNameLabel = new Label();
@@ -467,7 +540,6 @@ namespace ntra_missions
                 companyNameLabel.Style = (Style)FindResource("mediumLabelStyle");
                 companyNameLabel.Content = companies[i].company_name;
                 companyNameLabel.HorizontalContentAlignment = HorizontalAlignment.Center;
-                companyNameLabel.HorizontalAlignment = HorizontalAlignment.Center;
 
                 tempCompaniesGrid.Children.Add(companyNameLabel);
                 Grid.SetColumn(companyNameLabel, 0);
@@ -475,73 +547,69 @@ namespace ntra_missions
                 Label workFieldLabel = new Label();
                 workFieldLabel.MouseLeftButtonDown += CopyLabelContent;
                 workFieldLabel.ToolTip = "Copy";
-                workFieldLabel.Style = (Style)FindResource("wideLabelStyle");
+                workFieldLabel.Style = (Style)FindResource("mediumLabelStyle");
                 workFieldLabel.Content = companies[i].company_field_of_work;
                 workFieldLabel.HorizontalContentAlignment = HorizontalAlignment.Center;
-                workFieldLabel.HorizontalAlignment = HorizontalAlignment.Center;
 
                 tempCompaniesGrid.Children.Add(workFieldLabel);
                 Grid.SetColumn(workFieldLabel, 1);
 
+                Grid contactsGrid = new Grid();
+                contactsGrid.ShowGridLines = true;
+
+                contactsGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(70)});
+
+                contactsGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(150) });
+                contactsGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(150) });
+                contactsGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(300) });
+
+                Label contactNameHeader = new Label();
+                contactNameHeader.Style = (Style)FindResource("stackPanelHeaderLabelStyle");
+                contactNameHeader.Content = "Name";
+
+                Label contactNumberHeader = new Label();
+                contactNumberHeader.Style = (Style)FindResource("stackPanelHeaderLabelStyle");
+                contactNumberHeader.Content = "Number";
+
+
+                Label contactEmailHeader = new Label();
+                contactEmailHeader.Style = (Style)FindResource("stackPanelHeaderLabelStyle");
+                contactEmailHeader.Content = "Email";
+
+                contactsGrid.Children.Add(contactNameHeader);
+                Grid.SetColumn(contactNameHeader, 0);
+                Grid.SetRow(contactNameHeader, 0);
+
+                contactsGrid.Children.Add(contactNumberHeader);
+                Grid.SetColumn(contactNumberHeader, 1);
+                Grid.SetRow(contactNumberHeader, 0);
+
+                contactsGrid.Children.Add(contactEmailHeader);
+                Grid.SetColumn(contactEmailHeader, 2);
+                Grid.SetRow(contactEmailHeader, 0);
+
                 for (int j = 0; j < companies[i].contacts.Count; j++)
                 {
-                    Grid contactsGrid = new Grid();
-                    contactsGrid.ShowGridLines = true;
 
                     contactsGrid.RowDefinitions.Add(new RowDefinition());
-                    contactsGrid.RowDefinitions.Add(new RowDefinition());
-
-                    contactsGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(200)});
-                    contactsGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(200)});
-                    contactsGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(300)});
-
-                    ///HEADER///
-                    Label contactNameHeader = new Label();
-                    contactNameHeader.Style = (Style)FindResource("stackPanelSecondaryHeaderLabelStyle");
-                    contactNameHeader.Content = "Name";
-                    contactNameHeader.Width = 200;
-
-                    Label contactNumberHeader = new Label();
-                    contactNumberHeader.Style = (Style)FindResource("stackPanelSecondaryHeaderLabelStyle");
-                    contactNumberHeader.Content = "Number";
-                    contactNumberHeader.Width = 200;
-
-
-                    Label contactEmailHeader = new Label();
-                    contactEmailHeader.Style = (Style)FindResource("stackPanelSecondaryHeaderLabelStyle");
-                    contactEmailHeader.Content = "Email";
-                    contactEmailHeader.Width = 300;
-
-                    contactsGrid.Children.Add(contactNameHeader);
-                    Grid.SetColumn(contactNameHeader, 0);
-                    Grid.SetRow(contactNameHeader, 0);
-
-                    contactsGrid.Children.Add(contactNumberHeader);
-                    Grid.SetColumn(contactNumberHeader, 1);
-                    Grid.SetRow(contactNumberHeader, 0);
-
-                    contactsGrid.Children.Add(contactEmailHeader);
-                    Grid.SetColumn(contactEmailHeader, 2);
-                    Grid.SetRow(contactEmailHeader, 0);
-
 
                     Label contactNameLabel = new Label();
-                    contactNameLabel.Style = (Style)FindResource("wideLabelStyle");
+                    contactNameLabel.Style = (Style)FindResource("mediumLabelStyle");
                     contactNameLabel.Content = companies[i].contacts[j].contact_name;
                     contactNameLabel.HorizontalContentAlignment = HorizontalAlignment.Center;
 
                     contactsGrid.Children.Add(contactNameLabel);
                     Grid.SetColumn(contactNameLabel, 0);
-                    Grid.SetRow(contactNameLabel, 1);
+                    Grid.SetRow(contactNameLabel, j + 1);
 
                     Label contactNumberLabel = new Label();
-                    contactNumberLabel.Style = (Style)FindResource("wideLabelStyle");
+                    contactNumberLabel.Style = (Style)FindResource("mediumLabelStyle");
                     contactNumberLabel.Content = companies[i].contacts[j].contact_phone;
                     contactNumberLabel.HorizontalContentAlignment = HorizontalAlignment.Center;
 
                     contactsGrid.Children.Add(contactNumberLabel);
                     Grid.SetColumn(contactNumberLabel, 1);
-                    Grid.SetRow(contactNumberLabel, 1);
+                    Grid.SetRow(contactNumberLabel, j + 1);
 
                     Label contactEmailLabel = new Label();
                     contactEmailLabel.Style = (Style)FindResource("wideLabelStyle");
@@ -551,12 +619,102 @@ namespace ntra_missions
 
                     contactsGrid.Children.Add(contactEmailLabel);
                     Grid.SetColumn(contactEmailLabel, 2);
-                    Grid.SetRow(contactEmailLabel, 1);
+                    Grid.SetRow(contactEmailLabel, j + 1);
 
-
-                    tempCompaniesGrid.Children.Add(contactsGrid);
-                    Grid.SetColumn(contactsGrid, j + 2);
                 }
+
+
+                tempCompaniesGrid.Children.Add(contactsGrid);
+                Grid.SetColumn(contactsGrid, 2);
+
+
+
+                Grid frequencyGrid = new Grid();
+                frequencyGrid.ShowGridLines = true;
+
+                frequencyGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(70) });
+
+                frequencyGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(200) });
+                frequencyGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(200) });
+
+                Label StartHeader = new Label();
+                StartHeader.Style = (Style)FindResource("stackPanelHeaderLabelStyle");
+                if (companies[i].start_and_stop_frequencies.Count > 0)
+                    StartHeader.Content = "Start Frequency";
+                else
+                    StartHeader.Content = "Centre Frequency";
+
+                Label StopHeader = new Label();
+                StopHeader.Style = (Style)FindResource("stackPanelHeaderLabelStyle");
+                if (companies[i].start_and_stop_frequencies.Count > 0)
+                    StopHeader.Content = "Stop Frequency";
+                else
+                    StopHeader.Content = "Bandwidth";
+
+
+
+                frequencyGrid.Children.Add(StartHeader);
+                Grid.SetColumn(StartHeader, 0);
+                Grid.SetRow(StartHeader, 0);
+
+                frequencyGrid.Children.Add(StopHeader);
+                Grid.SetColumn(StopHeader, 1);
+                Grid.SetRow(StopHeader, 0);
+
+
+
+                for (int j = 0; j < companies[i].start_and_stop_frequencies.Count; j++)
+                {
+
+                    frequencyGrid.RowDefinitions.Add(new RowDefinition());
+
+                    Label startLabel = new Label();
+                    startLabel.Style = (Style)FindResource("wideLabelStyle");
+                    startLabel.Content = companies[i].start_and_stop_frequencies[j].start_frequency + " " + companies[i].start_and_stop_frequencies[j].start_frequency_unit;
+                    startLabel.HorizontalContentAlignment = HorizontalAlignment.Center;
+
+                    frequencyGrid.Children.Add(startLabel);
+                    Grid.SetColumn(startLabel, 0);
+                    Grid.SetRow(startLabel, j + 1);
+
+                    Label stopLabel = new Label();
+                    stopLabel.Style = (Style)FindResource("wideLabelStyle");
+                    stopLabel.Content = companies[i].start_and_stop_frequencies[j].stop_frequency + " " + companies[i].start_and_stop_frequencies[j].stop_frequency_unit;
+                    stopLabel.HorizontalContentAlignment = HorizontalAlignment.Center;
+
+                    frequencyGrid.Children.Add(stopLabel);
+                    Grid.SetColumn(stopLabel, 1);
+                    Grid.SetRow(stopLabel, j + 1);
+
+                }
+
+                for (int j = 0; j < companies[i].cf_and_bw_frequencies.Count; j++)
+                {
+
+                    frequencyGrid.RowDefinitions.Add(new RowDefinition());
+
+                    Label startLabel = new Label();
+                    startLabel.Style = (Style)FindResource("wideLabelStyle");
+                    startLabel.Content = companies[i].cf_and_bw_frequencies[j].centre_frequency + " " + companies[i].cf_and_bw_frequencies[j].centre_frequency_unit;
+                    startLabel.HorizontalContentAlignment = HorizontalAlignment.Center;
+
+                    frequencyGrid.Children.Add(startLabel);
+                    Grid.SetColumn(startLabel, 0);
+                    Grid.SetRow(startLabel, j + 1);
+
+                    Label stopLabel = new Label();
+                    stopLabel.Style = (Style)FindResource("wideLabelStyle");
+                    stopLabel.Content = companies[i].cf_and_bw_frequencies[j].bandwidth + " " + companies[i].cf_and_bw_frequencies[j].bandwidth_unit;
+                    stopLabel.HorizontalContentAlignment = HorizontalAlignment.Center;
+
+                    frequencyGrid.Children.Add(stopLabel);
+                    Grid.SetColumn(stopLabel, 1);
+                    Grid.SetRow(stopLabel, j + 1);
+
+                }
+
+                tempCompaniesGrid.Children.Add(frequencyGrid);
+                Grid.SetColumn(frequencyGrid, 3);
 
                 companiesGrid.Children.Add(tempCompaniesGrid);
                 Grid.SetRow(tempCompaniesGrid, companiesGrid.RowDefinitions.Count - 1);
@@ -588,7 +746,9 @@ namespace ntra_missions
 
             Company company = new Company();
 
-            if (!company.InitializeCompanyInfo(int.Parse(currentExpander.Tag.ToString())))
+            int companySerial = int.Parse(currentExpander.Tag.ToString());
+
+            if (!company.InitializeCompanyInfo(companySerial))
                 return;
 
             int companyCondition = BASIC_STRUCTS.COMPANY_EDIT_CONDITION;
@@ -816,7 +976,7 @@ namespace ntra_missions
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
         {
             //Regex regex = new Regex("[A-Za-z]+");
-            Regex regex = new Regex("[^0-9]+");
+            Regex regex = new Regex("[^0-9.]+");
             e.Handled = regex.IsMatch(e.Text);
         }
 

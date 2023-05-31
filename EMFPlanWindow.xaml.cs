@@ -134,7 +134,7 @@ namespace ntra_missions
                     emfPointsGrid.RowDefinitions.Add(new RowDefinition());
                 }
 
-                CheckBox currentPoint = new CheckBox() { Style = (Style)FindResource("checkBoxStyle"), Margin = new Thickness(12) };
+                CheckBox currentPoint = new CheckBox() { Style = (Style)FindResource("wideCheckBoxStyle"), Margin = new Thickness(12) };
                 currentPoint.Content = emfPoints[i].name;
                 currentPoint.Tag = i;
 
@@ -198,7 +198,7 @@ namespace ntra_missions
                     emfPointsGrid.RowDefinitions.Add(new RowDefinition());
                 }
 
-                CheckBox currentPoint = new CheckBox() { Style = (Style)FindResource("checkBoxStyle2"), Margin = new Thickness(12) };
+                CheckBox currentPoint = new CheckBox() { Style = (Style)FindResource("wideCheckBoxStyle"), Margin = new Thickness(12) };
                 currentPoint.Content = plan.planPoints[i].name;
                 currentPoint.IsChecked = true;
                 currentPoint.Tag = i;

@@ -142,7 +142,7 @@ namespace ntra_missions
                 grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(300)});
 
                 Label complaintHeaderLabel = new Label();
-                complaintHeaderLabel.Style = (Style)FindResource("stackPanelHeaderLabelStyle");
+                complaintHeaderLabel.Style = (Style)FindResource("stackPanelHeaderLabelStyleBlue");
                 complaintHeaderLabel.Content = complaints[i].complaint_id;
                 complaintHeaderLabel.Margin = new Thickness(10);
 

@@ -184,6 +184,9 @@ namespace ntra_missions
                 bandwidthComboBox.Items.Add(bandsUnits[i].value);
             }
 
+            centreFreqComboBox.SelectedIndex = 0;
+            bandwidthComboBox.SelectedIndex = 0;
+
             return true;
         }
 
@@ -195,6 +198,8 @@ namespace ntra_missions
             {
                 mCombo.Items.Add(bandsUnits[i].value);
             }
+
+            mCombo.SelectedIndex = 0;
         }
 
         private bool GetBands()
@@ -489,18 +494,24 @@ namespace ntra_missions
                     }
 
 
-                    tempBands.start_frequency = int.Parse(currentCFTextBox.Text);
+                    tempBands.start_frequency = Decimal.Parse(currentCFTextBox.Text);
                     if (currentCFComboBox.SelectedIndex != -1)
                     {
                         tempBands.start_frequency_unit_id = bandsUnits[currentCFComboBox.SelectedIndex].key;
                         tempBands.start_frequency_unit = bandsUnits[currentCFComboBox.SelectedIndex].value;
                     }
 
-                    tempBands.stop_frequency = int.Parse(currentBWTextBox.Text);
+                    tempBands.stop_frequency = Decimal.Parse(currentBWTextBox.Text);
                     if (currentBWComboBox.SelectedIndex != -1)
                     {
                         tempBands.stop_frequency_unit_id = bandsUnits[currentBWComboBox.SelectedIndex].key;
                         tempBands.stop_frequency_unit = bandsUnits[currentBWComboBox.SelectedIndex].value;
+                    }
+
+                    if(tempBands.stop_frequency < tempBands.start_frequency)
+                    {
+                        MessageBox.Show("Stop Freq. cannot be less than Start Freq., The error is in row " + i + 1 + " in company frequencies!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
                     }
 
 
@@ -553,14 +564,14 @@ namespace ntra_missions
                     }
 
 
-                    tempBands.centre_frequency = int.Parse(currentCFTextBox.Text);
+                    tempBands.centre_frequency = Decimal.Parse(currentCFTextBox.Text);
                     if (currentCFComboBox.SelectedIndex != -1)
                     {
                         tempBands.centre_frequency_unit_id = bandsUnits[currentCFComboBox.SelectedIndex].key;
                         tempBands.centre_frequency_unit = bandsUnits[currentCFComboBox.SelectedIndex].value;
                     }
 
-                    tempBands.bandwidth = int.Parse(currentBWTextBox.Text);
+                    tempBands.bandwidth = Decimal.Parse(currentBWTextBox.Text);
                     if (currentBWComboBox.SelectedIndex != -1)
                     {
                         tempBands.bandwidth_unit_id = bandsUnits[currentBWComboBox.SelectedIndex].key;
@@ -659,7 +670,8 @@ namespace ntra_missions
         }
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
         {
-            Regex regex = new Regex("[A-Za-z]+");
+            //Regex regex = new Regex("[A-Za-z]+");
+            Regex regex = new Regex("[^0-9.]+");
             e.Handled = regex.IsMatch(e.Text);
         }
 
