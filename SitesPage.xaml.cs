@@ -269,7 +269,7 @@ namespace ntra_missions
                 currentLongWrapPanel.Children.Add(currentLongLabelValue);
 
                 grid.Children.Add(currentLongWrapPanel);
-                Grid.SetColumn(currentLongWrapPanel, 1);
+                Grid.SetColumn(currentLongWrapPanel, 2);
                 Grid.SetRow(currentLongWrapPanel, 2);
 
                 WrapPanel currentLatWrapPanel = new WrapPanel();
@@ -286,7 +286,7 @@ namespace ntra_missions
                 currentLatWrapPanel.Children.Add(currentLatLabelValue);
 
                 grid.Children.Add(currentLatWrapPanel);
-                Grid.SetColumn(currentLatWrapPanel, 2);
+                Grid.SetColumn(currentLatWrapPanel, 1);
                 Grid.SetRow(currentLatWrapPanel, 2);
 
                 Expander expander = new Expander();
