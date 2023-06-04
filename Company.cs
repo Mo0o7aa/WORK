@@ -293,7 +293,7 @@ namespace ntra_missions
             String sqlQueryPart1 = @"insert into NTRA.dbo.companies values (";
 
             sqlQuery = sqlQueryPart1;
-            sqlQuery += companySerial + ",'";
+            sqlQuery += companySerial + ",N'";
             sqlQuery += companyName + "',";
             sqlQuery += addedBy.GetEmployeeId() + ", getdate(),";
             sqlQuery += companyFieldOfWorkId + ");";
@@ -315,7 +315,7 @@ namespace ntra_missions
 
                 sqlQuery = sqlQueryPart1;
                 sqlQuery += companySerial + ",";
-                sqlQuery += mContactId + ",'";
+                sqlQuery += mContactId + ",N'";
                 sqlQuery += contacts[i].contact_name + "','";
                 sqlQuery += contacts[i].contact_phone + "','";
                 sqlQuery += contacts[i].contact_email + "',";

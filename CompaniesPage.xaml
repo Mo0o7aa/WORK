@@ -127,6 +127,7 @@
         </Grid>
 
         <Button Grid.Row="3" Style="{StaticResource buttonStyle}" Content="Add" Click="OnBtnClickAdd"/>
+        <Button Grid.Row="3" Style="{StaticResource buttonStyle}" HorizontalAlignment="Right" Content="Add Table" Click="OnBtnClickAdd"/>
     </Grid>
 </Page>
     

@@ -8,6 +8,7 @@ using System.Data.Odbc;
 using System.Data.SqlClient;
 using System.Collections;
 using System.Windows.Forms;
+using MySql.Data.MySqlClient;
 
 namespace ntra_missions
 {
@@ -78,6 +79,25 @@ namespace ntra_missions
             currentRow.sql_string = new List<String>();
             currentRow.sql_bit = new List<Boolean>();
         }
+
+        public bool DataGridExport(ref System.Windows.Controls.DataGrid temp, String sqlQuery)
+        {
+            DataTable dataTable = new DataTable();
+            sqlConnection = new SqlConnection(sqlConnectionString);
+            sqlConnection.Open();
+
+            SqlDataAdapter sqlDataAdapter = new SqlDataAdapter();
+            sqlCommand = new SqlCommand(sqlQuery, sqlConnection);
+            //sqlReader = sqlCommand.ExecuteReader();
+            sqlDataAdapter.SelectCommand= sqlCommand;
+
+            sqlDataAdapter.Fill(dataTable);
+
+            temp.ItemsSource = dataTable.DefaultView;
+
+            return true;
+        }
+
         public bool GetRows(String sqlQuery, BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT columnCount)
         {
             try

@@ -125,8 +125,8 @@
                 <ScrollViewer Grid.Row="1" Name="listViewScrollViewer" VerticalContentAlignment="Stretch" >
                     <StackPanel Name="sitesStackPanel" Background="White"/>
                 </ScrollViewer>
-                <ScrollViewer Grid.Row="1" Name="tableViewScrollViewer"  Visibility="Collapsed" HorizontalScrollBarVisibility="Auto">
-                    <Grid Name="sitesGrid" Background="White" ShowGridLines="True"/>
+                <ScrollViewer Grid.Row="1" Name="tableViewScrollViewer"  Visibility="Collapsed" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden">
+                    <DataGrid Name="sitesGrid" BorderBrush="#000080"  ColumnHeaderHeight="50"  Foreground="#000080" FontWeight="Bold" FontSize="18" AlternatingRowBackground="LightGray"  CanUserSortColumns="False" CanUserReorderColumns="False" IsTextSearchEnabled="True" IsReadOnly="True"  Height="600" Background="White" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible"/>
 
                 </ScrollViewer>
             </Grid>

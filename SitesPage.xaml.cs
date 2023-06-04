@@ -37,6 +37,9 @@ namespace ntra_missions
         private Popup popUp;
         private DispatcherTimer dispatchertimer;
 
+
+        BrushConverter brushConverter;
+
         public SitesPage(ref Employee mLoggedInUser)
         {
             loggedInUser = mLoggedInUser;
@@ -46,6 +49,8 @@ namespace ntra_missions
             companies = new List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT>();
             cities = new List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT>();
             employees = new List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT>();
+
+            brushConverter = new BrushConverter();
 
             popUp = new Popup();
             popUp.PopupAnimation = PopupAnimation.Fade;
@@ -67,6 +72,7 @@ namespace ntra_missions
             userNameLabel.Content = "Username: " + loggedInUser.GetEmployeeUserName();
 
             InitializeSitesStackPanel();
+            InitializeSitesGrid();
             FillFilterComboBoxes();
         }
 
@@ -106,7 +112,6 @@ namespace ntra_missions
 
         private void InitializeSitesStackPanel()
         {
-            BrushConverter brushConverter = new BrushConverter();
 
             sitesStackPanel.Children.Clear();
 
@@ -168,7 +173,7 @@ namespace ntra_missions
                 grid.RowDefinitions.Add(new RowDefinition());
                 grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(400) });
                 grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(400) });
-                grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(300) });
+                grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(400) });
 
                 WrapPanel siteNumberWrapPanel = new WrapPanel();
 
@@ -275,7 +280,7 @@ namespace ntra_missions
                 WrapPanel currentLatWrapPanel = new WrapPanel();
 
                 Label currentLatLabel = new Label();
-                currentLatLabel.Style = (Style)FindResource("labelStyleBlack");
+                currentLatLabel.Style = (Style)FindResource("mediumLabelStyleBlack");
                 currentLatLabel.Content = "Lat: ";
 
                 Label currentLatLabelValue = new Label();
@@ -335,8 +340,86 @@ namespace ntra_missions
 
         private void InitializeSitesGrid()
         {
-            sitesGrid.Children.Clear();
-            sitesGrid.RowDefinitions.Clear();
+            sitesGrid.ItemsSource = null;
+
+            String sqlQuery = @"  select  companies.name as Company_Name,
+                                          site_number as Site_Number,
+		                                  lat as Latitude,
+		                                  long as Longitude,
+		                                  cities.city as City,
+		                                  region as Region,
+		                                  employee_info.name as Added_By
+	     
+                                  from NTRA.dbo.company_sites
+                                  left join NTRA.dbo.companies
+                                  on company_sites.company_serial = companies.serial
+                                  left join NTRA.dbo.cities
+                                  on company_sites.city = cities.id
+                                  left join NTRA.dbo.employee_info
+                                  on company_sites.added_by = employee_info.employee_id";
+
+            SQLServer sql = new SQLServer();
+
+            String sqlQueryPart2 = @" where ";
+            bool firstCondition = true;
+
+            if(searchCheckBox.IsChecked == true && searchTextBox.Text != "")
+            {
+                sqlQueryPart2 += " company_sites.site_number like N'%";
+                sqlQueryPart2 += searchTextBox.Text + "%' or company_sites.region like N'%" + searchTextBox.Text + "%' ";
+                firstCondition = false;
+            }
+            if(companyCheckBox.IsChecked == true && companyComboBox.SelectedIndex != -1)
+            {
+                if (!firstCondition)
+                    sqlQueryPart2 += " and ";
+
+                sqlQueryPart2 += " company_sites.company_serial = ";
+                sqlQueryPart2 += companies[companyComboBox.SelectedIndex].key + " ";
+                firstCondition = false;
+            }
+            if (cityCheckBox.IsChecked == true && cityComboBox.SelectedIndex != -1)
+            {
+                if (!firstCondition)
+                    sqlQueryPart2 += " and ";
+
+                sqlQueryPart2 += " company_sites.city = ";
+                sqlQueryPart2 += cities[cityComboBox.SelectedIndex].key + " ";
+                firstCondition = false;
+            }
+            if (addedByCheckBox.IsChecked == true && addedByComboBox.SelectedIndex != -1)
+            {
+                if (!firstCondition)
+                    sqlQueryPart2 += " and ";
+
+                sqlQueryPart2 += " company_sites.added_by = ";
+                sqlQueryPart2 += employees[addedByComboBox.SelectedIndex].key + " ";
+                firstCondition = false;
+            }
+            if (latCheckBox.IsChecked == true && latTextBox.Text != "")
+            {
+                if (!firstCondition)
+                    sqlQueryPart2 += " and ";
+
+                sqlQueryPart2 += " company_sites.lat like'%";
+                sqlQueryPart2 += latTextBox.Text + "%' ";
+                firstCondition = false;
+            }
+            if (longCheckBox.IsChecked == true && longTextBox.Text != "")
+            {
+                if (!firstCondition)
+                    sqlQueryPart2 += " and ";
+
+                sqlQueryPart2 += " company_sites.long like'%";
+                sqlQueryPart2 += longTextBox.Text + "%' ";
+                firstCondition = false;
+            }
+
+            if (!firstCondition)
+                sqlQuery += sqlQueryPart2;
+
+            if (!sql.DataGridExport(ref sitesGrid, sqlQuery))
+                return;
         }
 
         private void OnClickShowHistory(object sender, RoutedEventArgs e)
@@ -384,7 +467,7 @@ namespace ntra_missions
             StackPanel currentStackPanel = (StackPanel)currentButton.Parent;
             Expander expander = (Expander)currentStackPanel.Parent;
 
-            String siteCoordinates = sites[int.Parse(expander.Tag.ToString())].longitude + "," + sites[int.Parse(expander.Tag.ToString())].latitude;
+            String siteCoordinates = sites[int.Parse(expander.Tag.ToString())].latitude + "," + sites[int.Parse(expander.Tag.ToString())].longitude;
             Clipboard.SetText(siteCoordinates);
 
             StackPanel stackPanel = new StackPanel();
@@ -425,6 +508,7 @@ namespace ntra_missions
                 return;
 
             InitializeSitesStackPanel();
+            InitializeSitesGrid();
         }
 
         private void OnExpandExpander(object sender, RoutedEventArgs e)
@@ -520,12 +604,32 @@ namespace ntra_missions
 
         private void OnClickListView(object sender, MouseButtonEventArgs e)
         {
+            listViewScrollViewer.Visibility = Visibility.Visible;
+            tableViewScrollViewer.Visibility = Visibility.Collapsed;
 
+            tableViewBorder.Background = (Brush)brushConverter.ConvertFrom("#000080");
+            listViewBorder.Background = Brushes.White;
+
+            Label currentListViewLabel = (Label)listViewBorder.Child;
+            Label currentTableViewLabel = (Label)tableViewBorder.Child;
+
+            currentListViewLabel.Foreground = (Brush)brushConverter.ConvertFrom("#000080");
+            currentTableViewLabel.Foreground = Brushes.White;
         }
 
         private void OnClickTableView(object sender, MouseButtonEventArgs e)
         {
+            listViewScrollViewer.Visibility = Visibility.Collapsed;
+            tableViewScrollViewer.Visibility = Visibility.Visible;
 
+            listViewBorder.Background = (Brush)brushConverter.ConvertFrom("#000080");
+            tableViewBorder.Background = Brushes.White;
+
+            Label currentListViewLabel = (Label)listViewBorder.Child;
+            Label currentTableViewLabel = (Label)tableViewBorder.Child;
+
+            currentTableViewLabel.Foreground = (Brush)brushConverter.ConvertFrom("#000080");
+            currentListViewLabel.Foreground = Brushes.White;
         }
 
         private void OnBtnClickAdd(object sender, RoutedEventArgs e)
@@ -588,21 +692,25 @@ namespace ntra_missions
         private void OnTextChangedSearchTextbox(object sender, TextChangedEventArgs e)
         {
             InitializeSitesStackPanel();
+            InitializeSitesGrid();
         }
 
         private void OnSelChangedCompanyCombo(object sender, SelectionChangedEventArgs e)
         {
             InitializeSitesStackPanel();
+            InitializeSitesGrid();
         }
 
         private void OnSelChangedCityCombo(object sender, SelectionChangedEventArgs e)
         {
             InitializeSitesStackPanel();
+            InitializeSitesGrid();
         }
 
         private void OnSelChangedAddedByCombo(object sender, SelectionChangedEventArgs e)
         {
             InitializeSitesStackPanel();
+            InitializeSitesGrid();
         }
 
         private void OnCheckLongCheckbox(object sender, RoutedEventArgs e)
@@ -630,11 +738,13 @@ namespace ntra_missions
         private void OnTextChangedLongTextBox(object sender, TextChangedEventArgs e)
         {
             InitializeSitesStackPanel();
+            InitializeSitesGrid();
         }
 
         private void OnTextChangedLatTextBox(object sender, TextChangedEventArgs e)
         {
             InitializeSitesStackPanel();
+            InitializeSitesGrid();
         }
 
     }

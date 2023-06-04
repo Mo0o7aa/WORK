@@ -60,15 +60,12 @@ namespace ntra_missions
             InitializeEmployeeCombo();
             SetPersonalInfo();
 
-            if (selectedEmployee.GetEmployeePositionId() == BASIC_STRUCTS.MANAGER_POSITION)
+            if (selectedEmployee.GetEmployeePositionId() == BASIC_STRUCTS.MANAGER_POSITION && loggedInUser.GetEmployeeId() == 1)
             {
                 employeeSelectionStackPanel.Visibility = Visibility.Visible;
-            }
-
-            if (loggedInUser.GetEmployeePositionId() == BASIC_STRUCTS.MANAGER_POSITION)
-            {
                 mainLabel.Content = "Manager Profile";
             }
+
 
         }
 
