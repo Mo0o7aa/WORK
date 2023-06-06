@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-D:\NTRA Software\ntra_missions\ntra_missions\obj\Release\
+D:\NTRA\WORK\obj\Release\
 ntra_missions
 none
 false
 TRACE
-D:\NTRA Software\ntra_missions\ntra_missions\App.xaml
-201278689514
+D:\NTRA\WORK\App.xaml
+20-690446337
 
-341311079315
-20-736104380
+381456317704
+421857660168
 ChangePasswordWindow.xaml;CompaniesPage.xaml;CompanyEquipmentPage.xaml;CompanyEquipmentWindow.xaml;CompanyWindow.xaml;ComplaintsHistoryWindow.xaml;ComplaintsPage.xaml;ComplaintsWindow.xaml;EMFPage.xaml;EMFPlanWindow.xaml;EMFWindow.xaml;EmployeesPage.xaml;MainWindow.xaml;MissionsPage.xaml;MissionWindow.xaml;SignInPage.xaml;SignInWindow.xaml;SignUpPage.xaml;SitesPage.xaml;SiteWindow.xaml;
 
-False
+True
 

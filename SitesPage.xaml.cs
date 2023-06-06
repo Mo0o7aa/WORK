@@ -420,6 +420,7 @@ namespace ntra_missions
 
             if (!sql.DataGridExport(ref sitesGrid, sqlQuery))
                 return;
+
         }
 
         private void OnClickShowHistory(object sender, RoutedEventArgs e)
