@@ -1113,19 +1113,21 @@ namespace ntra_missions
                 
                 int childIndex = 7;
 
-                if (i != 0)
-                    childIndex = 8;
+                //if (i != 0)
+                //    childIndex = 8;
 
                 if (selectedCompany.GetCompanyFieldOfWorkId() == BASIC_STRUCTS.MOBILE_OPERATOR)
                 {
-                    for (int j = 4; j < currentGrid.RowDefinitions.Count; j++)
+                    for (int j = childIndex; j < currentGrid.Children.Count; j++)
                     {
                         BASIC_STRUCTS.SECTOR_STRUCT sector = new BASIC_STRUCTS.SECTOR_STRUCT();
                         sector.sector_bands = new List<string>();
 
+                        if (currentGrid.Children[j].GetType() == typeof(Image))
+                            continue;
 
-                        Grid currentSectorGrid = (Grid)currentGrid.Children[childIndex];
-                        childIndex++;
+                        Grid currentSectorGrid = (Grid)currentGrid.Children[j];
+                        //childIndex++;
                         ////Because remove site icon is added after Grid in the handler add site, so for all sites except first site has to increment by 2
 
 
@@ -1567,9 +1569,7 @@ namespace ntra_missions
             Grid.SetRow(currentLatWrapPanel, 3);
             Grid.SetColumn(currentLatWrapPanel, 1);
 
-            grid.Children.Add(removeSiteIcon);
-            Grid.SetRow(removeSiteIcon, 0);
-            Grid.SetColumn(removeSiteIcon, 1);
+            ///shelt remove site icon mn hena
 
             if (selectedCompany.GetCompanyFieldOfWorkId() == BASIC_STRUCTS.MOBILE_OPERATOR)
             {
@@ -1580,6 +1580,11 @@ namespace ntra_missions
                 Grid.SetRow(sectorGrid, 4);
                 Grid.SetColumnSpan(sectorGrid, 2);
             }
+
+
+            grid.Children.Add(removeSiteIcon);
+            Grid.SetRow(removeSiteIcon, 0);
+            Grid.SetColumn(removeSiteIcon, 1);
 
             return border;
         }

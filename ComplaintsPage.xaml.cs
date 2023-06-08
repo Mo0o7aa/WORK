@@ -1,17 +1,28 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Button = System.Windows.Controls.Button;
+using Cursors = System.Windows.Input.Cursors;
+using Label = System.Windows.Controls.Label;
+using MessageBox = System.Windows.Forms.MessageBox;
+using MouseEventArgs = System.Windows.Input.MouseEventArgs;
+using OpenFileDialog = System.Windows.Forms.OpenFileDialog;
 
 namespace ntra_missions
 {
@@ -26,6 +37,8 @@ namespace ntra_missions
         private List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT> companies;
         private List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT> complaintStatus;
 
+        private CommonFunctions commonFunctions;
+
         private Expander currentExpander;
         private Expander previousExpander;
 
@@ -38,6 +51,8 @@ namespace ntra_missions
             complaints = new List<BASIC_STRUCTS.COMPLAINT_STRUCT>();
             companies = new List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT>();
             complaintStatus = new List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT>();
+
+            commonFunctions = new CommonFunctions();
 
             InitializeComponent();
 
@@ -137,7 +152,8 @@ namespace ntra_missions
                 grid.RowDefinitions.Add(new RowDefinition());
                 grid.RowDefinitions.Add(new RowDefinition());
                 grid.RowDefinitions.Add(new RowDefinition());
-                grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(400)});
+                grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(350)});
+                grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(350)});
                 grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(400)});
                 grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(300)});
 
@@ -251,10 +267,10 @@ namespace ntra_missions
                 statusBorder.Child = statusLabel;
                 grid.Children.Add(statusBorder);
                 Grid.SetRowSpan(statusBorder, 4);
-                Grid.SetColumn(statusBorder, 2);
+                Grid.SetColumn(statusBorder, 3);
 
                 Expander expander = new Expander();
-                expander.HorizontalContentAlignment = HorizontalAlignment.Left;
+                expander.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Left;
                 expander.VerticalAlignment = VerticalAlignment.Top;
                 expander.ExpandDirection = ExpandDirection.Down;
                 expander.Expanded += OnExpandExpander;
@@ -265,35 +281,90 @@ namespace ntra_missions
 
                 Button viewButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
                 viewButton.Content = "View";
-                viewButton.HorizontalContentAlignment = HorizontalAlignment.Center;
+                viewButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
                 viewButton.Click += OnClickViewComplaint;
 
                 Button editButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
                 editButton.Content = "Edit";
-                editButton.HorizontalContentAlignment = HorizontalAlignment.Center;
+                editButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
                 editButton.Click += OnClickEditComplaint;
 
                 Button AddMissionButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
                 AddMissionButton.Content = "Add Mission";
-                AddMissionButton.HorizontalContentAlignment = HorizontalAlignment.Center;
+                AddMissionButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
                 AddMissionButton.Click += OnClickAddMissionButton;
+
+                Button attachmentButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
+                attachmentButton.Content = "Attach File";
+                attachmentButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
+                attachmentButton.Click += OnClickAttachFile;
 
                 Button deleteButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
                 deleteButton.Content = "Delete";
-                deleteButton.HorizontalContentAlignment = HorizontalAlignment.Center;
+                deleteButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
                 deleteButton.Click += OnClickDeleteComplaint;
 
 
                 expanderstackPanel.Children.Add(viewButton);
                 expanderstackPanel.Children.Add(editButton);
                 expanderstackPanel.Children.Add(AddMissionButton);
+                expanderstackPanel.Children.Add(attachmentButton);
 
                 expander.Content = expanderstackPanel;
 
                 grid.Children.Add(expander);
                 Grid.SetRow(expander, 0);
                 Grid.SetRowSpan(expander, 2);
-                Grid.SetColumn(expander, 2);
+                Grid.SetColumn(expander, 3);
+
+                ScrollViewer scrollViewer = new ScrollViewer() { VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Height = 200, Margin = new Thickness(12), HorizontalAlignment = System.Windows.HorizontalAlignment.Left};
+                StackPanel fileStackPanel = new StackPanel() { Orientation = System.Windows.Controls.Orientation.Vertical};
+
+                scrollViewer.Content = fileStackPanel;
+
+                FileInfo[] filesPath;
+
+                if (commonFunctions.CheckDirectory(BASIC_STRUCTS.FOLDER_SHARE_PATH + @"Complaints\" + complaints[i].complaint_id + @"\"))
+                {
+                    filesPath = commonFunctions.ListFilesInFolder(BASIC_STRUCTS.FOLDER_SHARE_PATH + @"Complaints\" + complaints[i].complaint_id + @"\");
+
+                    for (int k = 0; k < filesPath.Length; k++)
+                    {
+                        //Border currentBorder = new Border() { BorderBrush = (Brush)brushConverter.ConvertFrom("#000080"), BorderThickness = new Thickness(3) };
+                        
+                        WrapPanel currentWrapPanel = new WrapPanel() { HorizontalAlignment = System.Windows.HorizontalAlignment.Left };
+
+                        //currentBorder.Child = currentWrapPanel;
+
+                        String imageSource = @"\Photos\file_icon.png";
+
+                        Image currentFileImage = new Image() { VerticalAlignment = VerticalAlignment.Center};
+                        currentFileImage.Height = 50;
+                        currentFileImage.Width = 50;
+                        currentFileImage.Source = new BitmapImage(new Uri(imageSource, UriKind.Relative));
+
+                        TextBlock currentFile = new TextBlock() { Style = (Style)FindResource("textblockStyleBlue") , Height = 50, VerticalAlignment = VerticalAlignment.Center, Padding = new Thickness(3)};
+                        currentFile.Cursor = Cursors.Hand;
+                        currentFile.ToolTip = "Click to open file";
+                        currentFile.PreviewMouseLeftButtonDown += OnClickOpenFile;
+
+                        currentFile.Text = System.IO.Path.GetFileName(filesPath[k].FullName);
+                        currentFile.Tag = filesPath[k].FullName;
+
+                        currentWrapPanel.Children.Add(currentFileImage);
+                        currentWrapPanel.Children.Add(currentFile);
+
+                        fileStackPanel.Children.Add(currentWrapPanel);
+                    }
+
+                    if (filesPath.Length != 0)
+                    {
+                        grid.Children.Add(scrollViewer);
+                        Grid.SetRowSpan(scrollViewer, 4);
+                        Grid.SetRow(scrollViewer, 0);
+                        Grid.SetColumn(scrollViewer, 2);
+                    }
+                }
 
                 WrapPanel dateWrapPanel = new WrapPanel();
 
@@ -315,6 +386,55 @@ namespace ntra_missions
                 border.Child = grid;
 
                 complaintsStackPanel.Children.Add(border);
+            }
+        }
+
+        private void OnClickOpenFile(object sender, MouseButtonEventArgs e)
+        {
+            TextBlock currentTextBlock = (TextBlock)sender;
+            if(currentTextBlock.Tag != "")
+                Process.Start(currentTextBlock.Tag.ToString());
+        }
+
+        private void OnClickAttachFile(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog fileDialog = new OpenFileDialog();
+            fileDialog.Multiselect = true;
+
+            if (fileDialog.ShowDialog() == DialogResult.OK)
+            {
+                Button currentButton = (Button)sender;
+                StackPanel currentStackPanel = (StackPanel)currentButton.Parent;
+                Expander expander = (Expander)currentStackPanel.Parent;
+
+                Complaints complaint = new Complaints();
+
+                if (!complaint.InitializeComplaint(complaints[int.Parse(expander.Tag.ToString())].company_serial, complaints[int.Parse(expander.Tag.ToString())].complaint_serial))
+                    return;
+
+                bool failed = false;
+
+                for (int i = 0; i < fileDialog.FileNames.Length; i++)
+                {
+                    String filePath = fileDialog.FileNames[i];
+                    String fileName = System.IO.Path.GetFileName(filePath);
+
+                    try
+                    {
+                        commonFunctions.CreateDirectory(BASIC_STRUCTS.FOLDER_SHARE_PATH + @"Complaints\" + complaint.GetComplaintId());
+                        File.Copy(fileDialog.FileName, BASIC_STRUCTS.FOLDER_SHARE_PATH + @"Complaints\" + complaint.GetComplaintId() + @"\" + fileName);
+                    }
+                    catch
+                    {
+                        MessageBox.Show(fileName + " upload failed please try again later!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        failed = true;
+                    }
+                }
+
+                if(failed == false)
+                    MessageBox.Show("Upload complete!", "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                InitializeCompaintsStackPanel();
             }
         }
 

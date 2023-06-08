@@ -67,6 +67,8 @@ namespace ntra_missions
         public const int OUTDATED_EMF_PLAN_STATUS = 4;
 
         public const int MOBILE_OPERATOR = 1;
+
+        public const String FOLDER_SHARE_PATH = @"\\GIZA-ASAMEH\Giza Software\Attachments\";
         public struct SQL_COLUMN_COUNT_STRUCT
         {
             public int sql_int;

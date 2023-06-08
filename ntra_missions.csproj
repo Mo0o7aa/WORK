@@ -166,6 +166,7 @@
     <Compile Include="ChangePasswordWindow.xaml.cs">
       <DependentUpon>ChangePasswordWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="CommonFunctions.cs" />
     <Compile Include="CommonQueries.cs" />
     <Compile Include="CompaniesPage.xaml.cs">
       <DependentUpon>CompaniesPage.xaml</DependentUpon>
@@ -422,6 +423,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Photos\green_tick_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Photos\file_icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
