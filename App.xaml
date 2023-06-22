@@ -5,6 +5,8 @@
              StartupUri="SignInWindow.xaml">
     <Application.Resources>
 
+        <SolidColorBrush x:Key="navyblue" Color="#000080" />
+
         <Style x:Key="dataGridCellStyle" TargetType="DataGridCell">
             <Setter Property="Width" Value="150"/>
             <Setter Property="Height" Value="30"/>
@@ -434,6 +436,17 @@
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="HorizontalContentAlignment" Value="Left"/>
             <Setter Property="Width" Value="150"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+        <Style x:Key="centreCheckBoxStyle" TargetType="CheckBox">
+            <Setter Property="Foreground" Value="#000080"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="Width" Value="130"/>
             <Setter Property="FontWeight" Value="Bold"/>
         </Style>
 

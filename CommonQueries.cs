@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Office.Interop.Excel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -754,6 +755,37 @@ namespace ntra_missions
             return true;
         }
 
+        public bool GetRepeatersStatus(ref List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT> mList)
+        {
+            mList.Clear();
+
+            String sqlQueryPart1 = "select id, status from NTRA.dbo.repeaters_status";
+
+            String sqlQuery = string.Empty;
+            sqlQuery = sqlQueryPart1;
+
+            BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT SQL_COLUMN_COUNT_STRUCT = new BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT();
+            SQL_COLUMN_COUNT_STRUCT.sql_int = 1;
+            SQL_COLUMN_COUNT_STRUCT.sql_string = 1;
+
+            if (!sqlDatabase.GetRows(sqlQuery, SQL_COLUMN_COUNT_STRUCT))
+                return false;
+
+            if (sqlDatabase.rows.Count != 0)
+            {
+                for (int i = 0; i < sqlDatabase.rows.Count; i++)
+                {
+                    BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT temp = new BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT();
+                    temp.key = sqlDatabase.rows[i].sql_int[0];
+                    temp.value = sqlDatabase.rows[i].sql_string[0];
+
+                    mList.Add(temp);
+                }
+            }
+
+            return true;
+        }
+
         public bool GetEMFPlanStatus(ref List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT> mList)
         {
             mList.Clear();
@@ -1001,8 +1033,14 @@ namespace ntra_missions
 		                              mission_engineers.engineer as engineer_id,
 		                              mission_sites.site_serial as site_serial,
 		                              mission_sites.reason_of_interference,
+									  repeaters.serial,
+									  repeaters.status,
+									  repeaters.company_serial,
+									  repeaters.complaint_serial,
+									  repeaters.mission_serial,
                                       
 		                              interference_missions.mission_date,
+									  repeaters.date_located,
                                       
 		                              interference_missions.mission_id,
 		                              complaints.ticket_number,
@@ -1014,7 +1052,11 @@ namespace ntra_missions
 		                              mission_equipment.equipment,
 		                              reasons_of_interference.reason,
 		                              company_sites.site_number,
-		                              mission_sites.comment as site_comment
+		                              mission_sites.comment as site_comment,
+									  repeaters.lat,
+									  repeaters.long,
+									  repeaters.address,
+									  repeaters_status.status
 
              from NTRA.dbo.interference_missions
              
@@ -1055,15 +1097,23 @@ namespace ntra_missions
              
              left join NTRA.dbo.reasons_of_interference
              on mission_sites.reason_of_interference = reasons_of_interference.id
+
+			 left join NTRA.dbo.repeaters
+			 on interference_missions.company_serial = repeaters.company_serial
+			 and interference_missions.complaint_serial = repeaters.complaint_serial
+			 and interference_missions.serial = repeaters.mission_serial
+
+			 left join NTRA.dbo.repeaters_status
+			 on repeaters.status = repeaters_status.id
              
              order by interference_missions.date_added DESC";
 
             sqlQuery = sqlQueryPart1;
 
             BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT SQL_COLUMN_COUNT_STRUCT = new BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT();
-            SQL_COLUMN_COUNT_STRUCT.sql_int = 9;
-            SQL_COLUMN_COUNT_STRUCT.sql_datetime = 1;
-            SQL_COLUMN_COUNT_STRUCT.sql_string = 11;
+            SQL_COLUMN_COUNT_STRUCT.sql_int = 14;
+            SQL_COLUMN_COUNT_STRUCT.sql_datetime = 2;
+            SQL_COLUMN_COUNT_STRUCT.sql_string = 15;
 
             if (!sqlDatabase.GetRows(sqlQuery, SQL_COLUMN_COUNT_STRUCT))
                 return false;
@@ -1077,12 +1127,15 @@ namespace ntra_missions
                     tempMission.equipment = new List<string>();
                     tempMission.sites = new List<BASIC_STRUCTS.MISSION_SITE_STRUCT>();
                     tempMission.engineers = new List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT>();
+                    tempMission.repeaters = new List<BASIC_STRUCTS.REPEATER_STRUCT>();
                     
                     BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT tempEngineers = new BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT();
                     BASIC_STRUCTS.MISSION_EQUIPMENT_STRUCT tempEquipment = new BASIC_STRUCTS.MISSION_EQUIPMENT_STRUCT();
                     BASIC_STRUCTS.MISSION_SITE_STRUCT tempSite = new BASIC_STRUCTS.MISSION_SITE_STRUCT();
+                    BASIC_STRUCTS.REPEATER_STRUCT tempRepeater = new BASIC_STRUCTS.REPEATER_STRUCT();
 
                     tempMission.mission_Date = sqlDatabase.rows[i].sql_datetime[0];
+                    tempRepeater.date = sqlDatabase.rows[i].sql_datetime[1];
 
                     tempMission.company_serial = sqlDatabase.rows[i].sql_int[0];
                     tempMission.complaint_serial = sqlDatabase.rows[i].sql_int[1];
@@ -1090,6 +1143,12 @@ namespace ntra_missions
                     tempMission.vehicle_id = sqlDatabase.rows[i].sql_int[3];
                     tempMission.status_id = sqlDatabase.rows[i].sql_int[4];
                     tempMission.added_by_id = sqlDatabase.rows[i].sql_int[5];
+
+                    tempRepeater.repeater_serial = sqlDatabase.rows[i].sql_int[9];
+                    tempRepeater.status_id = sqlDatabase.rows[i].sql_int[10];
+                    tempRepeater.company_serial = sqlDatabase.rows[i].sql_int[11];
+                    tempRepeater.complaint_serial = sqlDatabase.rows[i].sql_int[12];
+                    tempRepeater.mission_serial = sqlDatabase.rows[i].sql_int[13];
 
                     tempEngineers.key = sqlDatabase.rows[i].sql_int[6];
                     tempEngineers.value = sqlDatabase.rows[i].sql_string[6];
@@ -1114,6 +1173,14 @@ namespace ntra_missions
 
                     tempEquipment.equipment = sqlDatabase.rows[i].sql_string[7];
 
+                    tempRepeater.latitude = sqlDatabase.rows[i].sql_string[11];
+                    tempRepeater.longitude = sqlDatabase.rows[i].sql_string[12];
+                    tempRepeater.address = sqlDatabase.rows[i].sql_string[13];
+                    tempRepeater.status = sqlDatabase.rows[i].sql_string[14];
+
+                    if(tempRepeater.repeater_serial != 0)
+                        tempMission.repeaters.Add(tempRepeater);
+
                     if (i != 0 && mList.Last().company_serial == tempMission.company_serial && mList.Last().complaint_serial == tempMission.complaint_serial && mList.Last().mission_serial == tempMission.mission_serial)
                     {
                         if (!mList.Last().engineers.Exists(x1 => x1.key == tempEngineers.key))
@@ -1129,6 +1196,11 @@ namespace ntra_missions
                         if (!mList.Last().sites.Exists(x1 => x1.site_serial == tempSite.site_serial))
                         {
                             mList.Last().sites.Add(tempSite);
+                        }
+
+                        if (tempRepeater.repeater_serial != 0 && mList.Last().repeaters.Count != 0 && !mList.Last().repeaters.Exists(x1 => x1.repeater_serial == tempRepeater.repeater_serial))
+                        {
+                            mList.Last().repeaters.Add(tempRepeater);
                         }
                     }
                     else
@@ -2212,6 +2284,68 @@ namespace ntra_missions
                 return false;
             }
 
+            return true;
+        }
+
+        public bool GetNewRepeaterSerial(ref int mSerial)
+        {
+            String sqlQuery = string.Empty;
+
+            String sqlQueryPart1 = @"select max(serial) from NTRA.dbo.repeaters ";
+
+            sqlQuery = sqlQueryPart1;
+
+            BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT SQL_COLUMN_COUNT_STRUCT = new BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT();
+            SQL_COLUMN_COUNT_STRUCT.sql_int = 1;
+
+            if (!sqlDatabase.GetRows(sqlQuery, SQL_COLUMN_COUNT_STRUCT))
+                return false;
+
+            if (sqlDatabase.rows.Count != 0)
+            {
+                mSerial = sqlDatabase.rows[0].sql_int[0] + 1;
+            }
+
+            if (mSerial == 0)
+                mSerial = 1;
+
+            return true;
+        }
+
+        public bool InsertIntoRepeaters(ref List<BASIC_STRUCTS.REPEATER_STRUCT> mRepeaters)
+        {
+            int serial = 1;
+
+            GetNewRepeaterSerial(ref serial);
+
+
+            for (int i = 0; i < mRepeaters.Count; i++)
+            {
+                String sqlQueryPart1 = "Insert into NTRA.dbo.repeaters values (";
+                sqlQueryPart1 += serial + " ,'";
+                sqlQueryPart1 += mRepeaters[i].latitude + "','";
+                sqlQueryPart1 += mRepeaters[i].longitude + "',N'";
+                sqlQueryPart1 += mRepeaters[i].address + "',";
+
+                if (mRepeaters[i].company_serial != 0)
+                {
+                    sqlQueryPart1 += mRepeaters[i].company_serial + ",";
+                    sqlQueryPart1 += mRepeaters[i].complaint_serial + ",";
+                    sqlQueryPart1 += mRepeaters[i].mission_serial + ",'";
+                }
+                else
+                {
+                    sqlQueryPart1 += ",,';";
+                }
+
+                sqlQueryPart1 += mRepeaters[i].date + "',";
+                sqlQueryPart1 += mRepeaters[i].status_id + ");";
+
+                if (!sqlDatabase.InsertRows(sqlQueryPart1))
+                    return false;
+
+                serial++;
+            }
             return true;
         }
 

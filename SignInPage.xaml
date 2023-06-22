@@ -23,6 +23,7 @@
                 <RowDefinition Height="70"/>
                 <RowDefinition Height="80"/>
                 <RowDefinition Height="80"/>
+                <RowDefinition Height="80"/>
             </Grid.RowDefinitions>
 
             <WrapPanel Grid.Row="0" VerticalAlignment="Center" Margin="12">
@@ -37,6 +38,7 @@
 
             <Button Grid.Row="2" Name="signInButton" Click="OnBtnClickSignIn" Content="Sign In" Style="{StaticResource buttonStyle}" />
             <Button Grid.Row="3" Name="signUpButton" Click="OnBtnClickSignUp" Content="Sign Up" Style="{StaticResource buttonStyle}" />
+            <CheckBox Grid.Row="4" Name="rememberMeCheckBox" Content="Remember Me" Style="{StaticResource centreCheckBoxStyle}" />
         </Grid>
     </Grid>
 </Page>

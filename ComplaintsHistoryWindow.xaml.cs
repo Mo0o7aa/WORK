@@ -65,7 +65,7 @@ namespace ntra_missions
                 grid.ColumnDefinitions.Add(new ColumnDefinition());
 
                 Label complaintHeaderLabel = new Label();
-                complaintHeaderLabel.Style = (Style)FindResource("stackPanelHeaderLabelStyle");
+                complaintHeaderLabel.Style = (Style)FindResource("stackPanelHeaderLabelStyleBlue");
                 complaintHeaderLabel.Content = complaints[i].complaint_id;
                 complaintHeaderLabel.Margin = new Thickness(10);
 
@@ -211,7 +211,7 @@ namespace ntra_missions
 
                 grid.Children.Add(expander);
                 Grid.SetRow(expander, 0);
-                Grid.SetRowSpan(expander, 2);
+                //Grid.SetRowSpan(expander, 2);
                 Grid.SetColumn(expander, 2);
 
                 WrapPanel dateWrapPanel = new WrapPanel();
@@ -320,7 +320,7 @@ namespace ntra_missions
 
                 Label missionIdLabel = new Label();
                 missionIdLabel.Content = missions[i].mission_id;
-                missionIdLabel.Style = (Style)FindResource("stackPanelHeaderLabelStyle");
+                missionIdLabel.Style = (Style)FindResource("stackPanelHeaderLabelStyleBlue");
                 missionIdLabel.Width = 500;
 
                 //logoWrapPanel.Children.Add(logo);
@@ -411,9 +411,9 @@ namespace ntra_missions
                 statusBorder.Child = statusLabel;
 
                 missionGrid.Children.Add(statusBorder);
-                Grid.SetRow(statusBorder, 2);
-                Grid.SetColumn(statusBorder, 1);
-                Grid.SetColumnSpan(statusBorder, 2);
+                Grid.SetRow(statusBorder, 1);
+                Grid.SetColumn(statusBorder, 2);
+                Grid.SetRowSpan(statusBorder, 2);
 
                 WrapPanel dateWrapPanel = new WrapPanel();
                 dateWrapPanel.HorizontalAlignment = HorizontalAlignment.Center;
@@ -431,8 +431,8 @@ namespace ntra_missions
                 dateWrapPanel.Children.Add(dateLabelValue);
 
                 missionGrid.Children.Add(dateWrapPanel);
-                Grid.SetRow(dateWrapPanel, 1);
-                Grid.SetColumn(dateWrapPanel, 2);
+                Grid.SetRow(dateWrapPanel, 2);
+                Grid.SetColumn(dateWrapPanel, 1);
 
                 Expander expander = new Expander();
                 expander.Tag = missions[i].company_serial + "," + missions[i].complaint_serial + "," + missions[i].mission_serial;

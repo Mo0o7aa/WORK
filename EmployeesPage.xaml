@@ -130,7 +130,7 @@
             <Button Grid.Column="0" Style="{StaticResource buttonStyle}" Name="addTelephoneButton" Content="Add Phone" Click="OnBtnClickAddTelephone" IsEnabled="False"/>
             <Button Grid.Column="1" Style="{StaticResource buttonStyle}" Name="removeTelephoneButton" Content="Remove" Click="OnBtnClickRemoveTelephone" IsEnabled="False"/>
             <Button Grid.Column="2"  Style="{StaticResource buttonStyle}" Name="editButton" Content="Edit Info" Click="OnBtnClickEdit"/>
-            
+
         </Grid>
 
     </Grid>

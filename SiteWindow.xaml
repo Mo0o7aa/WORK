@@ -13,7 +13,7 @@
             <RowDefinition Height="75"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Background="#000080">
+        <Grid Grid.Row="0" Background="{StaticResource navyblue}">
             <Image Source="Photos\NTRA_white1.png" VerticalAlignment="Center" Height="200"  HorizontalAlignment="Left"/>
             <Label Name="headerLabel" Content="SITE" Style="{StaticResource headerLabelStyle}" HorizontalAlignment="Center"/>
         </Grid>

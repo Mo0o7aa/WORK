@@ -121,7 +121,8 @@ namespace ntra_missions
 
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
         {
-            Regex regex = new Regex("[A-Za-z]+");
+            //Regex regex = new Regex("[A-Za-z]+");
+            Regex regex = new Regex("[^0-9.]+");
             e.Handled = regex.IsMatch(e.Text);
         }
 

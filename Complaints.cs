@@ -556,7 +556,7 @@ namespace ntra_missions
             String sqlQueryPart4 = @" and site_serial = ";
 
             sqlQuery = sqlQueryPart1;
-            if (mMissionStatus == BASIC_STRUCTS.MISSION_PENDING_OPERATOR_ACTION_STATUS || mMissionStatus == BASIC_STRUCTS.MISSION_PENDING_OPERATOR_ACTION_STATUS)
+            if (mMissionStatus == BASIC_STRUCTS.MISSION_PENDING_NTRA_ACTION_STATUS || mMissionStatus == BASIC_STRUCTS.MISSION_PENDING_OPERATOR_ACTION_STATUS)
                 sqlQuery += BASIC_STRUCTS.PENDING_SITE_STATUS;
             else
                 sqlQuery += BASIC_STRUCTS.CLOSED_SITE_STATUS;

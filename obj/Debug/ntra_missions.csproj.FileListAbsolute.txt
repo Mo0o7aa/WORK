@@ -69,6 +69,8 @@ D:\NTRA\WORK\bin\Debug\GoogleMaps.dll
 D:\NTRA\WORK\bin\Debug\K4os.Compression.LZ4.dll
 D:\NTRA\WORK\bin\Debug\K4os.Compression.LZ4.Streams.dll
 D:\NTRA\WORK\bin\Debug\K4os.Hash.xxHash.dll
+D:\NTRA\WORK\bin\Debug\Microsoft.Configuration.ConfigurationBuilders.Base.dll
+D:\NTRA\WORK\bin\Debug\Microsoft.Configuration.ConfigurationBuilders.UserSecrets.dll
 D:\NTRA\WORK\bin\Debug\MySql.Data.dll
 D:\NTRA\WORK\bin\Debug\System.Buffers.dll
 D:\NTRA\WORK\bin\Debug\System.Data.SqlServerCe.dll
@@ -87,6 +89,8 @@ D:\NTRA\WORK\bin\Debug\GoogleMaps.xml
 D:\NTRA\WORK\bin\Debug\K4os.Compression.LZ4.xml
 D:\NTRA\WORK\bin\Debug\K4os.Compression.LZ4.Streams.xml
 D:\NTRA\WORK\bin\Debug\K4os.Hash.xxHash.xml
+D:\NTRA\WORK\bin\Debug\Microsoft.Configuration.ConfigurationBuilders.Base.xml
+D:\NTRA\WORK\bin\Debug\Microsoft.Configuration.ConfigurationBuilders.UserSecrets.xml
 D:\NTRA\WORK\bin\Debug\MySql.Data.xml
 D:\NTRA\WORK\bin\Debug\System.Buffers.xml
 D:\NTRA\WORK\bin\Debug\System.IO.Pipelines.xml
@@ -149,7 +153,5 @@ D:\NTRA\WORK\obj\Debug\ntra_missions.application
 D:\NTRA\WORK\obj\Debug\ntra_missions.csproj.CopyComplete
 D:\NTRA\WORK\obj\Debug\ntra_missions.exe
 D:\NTRA\WORK\obj\Debug\ntra_missions.pdb
-D:\NTRA\WORK\bin\Debug\Microsoft.Configuration.ConfigurationBuilders.Base.dll
-D:\NTRA\WORK\bin\Debug\Microsoft.Configuration.ConfigurationBuilders.UserSecrets.dll
-D:\NTRA\WORK\bin\Debug\Microsoft.Configuration.ConfigurationBuilders.Base.xml
-D:\NTRA\WORK\bin\Debug\Microsoft.Configuration.ConfigurationBuilders.UserSecrets.xml
+D:\NTRA\WORK\obj\Debug\RepeatersWindow.g.cs
+D:\NTRA\WORK\obj\Debug\RepeatersWindow.baml

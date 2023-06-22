@@ -35,6 +35,16 @@ namespace ntra_missions
                 return true;
         }
 
+        public bool CheckFile(String path)
+        {
+            if (!File.Exists(path))
+            {
+                return false;
+            }
+            else
+                return true;
+        }
+
         public void CreateDirectory(String path)
         {
             if (!Directory.Exists(path))

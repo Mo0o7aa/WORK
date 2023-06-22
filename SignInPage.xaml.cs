@@ -32,6 +32,12 @@ namespace ntra_missions
 
             InitializeComponent();
 
+            usernameTextBox.Text = ntra_missions.Properties.Settings.Default.UserName;
+            passwordTextBox.Password = ntra_missions.Properties.Settings.Default.Password;
+            
+            if(passwordTextBox.Password != "")
+                rememberMeCheckBox.IsChecked = true;
+
             //this.Loaded += PageLoaded;
         }
 
@@ -87,6 +93,19 @@ namespace ntra_missions
                     {
                         MessageBox.Show("Username and password are correct but server connection failed! Please check your internet connection and try again!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
+                    }
+
+                    if(rememberMeCheckBox.IsChecked == true)
+                    {
+                        ntra_missions.Properties.Settings.Default.UserName = usernameTextBox.Text;
+                        ntra_missions.Properties.Settings.Default.Password = passwordTextBox.Password;
+                        ntra_missions.Properties.Settings.Default.Save();
+                    }
+                    else
+                    {
+                        ntra_missions.Properties.Settings.Default.UserName = "";
+                        ntra_missions.Properties.Settings.Default.Password = "";
+                        ntra_missions.Properties.Settings.Default.Save();
                     }
 
                     MainWindow mainWindow = new MainWindow(ref loggedInUser);

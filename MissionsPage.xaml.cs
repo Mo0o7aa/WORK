@@ -13,6 +13,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Net.Mail;
+using System.Windows.Forms;
+using Button = System.Windows.Controls.Button;
+using Cursors = System.Windows.Input.Cursors;
+using Label = System.Windows.Controls.Label;
+using MessageBox = System.Windows.Forms.MessageBox;
+using MouseEventArgs = System.Windows.Input.MouseEventArgs;
+using OpenFileDialog = System.Windows.Forms.OpenFileDialog;
+using TextBox = System.Windows.Controls.TextBox;
+using System.IO;
+using System.Diagnostics;
 
 namespace ntra_missions
 {
@@ -30,10 +40,13 @@ namespace ntra_missions
 
         private Expander currentExpander;
         private Expander previousExpander;
+
+        CommonFunctions commonFunctions;
         
         public MissionsPage(ref Employee mLoggedInUser)
         {
             commonQueries = new CommonQueries();
+            commonFunctions = new CommonFunctions();
 
             missions = new List<BASIC_STRUCTS.INTERFERENCE_MISSION_STRUCT>();
             engineers = new List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT>();
@@ -103,7 +116,7 @@ namespace ntra_missions
 
         private void InitializeMissionsStackPanel()
         {
-            missionsStackPanel.Orientation = Orientation.Vertical;
+            missionsStackPanel.Orientation = System.Windows.Controls.Orientation.Vertical;
             missionsStackPanel.Children.Clear();
             
             for(int i = 0; i < missions.Count; i++)
@@ -148,7 +161,7 @@ namespace ntra_missions
         
         
                 Grid missionGrid = new Grid();
-                missionGrid.HorizontalAlignment = HorizontalAlignment.Stretch;
+                missionGrid.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
                 missionGrid.VerticalAlignment = VerticalAlignment.Stretch;
         
                 missionGrid.RowDefinitions.Add(new RowDefinition());
@@ -159,6 +172,7 @@ namespace ntra_missions
         
                 missionGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(300)});
                 missionGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(500)});
+                missionGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(400)});
                 missionGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(300)});
         
                 BrushConverter brushConverter = new BrushConverter();
@@ -189,13 +203,13 @@ namespace ntra_missions
                 Grid.SetColumnSpan(missionIdLabel, 3);
 
                 StackPanel engineersStackPanel = new StackPanel();
-                engineersStackPanel.HorizontalAlignment = HorizontalAlignment.Stretch;
+                engineersStackPanel.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
                 engineersStackPanel.VerticalAlignment = VerticalAlignment.Stretch;
 
                 for (int j = 0; j < missions[i].engineers.Count; j++)
                 {
                     WrapPanel wrapPanel = new WrapPanel();
-                    wrapPanel.HorizontalAlignment = HorizontalAlignment.Center;
+                    wrapPanel.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
 
                     Label tempEngineerLabel = new Label();
                     tempEngineerLabel.Content = "Eng." + (j + 1) + " :";
@@ -218,7 +232,7 @@ namespace ntra_missions
                 ScrollViewer sitesScrollViewer = new ScrollViewer();
                 sitesScrollViewer.Height = 150;
                 //sitesScrollViewer.Margin = new Thickness(12);
-                sitesScrollViewer.HorizontalAlignment = HorizontalAlignment.Center;
+                sitesScrollViewer.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
                 sitesScrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
                 sitesScrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
 
@@ -233,17 +247,17 @@ namespace ntra_missions
                 Label siteNumberLabelHeader = new Label();
                 siteNumberLabelHeader.Content = "Site Number";
                 siteNumberLabelHeader.Style = (Style)FindResource("wideLabelStyle");
-                siteNumberLabelHeader.HorizontalContentAlignment = HorizontalAlignment.Center; ;
+                siteNumberLabelHeader.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center; ;
 
                 Label reasonOfIntLabelHeader = new Label();
                 reasonOfIntLabelHeader.Content = "Reason of Int.";
                 reasonOfIntLabelHeader.Style = (Style)FindResource("wideLabelStyle");
-                reasonOfIntLabelHeader.HorizontalContentAlignment = HorizontalAlignment.Center;
+                reasonOfIntLabelHeader.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
 
                 Label commentLabelHeader = new Label();
                 commentLabelHeader.Content = "Comment";
                 commentLabelHeader.Style = (Style)FindResource("wideLabelStyle");
-                commentLabelHeader.HorizontalContentAlignment = HorizontalAlignment.Center;
+                commentLabelHeader.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
 
                 sitesGrid.Children.Add(siteNumberLabelHeader);
                 sitesGrid.Children.Add(reasonOfIntLabelHeader);
@@ -254,9 +268,9 @@ namespace ntra_missions
 
                 for (int j = 0; j < missions[i].sites.Count; j++)
                 {
-                    Label tempSiteNumberLabel = new Label();
-                    tempSiteNumberLabel.Content = missions[i].sites[j].site_name;
-                    tempSiteNumberLabel.Style = (Style)FindResource("labelStyleBlack");
+                    TextBox tempSiteNumberLabel = new TextBox();
+                    tempSiteNumberLabel.Text = missions[i].sites[j].site_name;
+                    tempSiteNumberLabel.Style = (Style)FindResource("stackPanelTextboxStyle");
                     
                     TextBox tempReasonOfIntTextBlock = new TextBox();
                     tempReasonOfIntTextBlock.Text = missions[i].sites[j].reason_of_interference;
@@ -304,11 +318,11 @@ namespace ntra_missions
 
 
                 //Grid equipmentGrid = new Grid();
-                //equipmentGrid.HorizontalAlignment = HorizontalAlignment.Stretch;
+                //equipmentGrid.System.Windows.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
                 //equipmentGrid.RowDefinitions.Add(new RowDefinition());
                 //
                 //ScrollViewer equipmentScrollViewer = new ScrollViewer();
-                //equipmentScrollViewer.HorizontalAlignment = HorizontalAlignment.Center;
+                //equipmentScrollViewer.System.Windows.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
                 //equipmentScrollViewer.Margin = new Thickness(12);
                 //equipmentScrollViewer.Height = 150;
                 //equipmentScrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
@@ -318,7 +332,7 @@ namespace ntra_missions
                 //Label equipmentHeaderLabel = new Label();
                 //equipmentHeaderLabel.Content = "Equipment";
                 //equipmentHeaderLabel.Style = (Style)FindResource("wideLabelStyle");
-                //equipmentHeaderLabel.HorizontalAlignment = HorizontalAlignment.Center;
+                //equipmentHeaderLabel.System.Windows.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
                 //
                 //equipmentGrid.Children.Add(equipmentHeaderLabel);
                 //
@@ -338,24 +352,24 @@ namespace ntra_missions
                 //Grid.SetRow(equipmentScrollViewer, 2);
                 //Grid.SetColumn(equipmentScrollViewer, 0);
 
-                WrapPanel vehichleWrapPanel = new WrapPanel();
-                vehichleWrapPanel.HorizontalAlignment = HorizontalAlignment.Center;
-                vehichleWrapPanel.VerticalAlignment = VerticalAlignment.Center;
+                WrapPanel repeatersCountWrapPanel = new WrapPanel();
+                repeatersCountWrapPanel.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
+                repeatersCountWrapPanel.VerticalAlignment = VerticalAlignment.Center;
 
-                Label vehicleLabel = new Label();
-                vehicleLabel.Content = "Vehicle: ";
-                vehicleLabel.Style = (Style)FindResource("labelStyleBlack");
+                Label repeatersCountLabel = new Label();
+                repeatersCountLabel.Content = "Repeaters: ";
+                repeatersCountLabel.Style = (Style)FindResource("labelStyle");
 
-                Label vehichleValueLabel = new Label();
-                vehichleValueLabel.Content = missions[i].vehichle;
-                vehichleValueLabel.Style = (Style)FindResource("wideLabelStyle");
+                Label repeatersCountValueLabel = new Label();
+                repeatersCountValueLabel.Content = missions[i].repeaters.Count;
+                repeatersCountValueLabel.Style = (Style)FindResource("labelStyleBlack");
 
-                vehichleWrapPanel.Children.Add(vehicleLabel);
-                vehichleWrapPanel.Children.Add(vehichleValueLabel);
+                repeatersCountWrapPanel.Children.Add(repeatersCountLabel);
+                repeatersCountWrapPanel.Children.Add(repeatersCountValueLabel);
 
-                missionGrid.Children.Add(vehichleWrapPanel);
-                Grid.SetRow(vehichleWrapPanel, 1);
-                Grid.SetColumn(vehichleWrapPanel, 1);
+                missionGrid.Children.Add(repeatersCountWrapPanel);
+                Grid.SetRow(repeatersCountWrapPanel, 1);
+                Grid.SetColumn(repeatersCountWrapPanel, 1);
 
                 Border statusBorder = new Border();
                 statusBorder.Style = (Style)FindResource("statusBorderStyle");
@@ -374,10 +388,10 @@ namespace ntra_missions
 
                 missionGrid.Children.Add(statusBorder);
                 Grid.SetRow(statusBorder, 1);
-                Grid.SetColumn(statusBorder, 2);
+                Grid.SetColumn(statusBorder, 3);
 
                 WrapPanel dateWrapPanel = new WrapPanel();
-                dateWrapPanel.HorizontalAlignment = HorizontalAlignment.Center;
+                dateWrapPanel.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
                 dateWrapPanel.VerticalAlignment = VerticalAlignment.Center;
 
                 Label dateLabel = new Label();
@@ -393,11 +407,11 @@ namespace ntra_missions
 
                 missionGrid.Children.Add(dateWrapPanel);
                 Grid.SetRow(dateWrapPanel, 2);
-                Grid.SetColumn(dateWrapPanel, 2);
+                Grid.SetColumn(dateWrapPanel, 3);
         
                 Expander expander = new Expander();
                 expander.Tag = missions[i].company_serial + "," + missions[i].complaint_serial + "," + missions[i].mission_serial;
-                expander.HorizontalContentAlignment = HorizontalAlignment.Left;
+                expander.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Left;
                 expander.VerticalAlignment = VerticalAlignment.Top;
                 expander.ExpandDirection = ExpandDirection.Down;
                 expander.Expanded += OnExpandExpander;
@@ -407,42 +421,221 @@ namespace ntra_missions
         
                 Button viewButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
                 viewButton.Content = "View Mission";
-                viewButton.HorizontalContentAlignment = HorizontalAlignment.Center;
+                viewButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
                 viewButton.Click += OnBtnClickView;
 
                 Button viewComplaintButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
                 viewComplaintButton.Content = "View Complaint";
-                viewComplaintButton.HorizontalContentAlignment = HorizontalAlignment.Center;
+                viewComplaintButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
                 viewComplaintButton.Tag = missions[i].company_serial + "," + missions[i].complaint_serial;
                 viewComplaintButton.Click += OnClickViewComplaint;
 
 
                 Button editButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
                 editButton.Content = "Edit";
-                editButton.HorizontalContentAlignment = HorizontalAlignment.Center;
+                editButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
                 editButton.Click += OnClickEdit;
-        
-        
+
+                Button attachmentButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
+                attachmentButton.Content = "Attach File";
+                attachmentButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
+                attachmentButton.Click += OnClickAttachFile;
+
+                Button repeaterButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
+                repeaterButton.Content = "Add Repeaters";
+                repeaterButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
+                repeaterButton.Click += OnClickAddRepeaters;
+
+                Button showRepeatersButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
+                showRepeatersButton.Content = "Show Repeaters";
+                showRepeatersButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
+                showRepeatersButton.Click += OnClickShowRepeaters;
+
+                Button wordExportButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
+                wordExportButton.Content = "Word Export";
+                wordExportButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
+                wordExportButton.Click += OnClickWordExport;
+
+
                 Button deleteButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
                 deleteButton.Content = "Delete";
-                deleteButton.HorizontalContentAlignment = HorizontalAlignment.Center;
+                deleteButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
                 deleteButton.Click += OnBtnClickDelete;
         
                 expanderStackPanel.Children.Add(viewButton);
                 expanderStackPanel.Children.Add(viewComplaintButton);
                 expanderStackPanel.Children.Add(editButton);
+                expanderStackPanel.Children.Add(repeaterButton);
+                expanderStackPanel.Children.Add(showRepeatersButton);
+                expanderStackPanel.Children.Add(attachmentButton);
+                expanderStackPanel.Children.Add(wordExportButton);
                 //expanderStackPanel.Children.Add(deleteButton);
                 
                 expander.Content = expanderStackPanel;
         
                 missionGrid.Children.Add(expander);
-                Grid.SetColumn(expander, 2);
-        
+                Grid.SetColumn(expander, 3);
+
+                ScrollViewer scrollViewer = new ScrollViewer() { VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Height = 200, Margin = new Thickness(12), HorizontalAlignment = System.Windows.HorizontalAlignment.Left };
+                StackPanel fileStackPanel = new StackPanel() { Orientation = System.Windows.Controls.Orientation.Vertical };
+
+                scrollViewer.Content = fileStackPanel;
+
+                FileInfo[] filesPath;
+
+                if (commonFunctions.CheckDirectory(BASIC_STRUCTS.FOLDER_SHARE_PATH + @"Missions\" + missions[i].mission_id + @"\"))
+                {
+                    filesPath = commonFunctions.ListFilesInFolder(BASIC_STRUCTS.FOLDER_SHARE_PATH + @"Missions\" + missions[i].mission_id + @"\");
+
+                    for (int k = 0; k < filesPath.Length; k++)
+                    {
+                        //Border currentBorder = new Border() { BorderBrush = (Brush)brushConverter.ConvertFrom("#000080"), BorderThickness = new Thickness(3) };
+
+                        WrapPanel currentWrapPanel = new WrapPanel() { HorizontalAlignment = System.Windows.HorizontalAlignment.Left };
+
+                        //currentBorder.Child = currentWrapPanel;
+
+                        String imageSource = @"\Photos\file_icon.png";
+
+                        Image currentFileImage = new Image() { VerticalAlignment = VerticalAlignment.Center };
+                        currentFileImage.Height = 50;
+                        currentFileImage.Width = 50;
+                        currentFileImage.Source = new BitmapImage(new Uri(imageSource, UriKind.Relative));
+
+                        TextBlock currentFile = new TextBlock() { Style = (Style)FindResource("textblockStyleBlue"), Height = 50, VerticalAlignment = VerticalAlignment.Center, Padding = new Thickness(3) };
+                        currentFile.Cursor = Cursors.Hand;
+                        currentFile.ToolTip = "Click to open file";
+                        currentFile.PreviewMouseLeftButtonDown += OnClickOpenFile;
+
+                        currentFile.Text = System.IO.Path.GetFileName(filesPath[k].FullName);
+                        currentFile.Tag = filesPath[k].FullName;
+
+                        String imageSource1 = @"\Photos\red_cross_icon.png";
+
+                        Image currentRemoveImage = new Image() { VerticalAlignment = VerticalAlignment.Center };
+                        currentRemoveImage.Height = 40;
+                        currentRemoveImage.Width = 40;
+                        currentRemoveImage.Source = new BitmapImage(new Uri(imageSource1, UriKind.Relative));
+                        currentRemoveImage.ToolTip = "Click to delete file";
+                        currentRemoveImage.Tag = filesPath[k].FullName;
+                        currentRemoveImage.Cursor = Cursors.Hand;
+                        currentRemoveImage.MouseLeftButtonDown += OnClickRemoveFile;
+
+                        currentWrapPanel.Children.Add(currentFileImage);
+                        currentWrapPanel.Children.Add(currentFile);
+                        currentWrapPanel.Children.Add(currentRemoveImage);
+
+                        fileStackPanel.Children.Add(currentWrapPanel);
+                    }
+
+                    if (filesPath.Length != 0)
+                    {
+                        missionGrid.Children.Add(scrollViewer);
+                        Grid.SetRowSpan(scrollViewer, 5);
+                        Grid.SetRow(scrollViewer, 0);
+                        Grid.SetColumn(scrollViewer, 2);
+                    }
+                }
+
                 border.Child = missionGrid;
         
                 missionsStackPanel.Children.Add(border);
             }
         
+        }
+
+        private void OnClickRemoveFile(object sender, MouseButtonEventArgs e)
+        {
+            Image currentImage = (Image)sender;
+
+            File.Delete(currentImage.Tag.ToString());
+
+            InitializeMissionsStackPanel();
+        }
+
+
+        private void OnClickShowRepeaters(object sender, RoutedEventArgs e)
+        {
+            Button currentButton = (Button)sender;
+            StackPanel currentStackPanel = (StackPanel)currentButton.Parent;
+            Expander currentExpander = (Expander)currentStackPanel.Parent;
+
+            int viewAddCondition = BASIC_STRUCTS.REPEATER_VIEW_CONDITION;
+            List<BASIC_STRUCTS.REPEATER_STRUCT> currentRepeaters = new List<BASIC_STRUCTS.REPEATER_STRUCT>();
+
+            currentRepeaters = missions.Find(x1 => x1.company_serial == int.Parse(currentExpander.Tag.ToString().Split(',')[0]) && x1.complaint_serial == int.Parse(currentExpander.Tag.ToString().Split(',')[1]) && x1.mission_serial == int.Parse(currentExpander.Tag.ToString().Split(',')[2])).repeaters;
+
+            RepeatersWindow repeatersWindow = new RepeatersWindow(ref loggedInUser, ref currentRepeaters, ref viewAddCondition);
+            repeatersWindow.Closed += OnClosedMissionWindow;
+            repeatersWindow.Show();
+        }
+
+        private void OnClickAddRepeaters(object sender, RoutedEventArgs e)
+        {
+            int viewAddCondition = BASIC_STRUCTS.REPEATER_ADD_CONDITION;
+
+            List<BASIC_STRUCTS.REPEATER_STRUCT> repeaters = new List<BASIC_STRUCTS.REPEATER_STRUCT>();
+
+            RepeatersWindow repeatersWindow = new RepeatersWindow(ref loggedInUser, ref repeaters, ref viewAddCondition);
+            repeatersWindow.Closed += OnClosedMissionWindow;
+            repeatersWindow.Show();
+        }
+
+
+        private void OnClickOpenFile(object sender, MouseButtonEventArgs e)
+        {
+            TextBlock currentTextBlock = (TextBlock)sender;
+            try
+            {
+                if (currentTextBlock.Tag != "")
+                    Process.Start(currentTextBlock.Tag.ToString());
+            }
+            catch 
+            {
+                MessageBox.Show("Current file is not available!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void OnClickAttachFile(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog fileDialog = new OpenFileDialog();
+            fileDialog.Multiselect = true;
+
+            if (fileDialog.ShowDialog() == DialogResult.OK)
+            {
+                Button currentButton = (Button)sender;
+                StackPanel currentStackPanel = (StackPanel)currentButton.Parent;
+                Expander expander = (Expander)currentStackPanel.Parent;
+
+                Missions mission = new Missions();
+
+                if (!mission.InitializeMission(int.Parse(currentExpander.Tag.ToString().Split(',')[0]), int.Parse(currentExpander.Tag.ToString().Split(',')[1]), int.Parse(currentExpander.Tag.ToString().Split(',')[2])))
+                    return;
+
+                bool failed = false;
+
+                for (int i = 0; i < fileDialog.FileNames.Length; i++)
+                {
+                    String filePath = fileDialog.FileNames[i];
+                    String fileName = System.IO.Path.GetFileName(filePath);
+
+                    try
+                    {
+                        commonFunctions.CreateDirectory(BASIC_STRUCTS.FOLDER_SHARE_PATH + @"Missions\" + mission.GetMissionId());
+                        File.Copy(fileDialog.FileName, BASIC_STRUCTS.FOLDER_SHARE_PATH + @"Missions\" + mission.GetMissionId() + @"\" + fileName);
+                    }
+                    catch
+                    {
+                        MessageBox.Show(fileName + " upload failed please try again later!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        failed = true;
+                    }
+                }
+
+                if (failed == false)
+                    MessageBox.Show("Upload complete!", "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                InitializeMissionsStackPanel();
+            }
         }
 
         private void OnClickViewComplaint(object sender, RoutedEventArgs e)
@@ -502,6 +695,22 @@ namespace ntra_missions
                 return;
 
             //InitializeMissionsStackPanel();
+        }
+
+        private void OnClickWordExport(object sender, RoutedEventArgs e)
+        {
+            Button currentButton = (Button)sender;
+            StackPanel currentStackPanel = (StackPanel)currentButton.Parent;
+            Expander currentExpander = (Expander)currentStackPanel.Parent;
+
+            int missionCondition = BASIC_STRUCTS.MISSION_EDIT_CONDITION;
+
+            Missions mission = new Missions();
+
+            if (!mission.InitializeMission(int.Parse(currentExpander.Tag.ToString().Split(',')[0]), int.Parse(currentExpander.Tag.ToString().Split(',')[1]), int.Parse(currentExpander.Tag.ToString().Split(',')[2])))
+                return;
+
+            WordExport wordExport = new WordExport(mission, ref loggedInUser); 
         }
 
         private void OnClickEdit(object sender, RoutedEventArgs e)

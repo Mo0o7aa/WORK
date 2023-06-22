@@ -35,6 +35,10 @@ namespace ntra_missions
         public const int EMF_PLAN_ADD_CONDITION = 1;
         public const int EMF_PLAN_EDIT_CONDITION = 2;
 
+        public const int REPEATER_VIEW_CONDITION = 0;
+        public const int REPEATER_ADD_CONDITION = 1;
+        public const int REPEATER_EDIT_CONDITION = 2;
+
         public const int BAND_700 = 1;
         public const int BAND_900 = 2;
         public const int BAND_1800 = 3;
@@ -131,6 +135,7 @@ namespace ntra_missions
             public String status;
             public String added_by;
 
+            public List<REPEATER_STRUCT> repeaters;
 
             public DateTime mission_Date;
         };
@@ -359,6 +364,20 @@ namespace ntra_missions
             public double average_power_density;
             public double max_power_density;
 
+        };
+
+        public struct REPEATER_STRUCT
+        {
+            public int repeater_serial;
+            public int mission_serial;
+            public int company_serial;
+            public int complaint_serial;
+            public int status_id;
+            public String latitude;
+            public String longitude;
+            public String address;
+            public String status;
+            public DateTime date;
         };
 
 

@@ -351,8 +351,20 @@ namespace ntra_missions
                         currentFile.Text = System.IO.Path.GetFileName(filesPath[k].FullName);
                         currentFile.Tag = filesPath[k].FullName;
 
+                        String imageSource1 = @"\Photos\red_cross_icon.png";
+
+                        Image currentRemoveImage = new Image() { VerticalAlignment = VerticalAlignment.Center };
+                        currentRemoveImage.Height = 40;
+                        currentRemoveImage.Width = 40;
+                        currentRemoveImage.Source = new BitmapImage(new Uri(imageSource1, UriKind.Relative));
+                        currentRemoveImage.ToolTip = "Click to delete file";
+                        currentRemoveImage.Tag = filesPath[k].FullName;
+                        currentRemoveImage.Cursor = Cursors.Hand;
+                        currentRemoveImage.MouseLeftButtonDown += OnClickRemoveFile;
+
                         currentWrapPanel.Children.Add(currentFileImage);
                         currentWrapPanel.Children.Add(currentFile);
+                        currentWrapPanel.Children.Add(currentRemoveImage);
 
                         fileStackPanel.Children.Add(currentWrapPanel);
                     }
@@ -389,11 +401,27 @@ namespace ntra_missions
             }
         }
 
+        private void OnClickRemoveFile(object sender, MouseButtonEventArgs e)
+        {
+            Image currentImage = (Image)sender;
+
+            File.Delete(currentImage.Tag.ToString());
+
+            InitializeCompaintsStackPanel();
+        }
+
         private void OnClickOpenFile(object sender, MouseButtonEventArgs e)
         {
             TextBlock currentTextBlock = (TextBlock)sender;
-            if(currentTextBlock.Tag != "")
-                Process.Start(currentTextBlock.Tag.ToString());
+            try
+            {
+                if (currentTextBlock.Tag != "")
+                    Process.Start(currentTextBlock.Tag.ToString());
+            }
+            catch
+            {
+                MessageBox.Show("Current file is not available!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void OnClickAttachFile(object sender, RoutedEventArgs e)
