@@ -184,8 +184,8 @@ namespace ntra_missions
                 bandwidthComboBox.Items.Add(bandsUnits[i].value);
             }
 
-            centreFreqComboBox.SelectedIndex = 0;
-            bandwidthComboBox.SelectedIndex = 0;
+            centreFreqComboBox.SelectedIndex = 1;
+            bandwidthComboBox.SelectedIndex = 1;
 
             return true;
         }
@@ -199,7 +199,7 @@ namespace ntra_missions
                 mCombo.Items.Add(bandsUnits[i].value);
             }
 
-            mCombo.SelectedIndex = 0;
+            mCombo.SelectedIndex = 1;
         }
 
         private bool GetBands()

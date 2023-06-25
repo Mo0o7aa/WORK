@@ -560,7 +560,7 @@ namespace ntra_missions
             StackPanel currentStackPanel = (StackPanel)currentButton.Parent;
             Expander currentExpander = (Expander)currentStackPanel.Parent;
 
-            int viewAddCondition = BASIC_STRUCTS.REPEATER_VIEW_CONDITION;
+            int viewAddCondition = BASIC_STRUCTS.REPEATER_EDIT_CONDITION;
             List<BASIC_STRUCTS.REPEATER_STRUCT> currentRepeaters = new List<BASIC_STRUCTS.REPEATER_STRUCT>();
 
             currentRepeaters = missions.Find(x1 => x1.company_serial == int.Parse(currentExpander.Tag.ToString().Split(',')[0]) && x1.complaint_serial == int.Parse(currentExpander.Tag.ToString().Split(',')[1]) && x1.mission_serial == int.Parse(currentExpander.Tag.ToString().Split(',')[2])).repeaters;
@@ -572,9 +572,21 @@ namespace ntra_missions
 
         private void OnClickAddRepeaters(object sender, RoutedEventArgs e)
         {
+            Button currentButton = (Button)sender;
+            StackPanel currentStackPanel = (StackPanel)currentButton.Parent;
+            Expander currentExpander = (Expander)currentStackPanel.Parent;
+
             int viewAddCondition = BASIC_STRUCTS.REPEATER_ADD_CONDITION;
 
             List<BASIC_STRUCTS.REPEATER_STRUCT> repeaters = new List<BASIC_STRUCTS.REPEATER_STRUCT>();
+
+            BASIC_STRUCTS.REPEATER_STRUCT tempRepeater = new BASIC_STRUCTS.REPEATER_STRUCT();
+            tempRepeater.company_serial = int.Parse(currentExpander.Tag.ToString().Split(',')[0]);
+            tempRepeater.complaint_serial = int.Parse(currentExpander.Tag.ToString().Split(',')[1]);
+            tempRepeater.mission_serial = int.Parse(currentExpander.Tag.ToString().Split(',')[2]);
+
+            repeaters.Add(tempRepeater);
+
 
             RepeatersWindow repeatersWindow = new RepeatersWindow(ref loggedInUser, ref repeaters, ref viewAddCondition);
             repeatersWindow.Closed += OnClosedMissionWindow;

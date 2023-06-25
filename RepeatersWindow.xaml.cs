@@ -1,4 +1,4 @@
-﻿using Org.BouncyCastle.Math.EC.Rfc7748;
+﻿
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,34 +43,53 @@ namespace ntra_missions
             GetMissions();
             GetRepeatersStatus();
 
-            if(viewAddCondition == BASIC_STRUCTS.REPEATER_VIEW_CONDITION)
-            {
-                repeatersStackPanel.Children.Clear();
-
-                for(int i = 0; i < repeaters.Count; i++)
-                {
-                    Grid currentGrid = (Grid)CreateNewRepeaterGrid(i, true, false, true);
-                    repeatersStackPanel.Children.Add(currentGrid);
-                }
-
-                finishButton.IsEnabled = false;
-            }
-            else if(viewAddCondition == BASIC_STRUCTS.REPEATER_EDIT_CONDITION)
+            if (viewAddCondition == BASIC_STRUCTS.REPEATER_VIEW_CONDITION)
             {
                 repeatersStackPanel.Children.Clear();
 
                 for (int i = 0; i < repeaters.Count; i++)
                 {
-                    Grid currentGrid = (Grid)CreateNewRepeaterGrid(i, true, false, false);
+                    Grid currentGrid = (Grid)CreateNewRepeaterGrid(i, true, false, true, repeaters[i].repeater_serial);
                     repeatersStackPanel.Children.Add(currentGrid);
                 }
+
+                finishButton.IsEnabled = false;
+            }
+            else if (viewAddCondition == BASIC_STRUCTS.REPEATER_EDIT_CONDITION)
+            {
+                repeatersStackPanel.Children.Clear();
+
+                for (int i = 0; i < repeaters.Count; i++)
+                {
+                    Grid currentGrid = (Grid)CreateNewRepeaterGrid(i, true, true, false, repeaters[i].repeater_serial);
+                    repeatersStackPanel.Children.Add(currentGrid);
+                }
+
+                String imageSource = @"\Photos\plus_icon.png";
+
+                Image currentAddRepeaterImage = new Image() { HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(12) };
+                currentAddRepeaterImage.Height = 30;
+                currentAddRepeaterImage.Width = 30;
+                currentAddRepeaterImage.Cursor = Cursors.Hand;
+                currentAddRepeaterImage.ToolTip = "Add Repeater";
+                currentAddRepeaterImage.Source = new BitmapImage(new Uri(imageSource, UriKind.Relative));
+                currentAddRepeaterImage.MouseLeftButtonDown += OnClickAddRepeater;
+
+                repeatersStackPanel.Children.Add(currentAddRepeaterImage);
+
             }
             else
             {
+                if(repeaters.Count != 0)
+                {
+                    missionComboBox.SelectedIndex = missions.FindIndex(x1 => x1.company_serial == repeaters[0].company_serial && x1.complaint_serial == repeaters[0].complaint_serial && x1.mission_serial == repeaters[0].mission_serial);
+                }
 
+                missionComboBox.IsEnabled = false;
             }
 
         }
+
 
         private bool GetMissions()
         {
@@ -125,7 +144,7 @@ namespace ntra_missions
 
             repeatersStackPanel.Children.Remove(currentImage);
 
-            Grid currentGrid = CreateNewRepeaterGrid(repeatersStackPanel.Children.Count, false, true, false);
+            Grid currentGrid = CreateNewRepeaterGrid(repeatersStackPanel.Children.Count, false, true, false, 0);
 
             repeatersStackPanel.Children.Add(currentGrid);
 
@@ -133,7 +152,7 @@ namespace ntra_missions
 
         }
 
-        private Grid CreateNewRepeaterGrid(int index, bool fill, bool addRemoveIcon, bool view)
+        private Grid CreateNewRepeaterGrid(int index, bool fill, bool addRemoveIcon, bool view, int mSerial)
         {
             Grid currentGrid = new Grid();
             currentGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(50) });
@@ -141,6 +160,8 @@ namespace ntra_missions
             currentGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(50) });
             currentGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(50) });
             currentGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(50) });
+
+            currentGrid.Tag = mSerial;
 
             currentGrid.ColumnDefinitions.Add(new ColumnDefinition());
             currentGrid.ColumnDefinitions.Add(new ColumnDefinition());
@@ -266,23 +287,32 @@ namespace ntra_missions
 
             Label missionLabel = new Label() { Content = "Mission (Optional): ", Style = (Style)FindResource("wideLabelStyleBlack") };
 
-            ComboBox missionComboBox = new ComboBox() { Style = (Style)FindResource("comboBoxStyle") };
-            FillMissionComboBox(ref missionComboBox);
+            ComboBox currentMissionComboBox = new ComboBox() { Style = (Style)FindResource("comboBoxStyle") };
+            FillMissionComboBox(ref currentMissionComboBox);
             if (fill && repeaters[index].mission_serial != 0)
             {
-                missionComboBox.SelectedIndex = missions.FindIndex(x1 => x1.company_serial == repeaters[index].company_serial && x1.complaint_serial == repeaters[index].complaint_serial && x1.mission_serial == repeaters[index].mission_serial);
+                currentMissionComboBox.SelectedIndex = missions.FindIndex(x1 => x1.company_serial == repeaters[index].company_serial && x1.complaint_serial == repeaters[index].complaint_serial && x1.mission_serial == repeaters[index].mission_serial);
             }
             if (view)
             {
-                missionComboBox.IsEnabled = false;
+                currentMissionComboBox.IsEnabled = false;
+            }
+            if(viewAddCondition == BASIC_STRUCTS.REPEATER_ADD_CONDITION)
+            {
+                if(missionComboBox.IsEnabled == false)
+                {
+                    currentMissionComboBox.SelectedIndex = missionComboBox.SelectedIndex;
+                    currentMissionComboBox.IsEnabled = false;
+                }
             }
 
             missionWrapPanel.Children.Add(missionLabel);
-            missionWrapPanel.Children.Add(missionComboBox);
+            missionWrapPanel.Children.Add(currentMissionComboBox);
 
             currentGrid.Children.Add(missionWrapPanel);
             Grid.SetRow(missionWrapPanel, 4);
             Grid.SetColumnSpan(missionWrapPanel, 2);
+
 
             if(addRemoveIcon && !view)
             {
@@ -292,6 +322,7 @@ namespace ntra_missions
                 currentRedCrossImage.Height = 50;
                 currentRedCrossImage.Width = 50;
                 currentRedCrossImage.ToolTip = "Remove Repeater";
+                currentRedCrossImage.Cursor = Cursors.Hand;
                 currentRedCrossImage.Source = new BitmapImage(new Uri(imageSource, UriKind.Relative));
                 currentRedCrossImage.MouseLeftButtonDown += OnClickRemoveRepeater;
 
@@ -314,14 +345,20 @@ namespace ntra_missions
 
         private void FixRepeaterNumbers()
         {
-            for(int i = 0; i < repeatersStackPanel.Children.Count - 1; i++)
+            for(int i = 0; i < repeatersStackPanel.Children.Count; i++)
             {
-                Grid currentGrid = (Grid)repeatersStackPanel.Children[i];
 
                 try
                 {
-                    Label currentHeaderLabel = (Label)currentGrid.Children[i];
-                    currentHeaderLabel.Content = "Repeater " + (i + 1);
+                    if (repeatersStackPanel.Children[i].GetType() == typeof(Grid))
+                    {
+                        Grid currentGrid = (Grid)repeatersStackPanel.Children[i];
+                        if (currentGrid.Children[0].GetType() == typeof(Label))
+                        {
+                            Label currentHeaderLabel = (Label)currentGrid.Children[0];
+                            currentHeaderLabel.Content = "Repeater " + (i + 1);
+                        }
+                    }
                 }
                 catch
                 {
@@ -357,12 +394,15 @@ namespace ntra_missions
                 {
                     Grid currentGrid = (Grid)repeatersStackPanel.Children[i];
 
+                    if(currentGrid.Tag != null && currentGrid.Tag.ToString() != "0")
+                        currentRepeater.repeater_serial = int.Parse(currentGrid.Tag.ToString());
+
                     WrapPanel currentLatWrapPanel = (WrapPanel)currentGrid.Children[1];
 
                     TextBox currentLatTextBox = (TextBox)currentLatWrapPanel.Children[1];
                     if (currentLatTextBox.Text == "")
                     {
-                        MessageBox.Show("Latitude is not specified for repeater " + i, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show("Latitude is not specified for repeater " + (i + 1), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
                     currentRepeater.latitude = currentLatTextBox.Text;
@@ -372,7 +412,7 @@ namespace ntra_missions
                     TextBox currentLongTextBox = (TextBox)currentLongWrapPanel.Children[1];
                     if (currentLongTextBox.Text == "")
                     {
-                        MessageBox.Show("Longitude is not specified for repeater " + i, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show("Longitude is not specified for repeater " + (i + 1), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
                     currentRepeater.longitude = currentLongTextBox.Text;
@@ -383,7 +423,7 @@ namespace ntra_missions
                     TextBox currentAddressTextBox = (TextBox)currentAddressWrapPanel.Children[1];
                     if (currentAddressTextBox.Text == "")
                     {
-                        MessageBox.Show("Address is not specified for repeater " + i, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show("Address is not specified for repeater " + (i + 1), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
                     currentRepeater.address = currentAddressTextBox.Text;
@@ -394,7 +434,7 @@ namespace ntra_missions
                     DatePicker currentDatePicker = (DatePicker)currentdateWrapPanel.Children[1];
                     if (currentDatePicker.Text == "")
                     {
-                        MessageBox.Show("Date is not specified for repeater " + i, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show("Date is not specified for repeater " + (i + 1), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
                     currentRepeater.date = (DateTime)currentDatePicker.SelectedDate;
@@ -405,7 +445,7 @@ namespace ntra_missions
                     ComboBox currentStatusComboBox = (ComboBox)currentStatusWrapPanel.Children[1];
                     if (currentStatusComboBox.SelectedIndex == -1)
                     {
-                        MessageBox.Show("Status is not specified for repeater " + i, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show("Status is not specified for repeater " + (i + 1), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
                     currentRepeater.status_id = repeatersStatus[currentStatusComboBox.SelectedIndex].key;
@@ -433,10 +473,28 @@ namespace ntra_missions
                 }
             }
 
-            if (!commonQueries.InsertIntoRepeaters(ref currentRepeatersList))
-                return;
+            if (viewAddCondition == BASIC_STRUCTS.REPEATER_ADD_CONDITION)
+            {
+                if (!commonQueries.InsertIntoRepeaters(ref currentRepeatersList))
+                    return;
 
-            this.Close();
+
+                this.Close();
+            }
+            else
+            {
+                for(int i = 0; i < currentRepeatersList.Count; i++)
+                {
+                    if (!commonQueries.DeleteRepeaters(currentRepeatersList[i].repeater_serial))
+                        return;
+                }
+
+                if (!commonQueries.InsertIntoRepeaters(ref currentRepeatersList))
+                    return;
+
+
+                this.Close();
+            }
         }
     }
 }

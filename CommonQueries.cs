@@ -2312,6 +2312,22 @@ namespace ntra_missions
             return true;
         }
 
+        public bool DeleteRepeaters(int mSerial)
+        {
+            String sqlQuery = string.Empty;
+
+            String sqlQueryPart1 = @"delete from NTRA.dbo.repeaters where serial = ";
+
+            sqlQuery = sqlQueryPart1;
+            sqlQuery += mSerial;
+
+
+            if (!sqlDatabase.InsertRows(sqlQuery))
+                return false;
+
+            return true;
+        }
+
         public bool InsertIntoRepeaters(ref List<BASIC_STRUCTS.REPEATER_STRUCT> mRepeaters)
         {
             int serial = 1;

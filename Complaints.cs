@@ -147,7 +147,6 @@ namespace ntra_missions
             {
                 serial = sql.rows[0].sql_int[0];
                 companySerial = sql.rows[0].sql_int[4];
-                cityId = sql.rows[0].sql_int[5];
             
                 if (!addedBy.InitializeEmployeeInfo(sql.rows[0].sql_int[6]))
                     return false;
@@ -158,9 +157,7 @@ namespace ntra_missions
                 complaintDate = sql.rows[0].sql_datetime[0];
             
                 ticketNumber = sql.rows[0].sql_string[0];
-                region = sql.rows[0].sql_string[1];
             
-                city = sql.rows[0].sql_string[9];
                 companyName = sql.rows[0].sql_string[10];
 
                 complaintId = sql.rows[0].sql_string[12];
@@ -176,9 +173,12 @@ namespace ntra_missions
                     tempSite.site_serial = sql.rows[i].sql_int[1];
                     tempSector.site_serial = sql.rows[i].sql_int[1];
                     tempSector.sector_serial = sql.rows[i].sql_int[2];
+                    tempSite.city_id = sql.rows[i].sql_int[5];
                     tempSite.site_status_id = sql.rows[i].sql_int[8];
                     tempSector.shared_with_id = sql.rows[i].sql_int[9];
-                
+
+
+                    tempSite.region = sql.rows[i].sql_string[1];
                     tempSite.latitude = sql.rows[i].sql_string[2];
                     tempSite.longitude = sql.rows[i].sql_string[3];
                     tempSite.site_number = sql.rows[i].sql_string[4];
@@ -189,7 +189,10 @@ namespace ntra_missions
 
                     if(sql.rows[i].sql_string[8] != "")
                         tempSector.sector_bands.Add(sql.rows[i].sql_string[8]);
-                
+
+
+                    tempSite.city = sql.rows[i].sql_string[9];
+
                     tempSite.site_status = sql.rows[i].sql_string[14];
                     //if(tempSector.sector_number != "")
                         tempSite.sectors.Add(tempSector);

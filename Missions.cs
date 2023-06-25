@@ -202,7 +202,7 @@ namespace ntra_missions
             sqlQuery += serial + ",";
             sqlQuery += vehicle_id + ",";
             sqlQuery += missionStatusId + ",'";
-            sqlQuery += mission_date + "','";
+            sqlQuery += mission_date + "',N'";
             sqlQuery += missionComment + "',getdate(),";
             sqlQuery += addedById + ",'";
             sqlQuery += missionId + "');";
@@ -258,7 +258,7 @@ namespace ntra_missions
                 sqlQuery += complaint.GetSerial() + ",";
                 sqlQuery += sites[i].site_serial + ",";
                 sqlQuery += serial + ",";
-                sqlQuery += sites[i].reason_of_interference_id + ",'";
+                sqlQuery += sites[i].reason_of_interference_id + ",N'";
                 sqlQuery += sites[i].comment + "',getdate());";
 
                 if (!sqlDatabase.InsertRows(sqlQuery))
@@ -274,7 +274,7 @@ namespace ntra_missions
             sqlQuery += vehicle_id + ", status = ";
             sqlQuery += missionStatusId + ", mission_date = ";
             sqlQuery += "'" + mission_date + "', comment = ";
-            sqlQuery += "'" + missionComment + "' where company_serial = ";
+            sqlQuery += "N'" + missionComment + "' where company_serial = ";
             sqlQuery += complaint.GetCompanySerial() + " and complaint_serial = ";
             sqlQuery += complaint.GetSerial() + " and serial = ";
             sqlQuery += serial + ";";

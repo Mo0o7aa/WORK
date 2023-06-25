@@ -8,7 +8,6 @@ using System.Data.Odbc;
 using System.Data.SqlClient;
 using System.Collections;
 using System.Windows.Forms;
-using MySql.Data.MySqlClient;
 
 namespace ntra_missions
 {
