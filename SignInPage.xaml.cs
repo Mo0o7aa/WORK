@@ -25,10 +25,12 @@ namespace ntra_missions
     {
         SQLServer sql;
         CommonQueries commonQueries;
+        Employee loggedInUser;
         public SignInPage()
         {
             sql = new SQLServer();
             commonQueries = new CommonQueries();
+            loggedInUser = new Employee();
 
             InitializeComponent();
 
@@ -87,8 +89,6 @@ namespace ntra_missions
 
                 if (hashedPassword == password)
                 {
-                    Employee loggedInUser = new Employee();
-
                     if (!loggedInUser.InitializeEmployeeInfo(employeeId))
                     {
                         MessageBox.Show("Username and password are correct but server connection failed! Please check your internet connection and try again!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -108,7 +108,15 @@ namespace ntra_missions
                         ntra_missions.Properties.Settings.Default.Save();
                     }
 
+
+                    if (!commonQueries.InsertEmployeesLog(loggedInUser.GetEmployeeUserName(), "LogIn"))
+                    {
+                        MessageBox.Show("Something went wrong please try again!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
                     MainWindow mainWindow = new MainWindow(ref loggedInUser);
+                    mainWindow.Closed += MainWindow_Closed;
                     mainWindow.Show();
 
                     NavigationWindow parent = (NavigationWindow)this.Parent;
@@ -124,6 +132,12 @@ namespace ntra_missions
                 MessageBox.Show("Please enter password!", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 return;
             }
+        }
+
+        private void MainWindow_Closed(object sender, EventArgs e)
+        {
+            if(loggedInUser.GetEmployeeId() != 0)
+                commonQueries.InsertEmployeesLog(loggedInUser.GetEmployeeUserName(), "LogOut");
         }
 
         private void OnBtnClickSignUp(object sender, RoutedEventArgs e)

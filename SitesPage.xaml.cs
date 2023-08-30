@@ -10,12 +10,18 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using Button = System.Windows.Controls.Button;
+using Clipboard = System.Windows.Clipboard;
+using Label = System.Windows.Controls.Label;
+using MouseEventArgs = System.Windows.Input.MouseEventArgs;
+using Orientation = System.Windows.Controls.Orientation;
 
 namespace ntra_missions
 {
@@ -165,6 +171,7 @@ namespace ntra_missions
                 }
 
                 Border border = new Border() { BorderThickness = new Thickness(3) };
+                border.Tag = sites[i].site_serial;
                 border.BorderBrush = (Brush)brushConverter.ConvertFrom("#000080");
 
                 Grid grid = new Grid();
@@ -295,7 +302,7 @@ namespace ntra_missions
                 Grid.SetRow(currentLatWrapPanel, 2);
 
                 Expander expander = new Expander();
-                expander.HorizontalContentAlignment = HorizontalAlignment.Left;
+                expander.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Left;
                 expander.VerticalAlignment = VerticalAlignment.Top;
                 expander.ExpandDirection = ExpandDirection.Down;
                 expander.Expanded += OnExpandExpander;
@@ -308,19 +315,19 @@ namespace ntra_missions
                 Button copyCoordinatesButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
                 copyCoordinatesButton.Content = "Copy Coordinates";
                 copyCoordinatesButton.Width = 100;
-                copyCoordinatesButton.HorizontalContentAlignment = HorizontalAlignment.Center;
+                copyCoordinatesButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
                 copyCoordinatesButton.Click += OnClickCopyCooridinates;
 
                 Button editButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
                 editButton.Content = "Edit";
                 editButton.Width = 100;
-                editButton.HorizontalContentAlignment = HorizontalAlignment.Center;
+                editButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
                 editButton.Click += OnClickEditSite;
 
                 Button showHistoryButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
                 showHistoryButton.Content = "Show History";
                 showHistoryButton.Width = 100;
-                showHistoryButton.HorizontalContentAlignment = HorizontalAlignment.Center;
+                showHistoryButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
                 showHistoryButton.Click += OnClickShowHistory;
 
                 expanderstackPanel.Children.Add(copyCoordinatesButton);
@@ -336,6 +343,8 @@ namespace ntra_missions
                 border.Child = grid;
                 sitesStackPanel.Children.Add(border);
             }
+
+            countLabel.Content = sitesStackPanel.Children.Count.ToString();
         }
 
         private void InitializeSitesGrid()
@@ -365,8 +374,8 @@ namespace ntra_missions
 
             if(searchCheckBox.IsChecked == true && searchTextBox.Text != "")
             {
-                sqlQueryPart2 += " company_sites.site_number like N'%";
-                sqlQueryPart2 += searchTextBox.Text + "%' or company_sites.region like N'%" + searchTextBox.Text + "%' ";
+                sqlQueryPart2 += " (company_sites.site_number like N'%";
+                sqlQueryPart2 += searchTextBox.Text + "%' or company_sites.region like N'%" + searchTextBox.Text + "%') ";
                 firstCondition = false;
             }
             if(companyCheckBox.IsChecked == true && companyComboBox.SelectedIndex != -1)
@@ -417,6 +426,8 @@ namespace ntra_missions
 
             if (!firstCondition)
                 sqlQuery += sqlQueryPart2;
+
+            sqlQuery += " order by company_sites.date_added DESC";
 
             if (!sql.DataGridExport(ref sitesGrid, sqlQuery))
                 return;
@@ -748,5 +759,49 @@ namespace ntra_missions
             InitializeSitesGrid();
         }
 
+        private void OnCopyDataGrid(object sender, DataGridRowClipboardEventArgs e)
+        {
+            var currentCell = e.ClipboardRowContent[sitesGrid.CurrentCell.Column.DisplayIndex];
+            e.ClipboardRowContent.Clear();
+            e.ClipboardRowContent.Add(currentCell);
+        }
+
+        private void OnBtnClickImport(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog fileDialog = new OpenFileDialog();
+
+            if (fileDialog.ShowDialog() == DialogResult.OK)
+            {
+
+                String filePath = fileDialog.FileNames[0];
+                String fileName = System.IO.Path.GetFileName(filePath);
+
+
+                ExcelExport excelExport = new ExcelExport();
+                excelExport.ImportCompanySites(fileName, filePath, ref loggedInUser);
+
+                if (!commonQueries.GetAllSites(ref sites))
+                    return;
+
+                InitializeSitesStackPanel();
+                InitializeSitesGrid();
+            }
+        }
+
+        private void OnBtnClickExport(object sender, RoutedEventArgs e)
+        {
+            List<BASIC_STRUCTS.MIN_SITE_STRUCT> selectedSites = new List<BASIC_STRUCTS.MIN_SITE_STRUCT>();
+
+            for(int i = 0; i < sitesStackPanel.Children.Count; i++)
+            {
+                Border currentBorder = (Border)sitesStackPanel.Children[i];
+                selectedSites.Add(sites.Find(x1 => x1.site_serial == int.Parse(currentBorder.Tag.ToString())));
+            }
+
+            ExcelExport export = new ExcelExport();
+            export.ExportCompanySites(ref selectedSites);
+
+
+        }
     }
 }

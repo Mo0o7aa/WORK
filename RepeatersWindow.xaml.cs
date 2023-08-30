@@ -287,13 +287,13 @@ namespace ntra_missions
 
             Label missionLabel = new Label() { Content = "Mission (Optional): ", Style = (Style)FindResource("wideLabelStyleBlack") };
 
-            ComboBox currentMissionComboBox = new ComboBox() { Style = (Style)FindResource("comboBoxStyle") };
+            ComboBox currentMissionComboBox = new ComboBox() { Style = (Style)FindResource("comboBoxStyle"), IsEnabled = false };
             FillMissionComboBox(ref currentMissionComboBox);
             if (fill && repeaters[index].mission_serial != 0)
             {
                 currentMissionComboBox.SelectedIndex = missions.FindIndex(x1 => x1.company_serial == repeaters[index].company_serial && x1.complaint_serial == repeaters[index].complaint_serial && x1.mission_serial == repeaters[index].mission_serial);
             }
-            if (view)
+            if (viewAddCondition == BASIC_STRUCTS.REPEATER_VIEW_CONDITION)
             {
                 currentMissionComboBox.IsEnabled = false;
             }

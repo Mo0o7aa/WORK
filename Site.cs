@@ -154,7 +154,7 @@ namespace ntra_missions
             sqlQuery += siteSerial + ",'";
             sqlQuery += latitude + "','";
             sqlQuery += longitude + "',";
-            sqlQuery += cityId + ",'";
+            sqlQuery += cityId + ",N'";
             sqlQuery += region + "',";
             sqlQuery += addedById + ",getdate(),'";
             sqlQuery += siteNumber + "')";

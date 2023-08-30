@@ -1802,7 +1802,7 @@ namespace ntra_missions
                                      on company_sites.city = cities.id
                                      left join NTRA.dbo.employee_info
                                      on company_sites.added_by = employee_info.employee_id
-                                     order by company_sites.company_serial, company_sites.serial DESC";
+                                     order by company_sites.date_added DESC";
         
         
             String sqlQuery = string.Empty;
@@ -2052,16 +2052,16 @@ namespace ntra_missions
                     tempSite.sectors.Add(tempSector);
                     tempComplaint.sites.Add(tempSite);
                     
-                    if (i != 0 && mList.Last().complaint_serial == tempComplaint.complaint_serial && mList.Last().sites.Last().site_serial == tempSite.site_serial && mList.Last().sites.Last().sectors.Last().sector_serial == tempSector.sector_serial)
+                    if (i != 0 && mList.Last().company_serial == tempComplaint.company_serial && mList.Last().complaint_serial == tempComplaint.complaint_serial && mList.Last().sites.Last().site_serial == tempSite.site_serial && mList.Last().sites.Last().sectors.Last().sector_serial == tempSector.sector_serial)
                     {
                         if(sqlDatabase.rows[i].sql_string[8] != "")
                             mList.Last().sites.Last().sectors.Last().sector_bands.Add(sqlDatabase.rows[i].sql_string[8]);
                     }
-                    else if (i != 0 && mList.Last().complaint_serial == tempComplaint.complaint_serial && mList.Last().sites.Last().site_serial == tempSite.site_serial)
+                    else if (i != 0 && mList.Last().company_serial == tempComplaint.company_serial && mList.Last().complaint_serial == tempComplaint.complaint_serial && mList.Last().sites.Last().site_serial == tempSite.site_serial)
                     {
                         mList.Last().sites.Last().sectors.Add(tempSector);
                     }
-                    else if (i != 0 && mList.Last().complaint_serial == tempComplaint.complaint_serial)
+                    else if (i != 0 && mList.Last().company_serial == tempComplaint.company_serial && mList.Last().complaint_serial == tempComplaint.complaint_serial)
                     {
                         mList.Last().sites.Add(tempSite);
                     }
@@ -2362,6 +2362,18 @@ namespace ntra_missions
 
                 serial++;
             }
+            return true;
+        }
+
+        public bool InsertEmployeesLog(String mName, String mAction)
+        {
+            String sqlQueryPart1 = "Insert into NTRA.dbo.employee_login_log values (getdate(),'";
+            sqlQueryPart1 += mName + "','" ;
+            sqlQueryPart1 += mAction + "');" ;
+
+            if (!sqlDatabase.InsertRows(sqlQueryPart1))
+                return false;
+
             return true;
         }
 

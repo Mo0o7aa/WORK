@@ -122,16 +122,33 @@
                     </Border>
                 </StackPanel>
 
+                <StackPanel Grid.Row="0" HorizontalAlignment="Right" Orientation="Horizontal">
+                    <Label  Style="{StaticResource labelStyle}" Content="Sites Count: "/>
+                    <Label Name="countLabel" Style="{StaticResource labelStyle}" />
+                </StackPanel>
+                
                 <ScrollViewer Grid.Row="1" Name="listViewScrollViewer" VerticalContentAlignment="Stretch" >
                     <StackPanel Name="sitesStackPanel" Background="White"/>
                 </ScrollViewer>
                 <ScrollViewer Grid.Row="1" Name="tableViewScrollViewer"  Visibility="Collapsed" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden">
-                    <DataGrid Name="sitesGrid" BorderBrush="#000080"  ColumnHeaderHeight="50"  Foreground="#000080" FontWeight="Bold" FontSize="18" AlternatingRowBackground="LightGray"  CanUserSortColumns="False" CanUserReorderColumns="False" IsTextSearchEnabled="True" IsReadOnly="True"  Height="600" Background="White" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible"/>
+                    <DataGrid Name="sitesGrid" BorderBrush="#000080"  ColumnHeaderHeight="50"  Foreground="#000080" FontWeight="Bold" FontSize="18" AlternatingRowBackground="LightGray"  CanUserSortColumns="False" CanUserReorderColumns="False" IsTextSearchEnabled="True" CopyingRowClipboardContent="OnCopyDataGrid" IsReadOnly="True" IsManipulationEnabled="True"  Height="600" Background="White" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible"/>
 
                 </ScrollViewer>
             </Grid>
         </Grid>
 
-        <Button Grid.Row="3" Style="{StaticResource buttonStyle}" Content="Add" Click="OnBtnClickAdd"/>
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+
+            <Button  Style="{StaticResource buttonStyle}" Content="Add" Click="OnBtnClickAdd"/>
+            <Button Grid.Column="1" Style="{StaticResource buttonStyle}" Content="Import" Click="OnBtnClickImport"/>
+            <Button Grid.Column="2" Style="{StaticResource buttonStyle}" Content="Export" Click="OnBtnClickExport"/>
+            
+        </Grid>
     </Grid>
 </Page>

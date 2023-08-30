@@ -146,11 +146,13 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
+                <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
 
             <Button Grid.Column="0" Style="{StaticResource buttonStyle}" Content="Add Point" Click="OnBtnClickAdd"/>
             <Button Grid.Column="1" Style="{StaticResource buttonStyle}" Content="Add Plan" Click="OnBtnClickAddPlan"/>
+            <Button Grid.Column="2" Style="{StaticResource buttonStyle}" Content="Import" Click="OnClickImport"/>
         </Grid>
     </Grid>
 </Page>

@@ -308,7 +308,8 @@ namespace ntra_missions
                 expanderstackPanel.Children.Add(viewButton);
                 expanderstackPanel.Children.Add(editButton);
                 expanderstackPanel.Children.Add(AddMissionButton);
-                expanderstackPanel.Children.Add(attachmentButton);
+                if (complaints[i].added_by_id == loggedInUser.GetEmployeeId())
+                    expanderstackPanel.Children.Add(attachmentButton);
 
                 expander.Content = expanderstackPanel;
 
@@ -353,18 +354,20 @@ namespace ntra_missions
 
                         String imageSource1 = @"\Photos\red_cross_icon.png";
 
-                        Image currentRemoveImage = new Image() { VerticalAlignment = VerticalAlignment.Center };
-                        currentRemoveImage.Height = 40;
-                        currentRemoveImage.Width = 40;
-                        currentRemoveImage.Source = new BitmapImage(new Uri(imageSource1, UriKind.Relative));
-                        currentRemoveImage.ToolTip = "Click to delete file";
-                        currentRemoveImage.Tag = filesPath[k].FullName;
-                        currentRemoveImage.Cursor = Cursors.Hand;
-                        currentRemoveImage.MouseLeftButtonDown += OnClickRemoveFile;
+                        
+                            Image currentRemoveImage = new Image() { VerticalAlignment = VerticalAlignment.Center };
+                            currentRemoveImage.Height = 40;
+                            currentRemoveImage.Width = 40;
+                            currentRemoveImage.Source = new BitmapImage(new Uri(imageSource1, UriKind.Relative));
+                            currentRemoveImage.ToolTip = "Click to delete file";
+                            currentRemoveImage.Tag = filesPath[k].FullName;
+                            currentRemoveImage.Cursor = Cursors.Hand;
+                            currentRemoveImage.MouseLeftButtonDown += OnClickRemoveFile;
 
                         currentWrapPanel.Children.Add(currentFileImage);
                         currentWrapPanel.Children.Add(currentFile);
-                        currentWrapPanel.Children.Add(currentRemoveImage);
+                        if (complaints[i].added_by_id == loggedInUser.GetEmployeeId())
+                            currentWrapPanel.Children.Add(currentRemoveImage);
 
                         fileStackPanel.Children.Add(currentWrapPanel);
                     }

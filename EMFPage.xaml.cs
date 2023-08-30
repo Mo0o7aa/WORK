@@ -8,12 +8,20 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using Button = System.Windows.Controls.Button;
+using Clipboard = System.Windows.Clipboard;
+using Cursors = System.Windows.Input.Cursors;
+using Label = System.Windows.Controls.Label;
+using MessageBox = System.Windows.Forms.MessageBox;
+using MouseEventArgs = System.Windows.Input.MouseEventArgs;
+using OpenFileDialog = System.Windows.Forms.OpenFileDialog;
 
 namespace ntra_missions
 {
@@ -475,7 +483,7 @@ namespace ntra_missions
                 Grid.SetColumn(statusBorder, 3);
 
                 Expander expander = new Expander();
-                expander.HorizontalContentAlignment = HorizontalAlignment.Left;
+                expander.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Left;
                 expander.VerticalAlignment = VerticalAlignment.Top;
                 expander.ExpandDirection = ExpandDirection.Down;
                 expander.Expanded += OnExpandExpander;
@@ -487,7 +495,7 @@ namespace ntra_missions
 
                 Button editButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
                 editButton.Content = "Edit";
-                editButton.HorizontalContentAlignment = HorizontalAlignment.Center;
+                editButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
                 editButton.Click += OnClickEditPoint;
 
                 expanderstackPanel.Children.Add(editButton);
@@ -796,7 +804,7 @@ namespace ntra_missions
                 Grid.SetColumn(statusBorder, 2);
 
                 Expander expander = new Expander();
-                expander.HorizontalContentAlignment = HorizontalAlignment.Left;
+                expander.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Left;
                 expander.VerticalAlignment = VerticalAlignment.Top;
                 expander.ExpandDirection = ExpandDirection.Down;
                 expander.Expanded += OnExpandExpander;
@@ -807,12 +815,12 @@ namespace ntra_missions
 
                 Button viewButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
                 viewButton.Content = "View";
-                viewButton.HorizontalContentAlignment = HorizontalAlignment.Center;
+                viewButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
                 viewButton.Click += OnClickViewPlan;
 
                 Button editButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
                 editButton.Content = "Edit";
-                editButton.HorizontalContentAlignment = HorizontalAlignment.Center;
+                editButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
                 editButton.Click += OnClickEditPlan;
 
                 expanderstackPanel.Children.Add(viewButton);
@@ -1175,6 +1183,30 @@ namespace ntra_missions
             EMFPlanWindow emfPlanWindow = new EMFPlanWindow(ref loggedInUser, ref plan, ref viewAddCondition);
             emfPlanWindow.Closed += OnClosedPlanWindow;
             emfPlanWindow.Show();
+        }
+
+        private void OnClickImport(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog fileDialog = new OpenFileDialog();
+
+            if (fileDialog.ShowDialog() == DialogResult.OK)
+            {
+
+                String filePath = fileDialog.FileNames[0];
+                String fileName = System.IO.Path.GetFileName(filePath);
+
+                
+                ExcelExport excelExport = new ExcelExport();
+                excelExport.ImportEMF(fileName, filePath);
+
+                if (!commonQueries.GetEMFPlans(ref plans))
+                    return;
+                if (!commonQueries.GetEMFPoints(ref emfPoints))
+                    return;
+
+                InitializeEMFPointsStackPanel();
+                InitializeEMFPlansStackPanel();
+            }
         }
     }
 }
