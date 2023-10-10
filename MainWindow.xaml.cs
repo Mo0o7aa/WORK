@@ -26,11 +26,11 @@ namespace ntra_missions
             loggedInUser = mLoggedInUser;
             InitializeComponent();
 
-            EmployeesPage employeesPage = new EmployeesPage(ref loggedInUser);
-            NavigationService.Navigate(employeesPage);
+            //EmployeesPage employeesPage = new EmployeesPage(ref loggedInUser);
+            //NavigationService.Navigate(employeesPage);
 
-            //MissionsPage missionsPage = new MissionsPage(ref loggedInUser);
-            //NavigationService.Navigate(missionsPage);
+            MissionsPage missionsPage = new MissionsPage(ref loggedInUser);
+            NavigationService.Navigate(missionsPage);
         }
     }
 }

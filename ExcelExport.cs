@@ -73,53 +73,6 @@ namespace ntra_missions
                     return;
                 }
 
-                //if (workSheet.Cells[rowNumber, 1].Value.ToString() != @"Gov. / District")
-                //{
-                //    MessageBox.Show("Excel sheet is not in the correct format for import");
-                //    excelWorkBook.Close();
-                //    return;
-                //}
-
-
-                //BrushConverter brushConverter = new BrushConverter();
-                //System.Windows.Controls.Border border = new System.Windows.Controls.Border() { BorderThickness = new System.Windows.Thickness(3), BorderBrush = (Brush)brushConverter.ConvertFrom("#000080"),Height = 100, Width = 400};
-                //
-                //ScrollViewer scrollViewer = new ScrollViewer() { VerticalScrollBarVisibility = ScrollBarVisibility.Auto };
-                //StackPanel stackPanel = new StackPanel() { Orientation = Orientation.Vertical };
-                //
-                //Label headerLabel = new Label() { HorizontalAlignment = HorizontalAlignment.Stretch};
-                //headerLabel.Content = "Please match your excel column headers with the excel form header";
-                //
-                //stackPanel.Children.Add(headerLabel);
-                //
-                //Label excelFormHeaders = new Label() { HorizontalAlignment = HorizontalAlignment.Stretch };
-                //excelFormHeaders.Content = "Area-District-Name-Lattitude-Longitude-Date-AveragePower-MaxPower-ActualLat-ActualLong";
-                //
-                //stackPanel.Children.Add(excelFormHeaders);
-                //
-                //StackPanel selectedHeaders = new StackPanel() { Orientation = Orientation.Horizontal };
-                //
-                //stackPanel.Children.Add(selectedHeaders);
-                //
-                //StackPanel excelHeaders = new StackPanel() { Orientation = Orientation.Horizontal };
-                //
-                //for(int i = 0; i < columnHeadersList.Count; i++)
-                //{
-                //    CheckBox currentCheckBox = new CheckBox() { Margin = new Thickness(4)};
-                //    currentCheckBox.Content = columnHeadersList[i].ToString();
-                //    currentCheckBox.Checked += OnCheckHeadersCheckBox;
-                //    currentCheckBox.Unchecked += OnUnCheckHeadersCheckBox;
-                //}
-                //
-                //Button finishButton = new Button();
-                //finishButton.Background = (Brush)brushConverter.ConvertFrom("#000080");
-                //finishButton.Foreground = Brushes.White;
-                //finishButton.FontWeight = FontWeights.Bold;
-                //finishButton.FontSize = 12;
-                //finishButton.Click += OnClickFinishButton;
-                //
-                //popUp.IsOpen = true;
-
                 bool HasValue = true;
 
                 List<EMF> emfPoints = new List<EMF>();
@@ -305,53 +258,109 @@ namespace ntra_missions
                 Excel.Worksheet workSheet = excelApp.ActiveSheet;
 
                 int rowNumber = 2;
-                int maxColumn = 8;
+                int maxColumn = 12;
 
-                if (workSheet.Cells[1, 1].Value.ToString() != "Company Name")
+                int companyNameColumn = 0;
+                int siteNameColumn = 0;
+                int cityColumn = 0;
+                int regionColumn = 0;
+                int latColumn = 0;
+                int longColumn = 0;
+
+                for (int i = 1; i < maxColumn; i++)
                 {
-                    MessageBox.Show("Excel sheet is not in the correct format for import, Please make sure that first column header  Company Name");
+                    if (Convert.ToString(workSheet.Cells[1,i].Value) == null)
+                    {
+                        i = maxColumn;
+                        continue;
+                    }
+
+                    if (workSheet.Cells[1, i].Value.ToString() == "Company Name")
+                    {
+                        companyNameColumn = i;
+                        continue;
+                    }
+                        
+
+                    if (workSheet.Cells[1, i].Value.ToString() == @"SITE" || workSheet.Cells[1, i].Value.ToString() == "Site" || workSheet.Cells[1, i].Value.ToString() == "Site Name" || workSheet.Cells[1, i].Value.ToString() == "Site Number")
+                    {
+                        siteNameColumn = i;
+                        continue;
+                    }
+                        
+
+                    if (workSheet.Cells[1, i].Value.ToString() == @"CITY" || workSheet.Cells[1, i].Value.ToString() == "City")
+                    {
+                        cityColumn = i;
+                        continue;
+                    }
+
+                    if (workSheet.Cells[1, i].Value.ToString() == @"REGION" || workSheet.Cells[1, i].Value.ToString() == "Region" || workSheet.Cells[1, i].Value.ToString() == "Zone" || workSheet.Cells[1, i].Value.ToString() == "ZONE")
+                    {
+                        regionColumn = i;
+                        continue;
+                    }
+                        
+
+                    if (workSheet.Cells[1, i].Value.ToString() == @"LAT" || workSheet.Cells[1, i].Value.ToString() == "Lat" || workSheet.Cells[1, i].Value.ToString() == "lat" || workSheet.Cells[1, i].Value.ToString() == "LATITUDE" || workSheet.Cells[1, i].Value.ToString() == "Latitude")
+                    {
+                        latColumn = i;
+                        continue;
+                    }
+
+                    if (workSheet.Cells[1, i].Value.ToString() == @"LONG" || workSheet.Cells[1, i].Value.ToString() == "Long" || workSheet.Cells[1, i].Value.ToString() == "LONGITUDE" || workSheet.Cells[1, i].Value.ToString() == "Longitude")
+                    {
+                        longColumn = i;
+                        continue;
+                    }
+                          
+                }
+
+                if(companyNameColumn == 0)
+                {
+                        MessageBox.Show("Excel sheet is not in the correct format for import, company name column doesn't exist");
+                        excelWorkBook.Close();
+                        return;
+                }
+
+                if (siteNameColumn == 0)
+                {
+                    MessageBox.Show("Excel sheet is not in the correct format for import, Site name column doesn't exist");
                     excelWorkBook.Close();
                     return;
                 }
 
-                if (workSheet.Cells[1, 2].Value.ToString() != @"SITE" && workSheet.Cells[1, 2].Value.ToString() != "Site" && workSheet.Cells[1, 2].Value.ToString() != "Site Name" && workSheet.Cells[1, 2].Value.ToString() != "Site Number")
+                if (cityColumn == 0)
                 {
-                    MessageBox.Show("Excel sheet is not in the correct format for import, Please make sure that second column header is Site");
+                    MessageBox.Show("Excel sheet is not in the correct format for import, City column doesn't exist");
                     excelWorkBook.Close();
                     return;
                 }
 
-                if (workSheet.Cells[1, 4].Value.ToString() != @"CITY" && workSheet.Cells[1, 4].Value.ToString() != "City")
+                if (regionColumn == 0)
                 {
-                    MessageBox.Show("Excel sheet is not in the correct format for import, Please make sure that Forth column header is City");
+                    MessageBox.Show("Excel sheet is not in the correct format for import, Region column doesn't exist");
                     excelWorkBook.Close();
                     return;
                 }
 
-                if (workSheet.Cells[1, 5].Value.ToString() != @"REGION" && workSheet.Cells[1, 5].Value.ToString() != "Region" && workSheet.Cells[1, 5].Value.ToString() != "Zone" && workSheet.Cells[1, 5].Value.ToString() != "ZONE")
+                if (latColumn == 0)
                 {
-                    MessageBox.Show("Excel sheet is not in the correct format for import, Please make sure that Fifth column header is Region");
+                    MessageBox.Show("Excel sheet is not in the correct format for import, Lat column doesn't exist");
                     excelWorkBook.Close();
                     return;
                 }
 
-                if (workSheet.Cells[1, 7].Value.ToString() != @"LAT" && workSheet.Cells[1, 7].Value.ToString() != "Lat" && workSheet.Cells[1, 7].Value.ToString() != "lat" && workSheet.Cells[1, 7].Value.ToString() != "LATITUDE" && workSheet.Cells[1, 7].Value.ToString() != "Latitude")
+                if (longColumn == 0)
                 {
-                    MessageBox.Show("Excel sheet is not in the correct format for import, Please make sure that seventh column header is Lat");
-                    excelWorkBook.Close();
-                    return;
-                }
-
-                if (workSheet.Cells[1, 8].Value.ToString() != @"LONG" && workSheet.Cells[1, 8].Value.ToString() != "Long" && workSheet.Cells[1, 8].Value.ToString() != "LONGITUDE" && workSheet.Cells[1, 8].Value.ToString() != "Longitude")
-                {
-                    MessageBox.Show("Excel sheet is not in the correct format for import, Please make sure that Eighth column header is Long");
+                    MessageBox.Show("Excel sheet is not in the correct format for import, Long column doesn't exist");
                     excelWorkBook.Close();
                     return;
                 }
 
                 List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT> companies = new List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT>();
 
-                if(!commonQueries.GetCompanies(ref companies))
+                if (!commonQueries.GetCompanies(ref companies))
                 {
                     MessageBox.Show("Server connection failed please try again later!");
                     return;
@@ -367,45 +376,6 @@ namespace ntra_missions
 
                 loggedInUser = mLoggedInUser;
 
-                //BrushConverter brushConverter = new BrushConverter();
-                //System.Windows.Controls.Border border = new System.Windows.Controls.Border() { BorderThickness = new System.Windows.Thickness(3), BorderBrush = (Brush)brushConverter.ConvertFrom("#000080"),Height = 100, Width = 400};
-                //
-                //ScrollViewer scrollViewer = new ScrollViewer() { VerticalScrollBarVisibility = ScrollBarVisibility.Auto };
-                //StackPanel stackPanel = new StackPanel() { Orientation = Orientation.Vertical };
-                //
-                //Label headerLabel = new Label() { HorizontalAlignment = HorizontalAlignment.Stretch};
-                //headerLabel.Content = "Please match your excel column headers with the excel form header";
-                //
-                //stackPanel.Children.Add(headerLabel);
-                //
-                //Label excelFormHeaders = new Label() { HorizontalAlignment = HorizontalAlignment.Stretch };
-                //excelFormHeaders.Content = "Area-District-Name-Lattitude-Longitude-Date-AveragePower-MaxPower-ActualLat-ActualLong";
-                //
-                //stackPanel.Children.Add(excelFormHeaders);
-                //
-                //StackPanel selectedHeaders = new StackPanel() { Orientation = Orientation.Horizontal };
-                //
-                //stackPanel.Children.Add(selectedHeaders);
-                //
-                //StackPanel excelHeaders = new StackPanel() { Orientation = Orientation.Horizontal };
-                //
-                //for(int i = 0; i < columnHeadersList.Count; i++)
-                //{
-                //    CheckBox currentCheckBox = new CheckBox() { Margin = new Thickness(4)};
-                //    currentCheckBox.Content = columnHeadersList[i].ToString();
-                //    currentCheckBox.Checked += OnCheckHeadersCheckBox;
-                //    currentCheckBox.Unchecked += OnUnCheckHeadersCheckBox;
-                //}
-                //
-                //Button finishButton = new Button();
-                //finishButton.Background = (Brush)brushConverter.ConvertFrom("#000080");
-                //finishButton.Foreground = Brushes.White;
-                //finishButton.FontWeight = FontWeights.Bold;
-                //finishButton.FontSize = 12;
-                //finishButton.Click += OnClickFinishButton;
-                //
-                //popUp.IsOpen = true;
-
                 bool HasValue = true;
 
                 List<Site> sites = new List<Site>();
@@ -418,30 +388,37 @@ namespace ntra_missions
                         List<BASIC_STRUCTS.MIN_SITE_STRUCT> tempSitesList = new List<BASIC_STRUCTS.MIN_SITE_STRUCT>();
                         BASIC_STRUCTS.MIN_SITE_STRUCT tempSite = new BASIC_STRUCTS.MIN_SITE_STRUCT();
 
-                        if (workSheet.Cells[rowNumber, 1].Value2 != null)
+                        if (workSheet.Cells[rowNumber, companyNameColumn].Value2 != null)
                         {
-                            site.SetCompanyName(workSheet.Cells[rowNumber, 1].Value.ToString());
+                            site.SetCompanyName(workSheet.Cells[rowNumber, companyNameColumn].Value.ToString());
                             site.SetCompanySerial(companies.Find(x1 => x1.value.Contains(site.GetCompanyName())).key);
+
+                            if(site.GetCompanySerial() == 0)
+                            {
+                                MessageBox.Show("Spelling for company name in row '" + rowNumber + "' is not correct please check and try again!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                                excelWorkBook.Close();
+                                return;
+                            }
                         }
                         else
                         {
-                            MessageBox.Show("Value of cell in row '" + rowNumber + "' and column '1' cant be null", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            MessageBox.Show("Value of cell in row '" + rowNumber + "' and column " + companyNameColumn + " cant be null", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                             excelWorkBook.Close();
                             return;
                         }
 
-                        if (workSheet.Cells[rowNumber, 2].Value2 != null)
-                            site.SetSiteNumber(workSheet.Cells[rowNumber, 2].Value.ToString());
+                        if (workSheet.Cells[rowNumber, siteNameColumn].Value2 != null)
+                            site.SetSiteNumber(workSheet.Cells[rowNumber, siteNameColumn].Value.ToString());
                         else
                         {
-                            MessageBox.Show("Value of cell in row '" + rowNumber + "' and column '2' cant be null", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            MessageBox.Show("Value of cell in row '" + rowNumber + "' and column " + siteNameColumn + " cant be null", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                             excelWorkBook.Close();
                             return;
                         }
 
-                        if (workSheet.Cells[rowNumber, 4].Value2 != null)
+                        if (workSheet.Cells[rowNumber, cityColumn].Value2 != null)
                         {
-                            site.SetCity(workSheet.Cells[rowNumber, 4].Value.ToString());
+                            site.SetCity(workSheet.Cells[rowNumber, cityColumn].Value.ToString());
                             site.SetCityId(cities[cities.FindIndex(x1 => x1.value == site.GetCity())].key);
                             if(site.GetCityId() == 0)
                             {
@@ -453,34 +430,34 @@ namespace ntra_missions
                         }
                         else
                         {
-                            MessageBox.Show("Value of cell in row '" + rowNumber + "' and column '4' cant be null", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            MessageBox.Show("Value of cell in row '" + rowNumber + "' and column " + cityColumn + " cant be null", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                             excelWorkBook.Close();
                             return;
                         }
 
-                        if (workSheet.Cells[rowNumber, 5].Value2 != null)
-                            site.SetRegion(workSheet.Cells[rowNumber, 5].Value.ToString());
+                        if (workSheet.Cells[rowNumber, regionColumn].Value2 != null)
+                            site.SetRegion(workSheet.Cells[rowNumber, regionColumn].Value.ToString());
                         else
                         {
-                            MessageBox.Show("Value of cell in row '" + rowNumber + "' and column '5' cant be null", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            MessageBox.Show("Value of cell in row '" + rowNumber + "' and column " + regionColumn + " cant be null", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                             excelWorkBook.Close();
                             return;
                         }
 
-                        if (workSheet.Cells[rowNumber, 7].Value2 != null)
-                            site.SetLat(workSheet.Cells[rowNumber, 7].Value.ToString());
+                        if (workSheet.Cells[rowNumber, latColumn].Value2 != null)
+                            site.SetLat(workSheet.Cells[rowNumber, latColumn].Value.ToString());
                         else
                         {
-                            MessageBox.Show("Value of cell in row '" + rowNumber + "' and column '7' cant be null", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            MessageBox.Show("Value of cell in row '" + rowNumber + "' and column " + latColumn + " cant be null", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                             excelWorkBook.Close();
                             return;
                         }
 
-                        if (workSheet.Cells[rowNumber, 8].Value2 != null)
-                            site.SetLong(workSheet.Cells[rowNumber, 8].Value.ToString());
+                        if (workSheet.Cells[rowNumber, longColumn].Value2 != null)
+                            site.SetLong(workSheet.Cells[rowNumber, longColumn].Value.ToString());
                         else
                         {
-                            MessageBox.Show("Value of cell in row '" + rowNumber + "' and column '8' cant be null", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            MessageBox.Show("Value of cell in row '" + rowNumber + "' and column " + longColumn + " cant be null", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                             excelWorkBook.Close();
                             return;
                         }
@@ -488,8 +465,19 @@ namespace ntra_missions
                         site.SetAddedById(loggedInUser.GetEmployeeId());
                         site.SetAddedBy(loggedInUser.GetEmployeeName());
 
-                        if(!sites.Exists(x1 => x1.GetSiteNumber() == site.GetSiteNumber()))
-                            sites.Add(site);
+                        if (!sites.Exists(x1 => x1.GetSiteNumber() == site.GetSiteNumber()))
+                        {
+                            if (commonQueries.CheckSiteNameExists(site.GetCompanySerial(), site.GetSiteNumber()))
+                            {
+                                sites.Add(site);
+                            }
+                            else
+                            {
+                                MessageBox.Show("Site Number " + site.GetSiteNumber() + " already exists in the database! import failed.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                                excelWorkBook.Close();
+                                return;
+                            }
+                        }
 
                         rowNumber++;
                     }
