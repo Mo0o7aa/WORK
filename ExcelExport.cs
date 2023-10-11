@@ -363,6 +363,7 @@ namespace ntra_missions
                 if (!commonQueries.GetCompanies(ref companies))
                 {
                     MessageBox.Show("Server connection failed please try again later!");
+                    excelWorkBook.Close();
                     return;
                 }
 
@@ -371,6 +372,7 @@ namespace ntra_missions
                 if (!commonQueries.GetCities(ref cities))
                 {
                     MessageBox.Show("Server connection failed please try again later!");
+                    excelWorkBook.Close();
                     return;
                 }
 
@@ -501,6 +503,322 @@ namespace ntra_missions
                     }
 
                 }
+
+                excelWorkBook.Close();
+
+            }
+            else
+            {
+                MessageBox.Show("Please select excel file with extentions '.xls' or '.xlsx'", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        public void ImportRepeaters(string fileName, String filePath, ref Employee mLoggedInUser)
+        {
+            var excelApp = new Excel.Application();
+            excelApp.Visible = false;
+
+
+            if (filePath.Contains(".xls") || filePath.Contains(".xlsx"))
+            {
+                Excel.Workbook excelWorkBook = excelApp.Workbooks.Open(filePath);
+                Excel.Worksheet workSheet = excelApp.ActiveSheet;
+
+                int rowNumber = 2;
+                int maxColumn = 12;
+
+                int latColumn = 0;
+                int longColumn = 0;
+                int addressColumn = 0;
+                int statusColumn = 0;
+                int commentColumn = 0;
+                int dateColumn = 0;
+                int cityColumn = 0;
+                int areaColumn = 0;
+
+                for (int i = 1; i < maxColumn; i++)
+                {
+                    if (Convert.ToString(workSheet.Cells[1, i].Value) == null)
+                    {
+                        i = maxColumn;
+                        continue;
+                    }
+
+                    if (workSheet.Cells[1, i].Value.ToString() == "Address")
+                    {
+                        addressColumn = i;
+                        continue;
+                    }
+
+
+                    if (workSheet.Cells[1, i].Value.ToString() == @"Status" || workSheet.Cells[1, i].Value.ToString() == "STATUS" || workSheet.Cells[1, i].Value.ToString() == "status")
+                    {
+                        statusColumn = i;
+                        continue;
+                    }
+
+
+                    if (workSheet.Cells[1, i].Value.ToString() == @"COMMENT" || workSheet.Cells[1, i].Value.ToString() == "Comment" || workSheet.Cells[1, i].Value.ToString() == "Comments" || workSheet.Cells[1, i].Value.ToString() == "comment" || workSheet.Cells[1, i].Value.ToString() == "comments")
+                    {
+                        commentColumn = i;
+                        continue;
+                    }
+
+                    if (workSheet.Cells[1, i].Value.ToString() == @"DATE" || workSheet.Cells[1, i].Value.ToString() == "Date" || workSheet.Cells[1, i].Value.ToString() == "date")
+                    {
+                        dateColumn = i;
+                        continue;
+                    }
+
+
+                    if (workSheet.Cells[1, i].Value.ToString() == @"LAT" || workSheet.Cells[1, i].Value.ToString() == "Lat" || workSheet.Cells[1, i].Value.ToString() == "lat" || workSheet.Cells[1, i].Value.ToString() == "LATITUDE" || workSheet.Cells[1, i].Value.ToString() == "Latitude")
+                    {
+                        latColumn = i;
+                        continue;
+                    }
+
+                    if (workSheet.Cells[1, i].Value.ToString() == @"LONG" || workSheet.Cells[1, i].Value.ToString() == "Long" || workSheet.Cells[1, i].Value.ToString() == "LONGITUDE" || workSheet.Cells[1, i].Value.ToString() == "Longitude")
+                    {
+                        longColumn = i;
+                        continue;
+                    }
+
+                    if (workSheet.Cells[1, i].Value.ToString() == @"City" || workSheet.Cells[1, i].Value.ToString() == "City" || workSheet.Cells[1, i].Value.ToString() == "city")
+                    {
+                        cityColumn = i;
+                        continue;
+                    }
+
+                    if (workSheet.Cells[1, i].Value.ToString() == @"AREA" || workSheet.Cells[1, i].Value.ToString() == "Area" || workSheet.Cells[1, i].Value.ToString() == "area" || workSheet.Cells[1, i].Value.ToString() == "REGION" || workSheet.Cells[1, i].Value.ToString() == "Region" || workSheet.Cells[1, i].Value.ToString() == "region")
+                    {
+                        areaColumn = i;
+                        continue;
+                    }
+
+                }
+
+                if (addressColumn == 0)
+                {
+                    MessageBox.Show("Excel sheet is not in the correct format for import, Address column doesn't exist");
+                    excelWorkBook.Close();
+                    return;
+                }
+
+                if (statusColumn == 0)
+                {
+                    MessageBox.Show("Excel sheet is not in the correct format for import, Status column doesn't exist");
+                    excelWorkBook.Close();
+                    return;
+                }
+
+                if (commentColumn == 0)
+                {
+                    MessageBox.Show("Excel sheet is not in the correct format for import, Comment column doesn't exist");
+                    excelWorkBook.Close();
+                    return;
+                }
+
+                if (dateColumn == 0)
+                {
+                    MessageBox.Show("Excel sheet is not in the correct format for import, Date column doesn't exist");
+                    excelWorkBook.Close();
+                    return;
+                }
+
+                if (latColumn == 0)
+                {
+                    MessageBox.Show("Excel sheet is not in the correct format for import, Lat column doesn't exist");
+                    excelWorkBook.Close();
+                    return;
+                }
+
+                if (longColumn == 0)
+                {
+                    MessageBox.Show("Excel sheet is not in the correct format for import, Long column doesn't exist");
+                    excelWorkBook.Close();
+                    return;
+                }
+
+                if (cityColumn == 0)
+                {
+                    MessageBox.Show("Excel sheet is not in the correct format for import, City column doesn't exist");
+                    excelWorkBook.Close();
+                    return;
+                }
+
+
+                if (areaColumn == 0)
+                {
+                    MessageBox.Show("Excel sheet is not in the correct format for import, Area or Region column doesn't exist");
+                    excelWorkBook.Close();
+                    return;
+                }
+
+                List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT> repeatersStatus = new List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT>();
+
+                if (!commonQueries.GetRepeatersStatus(ref repeatersStatus))
+                {
+                    MessageBox.Show("Server connection failed please try again later!");
+                    excelWorkBook.Close();
+                    return;
+                }
+
+                List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT> cities = new List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT>();
+
+                if (!commonQueries.GetCities(ref cities))
+                {
+                    MessageBox.Show("Server connection failed please try again later!");
+                    excelWorkBook.Close();
+                    return;
+                }
+
+                loggedInUser = mLoggedInUser;
+
+                bool HasValue = true;
+
+
+                List<BASIC_STRUCTS.REPEATER_STRUCT> repeaters = new List<BASIC_STRUCTS.REPEATER_STRUCT>();
+
+                while (HasValue)
+                {
+                    if (workSheet.Cells[rowNumber, 1].Value2 != null)
+                    {
+
+                        BASIC_STRUCTS.REPEATER_STRUCT repeater = new BASIC_STRUCTS.REPEATER_STRUCT();
+
+                        if (workSheet.Cells[rowNumber, latColumn].Value2 != null)
+                        {
+                            repeater.latitude = workSheet.Cells[rowNumber, latColumn].Value.ToString();
+                        }
+                        else
+                        {
+                            MessageBox.Show("Value of cell in row '" + rowNumber + "' and column '" + latColumn + "' cant be null", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            excelWorkBook.Close();
+                            return;
+                        }
+
+                        if (workSheet.Cells[rowNumber, longColumn].Value2 != null)
+                            repeater.longitude = workSheet.Cells[rowNumber, longColumn].Value.ToString();
+                        else
+                        {
+                            MessageBox.Show("Value of cell in row '" + rowNumber + "' and column '" + longColumn + "' cant be null", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            excelWorkBook.Close();
+                            return;
+                        }
+
+                        if (workSheet.Cells[rowNumber, addressColumn].Value2 != null)
+                        {
+                            repeater.address = workSheet.Cells[rowNumber, addressColumn].Value.ToString();
+                        }
+                        else
+                        {
+                            MessageBox.Show("Value of cell in row '" + rowNumber + "' and column '" + addressColumn + "' cant be null", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            excelWorkBook.Close();
+                            return;
+                        }
+
+                        if (workSheet.Cells[rowNumber, statusColumn].Value2 != null)
+                        {
+                            repeater.status = workSheet.Cells[rowNumber, statusColumn].Value.ToString();
+                            repeater.status_id = repeatersStatus.Find(x1 => x1.value == repeater.status).key;
+
+                            if (repeater.status_id == 0)
+                            {
+                                MessageBox.Show("Repeater status is incorrect please make sure it is either 'Pending or 'Removed' and try again!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                                excelWorkBook.Close();
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("Value of cell in row '" + rowNumber + "' and column '" + statusColumn + "' cant be null", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            excelWorkBook.Close();
+                            return;
+                        }
+
+                        if (workSheet.Cells[rowNumber, commentColumn].Value2 != null)
+                            repeater.comment = workSheet.Cells[rowNumber, commentColumn].Value.ToString();
+                        else
+                        {
+                            repeater.comment = "";
+                            //MessageBox.Show("Value of cell in row '" + rowNumber + "' and column '" + commentColumn + "' cant be null", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            //excelWorkBook.Close();
+                            //return;
+                        }
+
+                        if (workSheet.Cells[rowNumber, dateColumn].Value2 != null)
+                        {
+                            try
+                            {
+                                double tempDate = double.Parse(workSheet.Cells[rowNumber, longColumn].Value.ToString());
+                                repeater.date = DateTime.FromOADate(tempDate);
+                            }
+                            catch
+                            {
+                                MessageBox.Show("Repeaters date is not in correct format in row '" + rowNumber + "', Import Failed!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                                excelWorkBook.Close();
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("Value of cell in row '" + rowNumber + "' and column '" + longColumn + "' cant be null", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            excelWorkBook.Close();
+                            return;
+                        }
+
+
+                        if (workSheet.Cells[rowNumber, cityColumn].Value2 != null)
+                        {
+                            repeater.city = workSheet.Cells[rowNumber, cityColumn].Value.ToString();
+                            repeater.city_id = cities.Find(x1 => x1.value == repeater.city).key;
+
+                            if (repeater.city_id == 0)
+                            {
+                                MessageBox.Show("City '" + repeater.city + "' is incorrect! please check spelling to match cities in the database and then try again!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                                excelWorkBook.Close();
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("Value of cell in row '" + rowNumber + "' and column '" + cityColumn + "' cant be null", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            excelWorkBook.Close();
+                            return;
+                        }
+
+
+                        if (workSheet.Cells[rowNumber, areaColumn].Value2 != null)
+                            repeater.area = workSheet.Cells[rowNumber, areaColumn].Value.ToString();
+                        else
+                        {
+                            MessageBox.Show("Value of cell in row '" + rowNumber + "' and column '" + areaColumn + "' cant be null", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            excelWorkBook.Close();
+                            return;
+                        }
+
+                        repeater.added_by_id = loggedInUser.GetEmployeeId();
+                        repeater.added_by = loggedInUser.GetEmployeeName();
+
+                        repeaters.Add(repeater);
+
+                        rowNumber++;
+                    }
+                    else
+                    {
+                        HasValue = false;
+                    }
+                }
+
+
+
+                if (!commonQueries.InsertIntoRepeaters(ref repeaters))
+                {
+                    MessageBox.Show("Server connection failed please check your internet connection!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    excelWorkBook.Close();
+                    return;
+                }
+
 
                 excelWorkBook.Close();
 

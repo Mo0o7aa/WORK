@@ -82,7 +82,7 @@ namespace ntra_missions
             {
                 if(repeaters.Count != 0)
                 {
-                    missionComboBox.SelectedIndex = missions.FindIndex(x1 => x1.company_serial == repeaters[0].company_serial && x1.complaint_serial == repeaters[0].complaint_serial && x1.mission_serial == repeaters[0].mission_serial);
+                    //missionComboBox.SelectedIndex = missions.FindIndex(x1 => x1.company_serial == repeaters[0].company_serial && x1.complaint_serial == repeaters[0].complaint_serial && x1.mission_serial == repeaters[0].mission_serial);
                 }
 
                 missionComboBox.IsEnabled = false;
@@ -289,22 +289,22 @@ namespace ntra_missions
 
             ComboBox currentMissionComboBox = new ComboBox() { Style = (Style)FindResource("comboBoxStyle"), IsEnabled = false };
             FillMissionComboBox(ref currentMissionComboBox);
-            if (fill && repeaters[index].mission_serial != 0)
-            {
-                currentMissionComboBox.SelectedIndex = missions.FindIndex(x1 => x1.company_serial == repeaters[index].company_serial && x1.complaint_serial == repeaters[index].complaint_serial && x1.mission_serial == repeaters[index].mission_serial);
-            }
-            if (viewAddCondition == BASIC_STRUCTS.REPEATER_VIEW_CONDITION)
-            {
-                currentMissionComboBox.IsEnabled = false;
-            }
-            if(viewAddCondition == BASIC_STRUCTS.REPEATER_ADD_CONDITION)
-            {
-                if(missionComboBox.IsEnabled == false)
-                {
-                    currentMissionComboBox.SelectedIndex = missionComboBox.SelectedIndex;
-                    currentMissionComboBox.IsEnabled = false;
-                }
-            }
+            //if (fill && repeaters[index].mission_serial != 0)
+            //{
+            //    currentMissionComboBox.SelectedIndex = missions.FindIndex(x1 => x1.company_serial == repeaters[index].company_serial && x1.complaint_serial == repeaters[index].complaint_serial && x1.mission_serial == repeaters[index].mission_serial);
+            //}
+            //if (viewAddCondition == BASIC_STRUCTS.REPEATER_VIEW_CONDITION)
+            //{
+            //    currentMissionComboBox.IsEnabled = false;
+            //}
+            //if(viewAddCondition == BASIC_STRUCTS.REPEATER_ADD_CONDITION)
+            //{
+            //    if(missionComboBox.IsEnabled == false)
+            //    {
+            //        currentMissionComboBox.SelectedIndex = missionComboBox.SelectedIndex;
+            //        currentMissionComboBox.IsEnabled = false;
+            //    }
+            //}
 
             missionWrapPanel.Children.Add(missionLabel);
             missionWrapPanel.Children.Add(currentMissionComboBox);
@@ -455,18 +455,18 @@ namespace ntra_missions
                     WrapPanel currentMissionWrapPanel = (WrapPanel)currentGrid.Children[6];
 
                     ComboBox currentMissionComboBox = (ComboBox)currentMissionWrapPanel.Children[1];
-                    if (currentMissionComboBox.SelectedIndex != -1)
-                    {
-                        currentRepeater.company_serial = missions[currentMissionComboBox.SelectedIndex].company_serial;
-                        currentRepeater.complaint_serial = missions[currentMissionComboBox.SelectedIndex].complaint_serial;
-                        currentRepeater.mission_serial = missions[currentMissionComboBox.SelectedIndex].mission_serial;
-                    }
-                    else
-                    {
-                        currentRepeater.company_serial = 0;
-                        currentRepeater.complaint_serial = 0;
-                        currentRepeater.mission_serial = 0;
-                    }
+                    //if (currentMissionComboBox.SelectedIndex != -1)
+                    //{
+                    //    currentRepeater.company_serial = missions[currentMissionComboBox.SelectedIndex].company_serial;
+                    //    currentRepeater.complaint_serial = missions[currentMissionComboBox.SelectedIndex].complaint_serial;
+                    //    currentRepeater.mission_serial = missions[currentMissionComboBox.SelectedIndex].mission_serial;
+                    //}
+                    //else
+                    //{
+                    //    currentRepeater.company_serial = 0;
+                    //    currentRepeater.complaint_serial = 0;
+                    //    currentRepeater.mission_serial = 0;
+                    //}
 
                     currentRepeatersList.Add(currentRepeater);
 

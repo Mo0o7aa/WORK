@@ -116,3 +116,5 @@ D:\NTRA\WORK\obj\Debug\ntra_missions.exe.manifest
 D:\NTRA\WORK\obj\Debug\ntra_missions.application
 D:\NTRA\WORK\obj\Debug\ntra_missions.exe
 D:\NTRA\WORK\obj\Debug\ntra_missions.pdb
+D:\NTRA\WORK\obj\Debug\RepeatersPage.g.cs
+D:\NTRA\WORK\obj\Debug\RepeatersPage.baml

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace ntra_missions
 {
@@ -69,6 +70,12 @@ namespace ntra_missions
         public const int PENDING_EMF_PLAN_STATUS = 2;
         public const int CLOSED_EMF_PLAN_STATUS = 3;
         public const int OUTDATED_EMF_PLAN_STATUS = 4;
+
+
+        public const int PENDING_REPEATER_STATUS = 1;
+        public const int REMOVED_REPEATER_STATUS = 2;
+
+
 
         public const int MOBILE_OPERATOR = 1;
 
@@ -369,15 +376,19 @@ namespace ntra_missions
         public struct REPEATER_STRUCT
         {
             public int repeater_serial;
-            public int mission_serial;
-            public int company_serial;
-            public int complaint_serial;
+            public int added_by_id;
             public int status_id;
+            public int city_id;
             public String latitude;
             public String longitude;
             public String address;
             public String status;
+            public String comment;
+            public String added_by;
+            public String city;
+            public String area;
             public DateTime date;
+            public DateTime date_added;
         };
 
 

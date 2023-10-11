@@ -170,6 +170,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>NTRADataSet.xsd</DependentUpon>
     </Compile>
+    <Compile Include="RepeatersPage.xaml.cs">
+      <DependentUpon>RepeatersPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="RepeatersWindow.xaml.cs">
       <DependentUpon>RepeatersWindow.xaml</DependentUpon>
     </Compile>
@@ -256,6 +259,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MissionWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="RepeatersPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
