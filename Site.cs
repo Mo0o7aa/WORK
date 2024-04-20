@@ -99,6 +99,7 @@ namespace ntra_missions
             if (!GetNewSiteSerial())
                 return false;
 
+
             if (!InsertIntoCompanySites())
                 return false;
 

@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Media.Media3D;
 
 namespace ntra_missions
 {
@@ -1035,6 +1037,7 @@ namespace ntra_missions
 		                              mission_sites.reason_of_interference,
                                       
 		                              interference_missions.mission_date,
+		                              interference_missions.end_date,
                                       
 		                              interference_missions.mission_id,
 		                              complaints.ticket_number,
@@ -1095,7 +1098,7 @@ namespace ntra_missions
 
             BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT SQL_COLUMN_COUNT_STRUCT = new BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT();
             SQL_COLUMN_COUNT_STRUCT.sql_int = 9;
-            SQL_COLUMN_COUNT_STRUCT.sql_datetime = 1;
+            SQL_COLUMN_COUNT_STRUCT.sql_datetime = 2;
             SQL_COLUMN_COUNT_STRUCT.sql_string = 11;
 
             if (!sqlDatabase.GetRows(sqlQuery, SQL_COLUMN_COUNT_STRUCT))
@@ -1116,6 +1119,7 @@ namespace ntra_missions
                     BASIC_STRUCTS.MISSION_SITE_STRUCT tempSite = new BASIC_STRUCTS.MISSION_SITE_STRUCT();
 
                     tempMission.mission_Date = sqlDatabase.rows[i].sql_datetime[0];
+                    tempMission.end_date = sqlDatabase.rows[i].sql_datetime[1];
 
                     tempMission.company_serial = sqlDatabase.rows[i].sql_int[0];
                     tempMission.complaint_serial = sqlDatabase.rows[i].sql_int[1];
@@ -2323,6 +2327,73 @@ namespace ntra_missions
             return true;
         }
 
+        public bool InsertIntoRepeaters(ref BASIC_STRUCTS.REPEATER_STRUCT mRepeaters)
+        {
+            int serial = 1;
+
+            GetNewRepeaterSerial(ref serial);
+
+
+            String sqlQueryPart1 = "Insert into NTRA.dbo.repeaters values (";
+            sqlQueryPart1 += serial + " ,'";
+            sqlQueryPart1 += mRepeaters.latitude + "','";
+            sqlQueryPart1 += mRepeaters.longitude + "',N'";
+            sqlQueryPart1 += mRepeaters.address + "',";
+            sqlQueryPart1 += mRepeaters.status_id + ",N'";
+            sqlQueryPart1 += mRepeaters.comment + "',";
+            sqlQueryPart1 += mRepeaters.added_by_id + ",'";
+            sqlQueryPart1 += mRepeaters.date + "',getdate(),";
+            sqlQueryPart1 += mRepeaters.city_id + ",N'";
+            sqlQueryPart1 += mRepeaters.area + "');";
+
+
+            if (!sqlDatabase.InsertRows(sqlQueryPart1))
+                return false;
+
+            return true;
+        }
+
+        public bool UpdateRepeater(ref BASIC_STRUCTS.REPEATER_STRUCT mRepeater)
+        {
+            String sqlQuery = "update NTRA.dbo.repeaters set address = N'";
+            sqlQuery += mRepeater.address + "', status = ";
+            sqlQuery += mRepeater.status_id + ", comment = N'";
+            sqlQuery += mRepeater.comment + "', area = N'";
+            sqlQuery += mRepeater.area + "' where lat ='";
+            sqlQuery += mRepeater.latitude + "' and long = '";
+            sqlQuery += mRepeater.longitude + "';";
+
+            if (!sqlDatabase.InsertRows(sqlQuery))
+                return false;
+
+            return true;
+        }
+
+        public bool CheckRepeater(ref BASIC_STRUCTS.REPEATER_STRUCT mRepeater)
+        {
+            int serial = 0;
+
+            String sqlQuery = @"select serial from NTRA.dbo.repeaters where lat = '";
+            sqlQuery += mRepeater.latitude + "' and long = '";
+            sqlQuery += mRepeater.longitude + "';";
+
+            BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT SQL_COLUMN_COUNT_STRUCT = new BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT();
+            SQL_COLUMN_COUNT_STRUCT.sql_int = 1;
+
+            if (!sqlDatabase.GetRows(sqlQuery, SQL_COLUMN_COUNT_STRUCT))
+                return false;
+
+            if (sqlDatabase.rows.Count != 0)
+            {
+                serial = sqlDatabase.rows[0].sql_int[0];
+            }
+
+            if(serial == 0)
+                return false;
+            else
+                return true;
+        }
+
         public bool GetRepeaters(ref List<BASIC_STRUCTS.REPEATER_STRUCT> mList)
         {
             mList.Clear();
@@ -2390,6 +2461,39 @@ namespace ntra_missions
             return true;
         }
 
+
+        public bool GetCityAreas(ref List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT> mList, int cityId)
+        {
+            mList.Clear();
+
+            String sqlQueryPart1 = @"select distinct area from NTRA.dbo.repeaters where city = ";
+
+            String sqlQuery = string.Empty;
+            sqlQuery = sqlQueryPart1;
+            sqlQuery += cityId;
+
+            BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT SQL_COLUMN_COUNT_STRUCT = new BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT();
+            SQL_COLUMN_COUNT_STRUCT.sql_string = 1;
+
+            if (!sqlDatabase.GetRows(sqlQuery, SQL_COLUMN_COUNT_STRUCT))
+                return false;
+
+            if (sqlDatabase.rows.Count != 0)
+            {
+                for (int i = 0; i < sqlDatabase.rows.Count; i++)
+                {
+                    BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT temp = new BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT();
+                    temp.key = 0;
+
+                    temp.value = sqlDatabase.rows[i].sql_string[0];
+
+                    mList.Add(temp);
+                }
+            }
+
+            return true;
+        }
+
         public bool InsertEmployeesLog(String mName, String mAction)
         {
             String sqlQueryPart1 = "Insert into NTRA.dbo.employee_login_log values (getdate(),'";
@@ -2398,6 +2502,36 @@ namespace ntra_missions
 
             if (!sqlDatabase.InsertRows(sqlQueryPart1))
                 return false;
+
+            return true;
+        }
+
+        public bool GetSiteSerial(String mSiteNumber, ref int mSiteSerial)
+        {
+
+            String sqlQueryPart1 = @"select serial from NTRA.dbo.company_sites where site_number = '";
+            String sqlQueryPart2 = "'";
+
+            String sqlQuery = string.Empty;
+            sqlQuery = sqlQueryPart1;
+            sqlQuery += mSiteNumber;
+            sqlQuery += sqlQueryPart2;
+
+            BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT SQL_COLUMN_COUNT_STRUCT = new BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT();
+            SQL_COLUMN_COUNT_STRUCT.sql_int = 1;
+
+            if (!sqlDatabase.GetRows(sqlQuery, SQL_COLUMN_COUNT_STRUCT))
+                return false;
+
+            if (sqlDatabase.rows.Count != 0)
+            {
+                mSiteSerial = sqlDatabase.rows[0].sql_int[0];
+            }
+            else
+            {
+                MessageBox.Show("Site '" + mSiteNumber + "' not found in database, Please check spelling and try again!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
 
             return true;
         }

@@ -33,6 +33,8 @@ namespace ntra_missions
         private List<BASIC_STRUCTS.REPEATER_STRUCT> repeaters;
         private List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT> repeatersStatus;
         private List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT> employees;
+        private List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT> cities;
+        private List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT> areas;
 
         public RepeatersPage(ref Employee mLoggedInUser)
         {
@@ -43,45 +45,63 @@ namespace ntra_missions
             repeaters = new List<BASIC_STRUCTS.REPEATER_STRUCT>();
             repeatersStatus = new List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT>();
             employees = new List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT>();
+            cities = new List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT>();
+            areas = new List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT>();
 
             if (!commonQueries.GetRepeaters(ref repeaters))
                 return;
 
+            if (!commonQueries.GetRepeatersStatus(ref repeatersStatus))
+                return;
+
+            if (!commonQueries.GetCities(ref cities))
+                return;
+
             InitializeComponent();
 
+            cityCheckBox.IsChecked = true;
 
             userNameLabel.Content = "Username: " + loggedInUser.GetEmployeeUserName();
 
 
-            InitializeYearCombo();
-
+            InitializeRepeatersStatusCombo();
+            InitializeCityCombo();
 
             InitializeRepeatersStackPanel();
             InitializeRepeatersGrid();
         }
 
-        private void InitializeYearCombo()
-        {
-            int startYear = BASIC_STRUCTS.START_YEAR;
-            int currentYear = DateTime.Now.Year;
-
-            while(startYear != currentYear)
-            {
-                yearComboBox.Items.Add(currentYear);
-                currentYear--;
-            }
-        }
 
         private bool InitializeEmployeeCombo()
         {
-            if(!commonQueries.GetEngineers(ref employees))
-                return false;
+            //if (!commonQueries.GetEngineers(ref employees))
+            //    return false;
+            //
+            //for (int i = 0; i < employees.Count; i++)
+            //{
+            //    employeeComboBox.Items.Add(employees[i].value);
+            //}
+            //
+            return true;
+        }
 
-            for(int i = 0; i < employees.Count; i++)
+        private bool InitializeRepeatersStatusCombo()
+        {
+            for (int i = 0; i < repeatersStatus.Count; i++)
             {
-                employeeComboBox.Items.Add(employees[i].value);
+                statusComboBox.Items.Add(repeatersStatus[i].value);
             }
-                    
+
+            return true;
+        }
+
+        private bool InitializeCityCombo()
+        {
+            for (int i = 0; i < cities.Count; i++)
+            {
+                cityComboBox.Items.Add(cities[i].value);
+            }
+
             return true;
         }
 
@@ -114,9 +134,15 @@ namespace ntra_missions
                         continue;
                 }
 
-                if (employeeCheckBox.IsChecked == true && employeeComboBox.SelectedIndex != -1)
+                if (cityCheckBox.IsChecked == true && cityComboBox.SelectedIndex != -1)
                 {
-                    if (repeaters[i].added_by_id != employees[employeeComboBox.SelectedIndex].key)
+                    if (repeaters[i].city_id != cities[cityComboBox.SelectedIndex].key)
+                        continue;
+                }
+
+                if (areaCheckBox.IsChecked == true && areaComboBox.SelectedIndex != -1)
+                {
+                    if (repeaters[i].area != areas[areaComboBox.SelectedIndex].value)
                         continue;
                 }
 
@@ -126,17 +152,6 @@ namespace ntra_missions
                         continue;
                 }
 
-                if (yearCheckBox.IsChecked == true && yearComboBox.SelectedIndex != -1)
-                {
-                    if (repeaters[i].date.Year != int.Parse(yearComboBox.SelectedItem.ToString()))
-                        continue;
-                }
-
-                if (monthCheckBox.IsChecked == true && monthComboBox.SelectedIndex != -1)
-                {
-                    if (repeaters[i].date.Month != int.Parse(monthComboBox.SelectedItem.ToString()))
-                        continue;
-                }
 
                 
 
@@ -158,6 +173,7 @@ namespace ntra_missions
                 BrushConverter brushConverter = new BrushConverter();
 
                 Border border = new Border() { BorderThickness = new Thickness(3) };
+                border.Tag = repeaters[i].repeater_serial;
                 border.BorderBrush = (Brush)brushConverter.ConvertFrom("#000080");
 
 
@@ -355,6 +371,9 @@ namespace ntra_missions
                 repeatersStackPanel.Children.Add(border);
             }
 
+
+            countLabel.Content = repeatersStackPanel.Children.Count.ToString();
+
         }
 
         private void InitializeRepeatersGrid()
@@ -490,20 +509,24 @@ namespace ntra_missions
             longTextBox.IsEnabled = false;
         }
 
-        private void OnCheckEmployeeCheckBox(object sender, RoutedEventArgs e)
+        private void OnCheckCityCheckBox(object sender, RoutedEventArgs e)
         {
-            employeeComboBox.IsEnabled = true;
+            cityComboBox.IsEnabled = true;
+            cityComboBox.SelectedIndex = 0;
         }
 
-        private void OnUncheckEmployeeCheckBox(object sender, RoutedEventArgs e)
+        private void OnUncheckCityCheckBox(object sender, RoutedEventArgs e)
         {
-            employeeComboBox.SelectedIndex = -1;
-            employeeComboBox.IsEnabled = false;
+            areaComboBox.SelectedIndex = -1;
+            areaComboBox.IsEnabled = false;
+            cityComboBox.SelectedIndex = -1;
+            cityComboBox.IsEnabled = false;
         }
 
         private void OnCheckStatusCheckBox(object sender, RoutedEventArgs e)
         {
             statusComboBox.IsEnabled = true;
+            statusComboBox.SelectedIndex = 0;
         }
 
         private void OnUncheckStatusCheckBox(object sender, RoutedEventArgs e)
@@ -512,26 +535,38 @@ namespace ntra_missions
             statusComboBox.IsEnabled = false;
         }
 
-        private void OnCheckYearCheckBox(object sender, RoutedEventArgs e)
+        private void OnCheckAreaCheckBox(object sender, RoutedEventArgs e)
         {
-            yearComboBox.IsEnabled = true;
+            if (cityCheckBox.IsChecked == true)
+            {
+
+                if (!commonQueries.GetCityAreas(ref areas, cities[cityComboBox.SelectedIndex].key))
+                {
+                    MessageBox.Show("Server connection failed, please try again later!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                areaComboBox.Items.Clear();
+                for (int i = 0; i < areas.Count; i++)
+                {
+                    areaComboBox.Items.Add(areas[i].value);
+                }
+
+                areaComboBox.IsEnabled = true;
+                areaComboBox.SelectedIndex = 0;
+
+            }
+            else
+            {
+                MessageBox.Show("City must be selected to choose an area!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
-        private void OnUncheckYearCheckBox(object sender, RoutedEventArgs e)
+        private void OnUnCheckAreaCheckBox(object sender, RoutedEventArgs e)
         {
-            yearComboBox.SelectedIndex = -1;
-            yearComboBox.IsEnabled = false;
-        }
-
-        private void OnCheckMonthCheckBox(object sender, RoutedEventArgs e)
-        {
-            monthComboBox.IsEnabled = true;
-        }
-
-        private void OnUncheckMonthCheckBox(object sender, RoutedEventArgs e)
-        {
-            monthComboBox.SelectedIndex = -1;
-            monthComboBox.IsEnabled = false;
+            areaComboBox.SelectedIndex = -1;
+            areaComboBox.IsEnabled = false;
+            areaComboBox.Items.Clear();
         }
 
 
@@ -547,7 +582,14 @@ namespace ntra_missions
             InitializeRepeatersGrid();
         }
 
-        private void OnSelChangedEmployeeCombo(object sender, SelectionChangedEventArgs e)
+        private void OnSelChangedCityCombo(object sender, SelectionChangedEventArgs e)
+        {
+            
+            InitializeRepeatersStackPanel();
+            InitializeRepeatersGrid();
+        }
+
+        private void OnSelChangedAreaCombo(object sender, SelectionChangedEventArgs e)
         {
 
             InitializeRepeatersStackPanel();
@@ -556,25 +598,15 @@ namespace ntra_missions
 
         private void OnSelChangedStatusCombo(object sender, SelectionChangedEventArgs e)
         {
+            
+
+            
 
             InitializeRepeatersStackPanel();
             InitializeRepeatersGrid();
         }
 
-        private void OnChangeYearCombo(object sender, SelectionChangedEventArgs e)
-        {
 
-            InitializeRepeatersStackPanel();
-            InitializeRepeatersGrid();
-        }
-
-
-        private void OnChangeMonthCombo(object sender, SelectionChangedEventArgs e)
-        {
-
-            InitializeRepeatersStackPanel();
-            InitializeRepeatersGrid();
-        }
 
         private void OnBtnClickAdd(object sender, RoutedEventArgs e)
         {
@@ -600,6 +632,42 @@ namespace ntra_missions
 
                 InitializeRepeatersStackPanel();
             }
+        }
+
+
+        private void OnBtnClickReImport(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.OpenFileDialog fileDialog = new System.Windows.Forms.OpenFileDialog();
+
+            if (fileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+
+                String filePath = fileDialog.FileNames[0];
+                String fileName = System.IO.Path.GetFileName(filePath);
+
+
+                ExcelExport excelExport = new ExcelExport();
+                excelExport.ReImportRepeaters(fileName, filePath, ref loggedInUser);
+
+                if (!commonQueries.GetRepeaters(ref repeaters))
+                    return;
+
+                InitializeRepeatersStackPanel();
+            }
+        }
+
+        private void OnBtnClickExport(object sender, RoutedEventArgs e)
+        {
+            List<BASIC_STRUCTS.REPEATER_STRUCT> selectedRepeaters = new List<BASIC_STRUCTS.REPEATER_STRUCT>();
+
+            for (int i = 0; i < repeatersStackPanel.Children.Count; i++)
+            {
+                Border currentBorder = (Border)repeatersStackPanel.Children[i];
+                selectedRepeaters.Add(repeaters.Find(x1 => x1.repeater_serial == int.Parse(currentBorder.Tag.ToString())));
+            }
+
+            ExcelExport export = new ExcelExport();
+            export.ExportRepeaters(ref selectedRepeaters);
         }
 
         /////////////////////////// Common Functions for every page///////////////////////
@@ -742,6 +810,8 @@ namespace ntra_missions
             Regex regex = new Regex("[^0-9.]+");
             e.Handled = regex.IsMatch(e.Text);
         }
+
+    
 
     }
 }

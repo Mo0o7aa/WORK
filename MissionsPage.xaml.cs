@@ -137,13 +137,13 @@ namespace ntra_missions
         
                 if (yearCheckBox.IsChecked == true && yearComboBox.SelectedIndex != -1)
                 {
-                    if (missions[i].mission_Date.Year != int.Parse(yearComboBox.SelectedItem.ToString()))
+                    if (missions[i].mission_Date.Year != int.Parse(yearComboBox.SelectedItem.ToString()) || missions[i].end_date.Year != int.Parse(yearComboBox.SelectedItem.ToString()))
                         continue;
                 }
         
                 if (monthCheckBox.IsChecked == true && monthComboBox.SelectedIndex != -1)
                 {
-                    if (missions[i].mission_Date.Month != int.Parse(monthComboBox.SelectedItem.ToString()))
+                    if (missions[i].mission_Date.Month != int.Parse(monthComboBox.SelectedItem.ToString()) || missions[i].end_date.Month != int.Parse(monthComboBox.SelectedItem.ToString()))
                         continue;
                 }
         
@@ -390,24 +390,42 @@ namespace ntra_missions
                 Grid.SetRow(statusBorder, 1);
                 Grid.SetColumn(statusBorder, 3);
 
+                StackPanel dateStackPanel = new StackPanel() { HorizontalAlignment = System.Windows.HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center};
                 WrapPanel dateWrapPanel = new WrapPanel();
                 dateWrapPanel.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
                 dateWrapPanel.VerticalAlignment = VerticalAlignment.Center;
 
                 Label dateLabel = new Label();
                 dateLabel.Style = (Style)FindResource("labelStyleBlack");
-                dateLabel.Content = "Date: ";
+                dateLabel.Content = "Start Date: ";
 
                 Label dateLabelValue = new Label();
                 dateLabelValue.Content = missions[i].mission_Date.Day + "/" + missions[i].mission_Date.Month + "/" + missions[i].mission_Date.Year;
                 dateLabelValue.Style = (Style)FindResource("labelStyle");
 
+                WrapPanel endDateWrapPanel = new WrapPanel();
+                endDateWrapPanel.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
+                endDateWrapPanel.VerticalAlignment = VerticalAlignment.Center;
+
+                Label endDateLabel = new Label();
+                endDateLabel.Style = (Style)FindResource("labelStyleBlack");
+                endDateLabel.Content = "End Date: ";
+
+                Label endDateLabelValue = new Label();
+                endDateLabelValue.Content = missions[i].end_date.Day + "/" + missions[i].end_date.Month + "/" + missions[i].end_date.Year;
+                endDateLabelValue.Style = (Style)FindResource("labelStyle");
+
                 dateWrapPanel.Children.Add(dateLabel);
                 dateWrapPanel.Children.Add(dateLabelValue);
+                endDateWrapPanel.Children.Add(endDateLabel);
+                endDateWrapPanel.Children.Add(endDateLabelValue);
 
-                missionGrid.Children.Add(dateWrapPanel);
-                Grid.SetRow(dateWrapPanel, 2);
-                Grid.SetColumn(dateWrapPanel, 3);
+                dateStackPanel.Children.Add(dateWrapPanel);
+                dateStackPanel.Children.Add(endDateWrapPanel);
+
+                missionGrid.Children.Add(dateStackPanel);
+                Grid.SetRow(dateStackPanel, 2);
+                Grid.SetColumn(dateStackPanel, 3);
         
                 Expander expander = new Expander();
                 expander.Tag = missions[i].company_serial + "," + missions[i].complaint_serial + "," + missions[i].mission_serial;

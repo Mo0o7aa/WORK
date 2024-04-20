@@ -77,6 +77,9 @@ namespace ntra_missions
             InitializeEngineersCombo();
             InitializeReasonsOfInterferenceCombo();
 
+            missionStartDatePicker.SelectedDate = DateTime.Today;
+            missionEndDatePicker.SelectedDate = DateTime.Today;
+
             InitializeMissionTypeCombo();
             InitializeDatePicker(ref measurementLocationDatePicker);
             InitializeCompanyCombo(ref companyComboBox);
@@ -100,6 +103,7 @@ namespace ntra_missions
             if(missionCondition == BASIC_STRUCTS.MISSION_ADD_CONDITION)
             {
                 missionStartDatePicker.SelectedDate = DateTime.Today;
+                missionEndDatePicker.SelectedDate = DateTime.Today;
                 engineer1ComboBox.SelectedIndex = engineers.FindIndex(x1 => x1.key == loggedInUser.GetEmployeeId());
 
                 if(mission.complaint.GetSerial() > 0)
@@ -432,6 +436,7 @@ namespace ntra_missions
             vehicleComboBox.SelectedIndex = vehichles.FindIndex(x1 => x1.key == mission.GetVehicleId());
             statusComboBox.SelectedIndex = missionStatusList.FindIndex(x1 => x1.key == mission.GetStatusId());
             missionStartDatePicker.SelectedDate = mission.GetDate();
+            missionEndDatePicker.SelectedDate = mission.GetEndDate();
             commentTextBox.Text = mission.GetComment();
             companyComboBox.SelectedIndex = companies.FindIndex(x1 => x1.key == mission.complaint.GetCompanySerial());
             ticketComboBox.SelectedItem = mission.complaint.GetTicketNumber();
@@ -441,6 +446,7 @@ namespace ntra_missions
                 vehicleComboBox.IsEnabled = false;
                 statusComboBox.IsEnabled = false;
                 missionStartDatePicker.IsEnabled = false;
+                missionEndDatePicker.IsEnabled = false;
                 commentTextBox.IsReadOnly = true;
                 companyComboBox.IsEnabled = false;
                 ticketComboBox.IsEnabled = false;
@@ -644,7 +650,14 @@ namespace ntra_missions
 
                 mission.SetEngineers(tempSelectedEngineers);
                 mission.SetDate((DateTime)missionStartDatePicker.SelectedDate);
+                mission.SetEndDate((DateTime)missionEndDatePicker.SelectedDate);
                 mission.SetComment(commentTextBox.Text);
+
+                if (mission.GetEndDate() < mission.GetDate())
+                {
+                    MessageBox.Show("Please check mission start and end date!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
 
                 List<BASIC_STRUCTS.MISSION_EQUIPMENT_STRUCT> tempEquipment = new List<BASIC_STRUCTS.MISSION_EQUIPMENT_STRUCT>();
 
@@ -1041,6 +1054,8 @@ namespace ntra_missions
 
             currentStackPanel.Children.Add(newSiteGrid);
             currentStackPanel.Children.Add(currentImage);
+
+            currentImage.BringIntoView();
         }
 
         private void OnClickRemoveSite(object sender, MouseButtonEventArgs e)
@@ -1052,7 +1067,7 @@ namespace ntra_missions
 
             currentStackPanel.Children.Remove(currentSiteGrid);
 
-            if(currentImage.Tag.ToString() != "")
+            if(currentImage.Tag != null && currentImage.Tag.ToString() != "")
             {
                 removedSiteSerials.Add(int.Parse(currentImage.Tag.ToString()));
             }

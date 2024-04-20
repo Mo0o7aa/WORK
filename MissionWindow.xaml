@@ -177,11 +177,17 @@
 
                         </StackPanel>
                 </ScrollViewer>
-                
-                <WrapPanel Grid.Row="2" Grid.Column="1" VerticalAlignment="Center">
-                    <Label Content="Date: " Style="{StaticResource mediumLabelStyleBlack}"/>
-                    <DatePicker Name="missionStartDatePicker" Style="{StaticResource datePickerStyle}" IsTodayHighlighted="True"/>
-                </WrapPanel>
+
+                <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Vertical">
+                    <WrapPanel  VerticalAlignment="Center" Margin="12">
+                        <Label Content="Start Date: " Style="{StaticResource mediumLabelStyleBlack}"/>
+                        <DatePicker Name="missionStartDatePicker" Style="{StaticResource datePickerStyle}" IsTodayHighlighted="True"/>
+                    </WrapPanel>
+                    <WrapPanel  VerticalAlignment="Center" Margin="12">
+                        <Label Content="End Date: " Style="{StaticResource mediumLabelStyleBlack}"/>
+                        <DatePicker Name="missionEndDatePicker" Style="{StaticResource datePickerStyle}" IsTodayHighlighted="True"/>
+                    </WrapPanel>
+                </StackPanel>
 
 
                 <WrapPanel Grid.Row="2" Grid.Column="2" VerticalAlignment="Center">

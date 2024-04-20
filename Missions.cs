@@ -28,6 +28,7 @@ namespace ntra_missions
         private String addedBy;
 
         private DateTime mission_date;
+        private DateTime mission_end_date;
 
         private String missionComment;
 
@@ -65,6 +66,7 @@ namespace ntra_missions
 		                             mission_sites.reason_of_interference,
                                      
 		                             interference_missions.mission_date,
+		                             interference_missions.end_date,
 
 		                             interference_missions.mission_id,
 		                             interference_missions.comment,
@@ -129,7 +131,7 @@ namespace ntra_missions
 
             BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT SQL_COLUMN_COUNT_STRUCT = new BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT();
             SQL_COLUMN_COUNT_STRUCT.sql_int = 9;
-            SQL_COLUMN_COUNT_STRUCT.sql_datetime = 1;
+            SQL_COLUMN_COUNT_STRUCT.sql_datetime = 2;
             SQL_COLUMN_COUNT_STRUCT.sql_string = 11;
 
             if (!sqlDatabase.GetRows(sqlQuery, SQL_COLUMN_COUNT_STRUCT))
@@ -145,6 +147,7 @@ namespace ntra_missions
                 addedById = sqlDatabase.rows[0].sql_int[4];
                 
                 mission_date = sqlDatabase.rows[0].sql_datetime[0];
+                mission_end_date = sqlDatabase.rows[0].sql_datetime[1];
 
                 missionId = sqlDatabase.rows[0].sql_string[0];
                 missionComment = sqlDatabase.rows[0].sql_string[1];
@@ -205,7 +208,8 @@ namespace ntra_missions
             sqlQuery += mission_date + "',N'";
             sqlQuery += missionComment + "',getdate(),";
             sqlQuery += addedById + ",'";
-            sqlQuery += missionId + "');";
+            sqlQuery += missionId + "','";
+            sqlQuery += mission_end_date + "');";
 
             if (!sqlDatabase.InsertRows(sqlQuery))
                 return false;
@@ -431,6 +435,11 @@ namespace ntra_missions
             mission_date = mDate;
         }
 
+        public void SetEndDate(DateTime mDate)
+        {
+            mission_end_date = mDate;
+        }
+
         public void SetComment(String mComment)
         {
             missionComment = mComment;
@@ -505,6 +514,11 @@ namespace ntra_missions
         public DateTime GetDate()
         {
             return mission_date;
+        }
+
+        public DateTime GetEndDate()
+        {
+            return mission_end_date;
         }
 
         public String GetComment()

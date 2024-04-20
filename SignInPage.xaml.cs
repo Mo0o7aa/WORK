@@ -39,8 +39,8 @@ namespace ntra_missions
             
             if(passwordTextBox.Password != "")
                 rememberMeCheckBox.IsChecked = true;
-
-            //this.Loaded += PageLoaded;
+            
+            this.Loaded += PageLoaded;
         }
 
         private void PageLoaded(object sender, RoutedEventArgs e)
@@ -99,7 +99,7 @@ namespace ntra_missions
                     {
                         ntra_missions.Properties.Settings.Default.UserName = usernameTextBox.Text;
                         ntra_missions.Properties.Settings.Default.Password = passwordTextBox.Password;
-                        ntra_missions.Properties.Settings.Default.Save();
+                        ntra_missions.Properties.Settings.Default.Save();   
                     }
                     else
                     {

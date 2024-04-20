@@ -91,18 +91,16 @@
 
                     <CheckBox Grid.Row="0" Grid.Column="0" Name="searchLatCheckBox" Content="Search &#10;Lat" Checked="OnCheckSearchLatCheckBox" Unchecked="OnUncheckSearchCheckBox" Style="{StaticResource checkBoxStyle}" Cursor="Hand"/>
                     <CheckBox Grid.Row="1" Grid.Column="0" Name="searchLongCheckBox" Content="Search &#10;Long" Checked="OnCheckSearchLongCheckBox" Unchecked="OnUncheckSearchLongCheckBox" Style="{StaticResource checkBoxStyle}" Cursor="Hand"/>
-                    <CheckBox Grid.Row="2" Grid.Column="0" Name="employeeCheckBox" Content="Employee" Checked="OnCheckEmployeeCheckBox" Unchecked="OnUncheckEmployeeCheckBox" Style="{StaticResource checkBoxStyle}" Cursor="Hand"/>
-                    <CheckBox Grid.Row="3" Grid.Column="0" Name="statusCheckBox" Content="Status" Checked="OnCheckStatusCheckBox" Unchecked="OnUncheckStatusCheckBox" Style="{StaticResource checkBoxStyle}" Cursor="Hand"/>
-                    <CheckBox Grid.Row="4" Grid.Column="0" Name="yearCheckBox" Content="Year" Checked="OnCheckYearCheckBox" Unchecked="OnUncheckYearCheckBox" Style="{StaticResource checkBoxStyle}" Cursor="Hand"/>
-                    <CheckBox Grid.Row="5" Grid.Column="0" Name="monthCheckBox" Content="Month" Checked="OnCheckMonthCheckBox" Unchecked="OnUncheckMonthCheckBox" Style="{StaticResource checkBoxStyle}" Cursor="Hand"/>
+                    <CheckBox Grid.Row="2" Grid.Column="0" Name="cityCheckBox" Content="City" Checked="OnCheckCityCheckBox" Unchecked="OnUncheckCityCheckBox" Style="{StaticResource checkBoxStyle}" Cursor="Hand"/>
+                    <CheckBox Grid.Row="3" Grid.Column="0" Name="areaCheckBox" Content="Area" Checked="OnCheckAreaCheckBox" Unchecked="OnUnCheckAreaCheckBox" Style="{StaticResource checkBoxStyle}" Cursor="Hand"/>
+                    <CheckBox Grid.Row="4" Grid.Column="0" Name="statusCheckBox" Content="Status" Checked="OnCheckStatusCheckBox" Unchecked="OnUncheckStatusCheckBox" Style="{StaticResource checkBoxStyle}" Cursor="Hand"/>
 
 
                     <TextBox Grid.Row="0" Grid.Column="1" Name="latTextBox" TextChanged="OnTextChangedLatTextBox" Style="{StaticResource miniTextboxStyle}" IsEnabled='False'/>
                     <TextBox Grid.Row="1" Grid.Column="1" Name="longTextBox" TextChanged="OnTextChangedLongTextBox" Style="{StaticResource miniTextboxStyle}" IsEnabled='False'/>
-                    <ComboBox Grid.Row="2" Grid.Column="1" Name="employeeComboBox" SelectionChanged="OnSelChangedEmployeeCombo" Style="{StaticResource miniComboBoxStyle}" IsEnabled='False'/>
-                    <ComboBox Grid.Row="3" Grid.Column="1" Name="statusComboBox" SelectionChanged="OnSelChangedStatusCombo" Style="{StaticResource miniComboBoxStyle}" IsEnabled='False'/>
-                    <ComboBox Grid.Row="4" Grid.Column="1" Name="yearComboBox" SelectionChanged="OnChangeYearCombo" Style="{StaticResource miniComboBoxStyle}" IsEnabled='False'/>
-                    <ComboBox Grid.Row="5" Grid.Column="1" Name="monthComboBox" SelectionChanged="OnChangeMonthCombo" Style="{StaticResource miniComboBoxStyle}" IsEnabled='False'/>
+                    <ComboBox Grid.Row="2" Grid.Column="1" Name="cityComboBox" SelectionChanged="OnSelChangedCityCombo" Style="{StaticResource miniComboBoxStyle}" IsEnabled='False'/>
+                    <ComboBox Grid.Row="3" Grid.Column="1" Name="areaComboBox" SelectionChanged="OnSelChangedAreaCombo" Style="{StaticResource miniComboBoxStyle}" IsEnabled='False'/>
+                    <ComboBox Grid.Row="4" Grid.Column="1" Name="statusComboBox" SelectionChanged="OnSelChangedStatusCombo" Style="{StaticResource miniComboBoxStyle}" IsEnabled='False'/>
 
 
                 </Grid>
@@ -123,6 +121,11 @@
                     </Border>
                 </StackPanel>
 
+                <StackPanel Grid.Row="0" HorizontalAlignment="Right" Orientation="Horizontal">
+                    <Label  Style="{StaticResource wideLabelStyle}" Content="Repeaters Count: "/>
+                    <Label Name="countLabel" Style="{StaticResource labelStyle}" />
+                </StackPanel>
+                
                 <ScrollViewer Grid.Row="1" Name="listViewScrollViewer" VerticalContentAlignment="Stretch" >
                     <StackPanel Name="repeatersStackPanel" Background="White"/>
                 </ScrollViewer>
@@ -137,11 +140,15 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
 
             <Button Grid.Column="0" Style="{StaticResource buttonStyle}" Content="Add" Click="OnBtnClickAdd"/>
-            <Button Grid.Column="1" Style="{StaticResource buttonStyle}" Content="Import" Click="OnBtnClickImport"/>
+            <Button Grid.Column="1" Style="{StaticResource buttonStyle}" Content="Export" Click="OnBtnClickExport"/>
+            <Button Grid.Column="2" Style="{StaticResource buttonStyle}" Content="Import" Click="OnBtnClickImport"/>
+            <Button Grid.Column="3" Style="{StaticResource buttonStyle}" Content="Re Import" Click="OnBtnClickReImport"/>
             
         </Grid>
     </Grid>

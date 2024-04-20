@@ -302,7 +302,7 @@ namespace ntra_missions
                 Grid.SetRow(currentLatWrapPanel, 2);
 
                 Expander expander = new Expander();
-                expander.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Left;
+                expander.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
                 expander.VerticalAlignment = VerticalAlignment.Top;
                 expander.ExpandDirection = ExpandDirection.Down;
                 expander.Expanded += OnExpandExpander;

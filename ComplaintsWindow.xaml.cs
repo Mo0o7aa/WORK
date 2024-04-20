@@ -1201,7 +1201,18 @@ namespace ntra_missions
             Grid currentGrid = (Grid)currentImage.Parent;
             Grid tempMainGrid = (Grid)currentGrid.Parent;
 
-            Grid lastSectorsGrid = (Grid)tempMainGrid.Children[tempMainGrid.Children.Count - 1];
+            Grid lastSectorsGrid = new Grid();
+            bool lastItemIsImage = false;
+
+            if (tempMainGrid.Children[tempMainGrid.Children.Count - 1].GetType() != typeof(Image))
+            {
+                lastSectorsGrid = (Grid)tempMainGrid.Children[tempMainGrid.Children.Count - 1];
+            }
+            else
+            {
+                lastSectorsGrid = (Grid)tempMainGrid.Children[tempMainGrid.Children.Count - 2];
+                lastItemIsImage = true;
+            }
 
             if (lastSectorsGrid == currentGrid)
             {
@@ -1212,11 +1223,37 @@ namespace ntra_missions
                 tempMainGrid.Children.Remove(currentGrid);
                 tempMainGrid.RowDefinitions.RemoveAt(tempMainGrid.RowDefinitions.Count - 1);
 
-                Grid newCurrentGrid = (Grid)tempMainGrid.Children[tempMainGrid.Children.Count - 1];
+                Grid newCurrentGrid = new Grid();
+
+                if (lastItemIsImage == false)
+                {
+                    newCurrentGrid = (Grid)tempMainGrid.Children[tempMainGrid.Children.Count - 1];
+                }
+                else
+                {
+                    newCurrentGrid = (Grid)tempMainGrid.Children[tempMainGrid.Children.Count - 2];
+                }
 
                 newCurrentGrid.Children.Add(currentAddSectorIcon);
                 Grid.SetRow(currentAddSectorIcon, 3);
                 Grid.SetColumnSpan(currentAddSectorIcon, 3);
+
+                if (!lastItemIsImage)
+                {
+                    for (int i = 0; i < tempMainGrid.Children.Count; i++)
+                    {
+                        var child = tempMainGrid.Children[i];
+                        Grid.SetRow(child, i);
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < tempMainGrid.Children.Count - 1; i++)
+                    {
+                        var child = tempMainGrid.Children[i];
+                        Grid.SetRow(child, i);
+                    }
+                }
             }
             else
             {
@@ -1391,6 +1428,8 @@ namespace ntra_missions
             Grid.SetRow(border, sitesGrid.RowDefinitions.Count - 1);
 
             companyNameComboBox.IsEnabled = false;
+
+            border.BringIntoView();
         }
 
         private Border CreateNewSiteGrid(ref Border border)

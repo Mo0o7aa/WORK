@@ -415,13 +415,16 @@ namespace ntra_missions
                 Grid.SetColumn(statusBorder, 2);
                 Grid.SetRowSpan(statusBorder, 2);
 
+
+                StackPanel dateStackPanel = new StackPanel() { HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center};
+
                 WrapPanel dateWrapPanel = new WrapPanel();
                 dateWrapPanel.HorizontalAlignment = HorizontalAlignment.Center;
                 dateWrapPanel.VerticalAlignment = VerticalAlignment.Center;
 
                 Label dateLabel = new Label();
                 dateLabel.Style = (Style)FindResource("labelStyleBlack");
-                dateLabel.Content = "Date: ";
+                dateLabel.Content = "Start Date: ";
 
                 Label dateLabelValue = new Label();
                 dateLabelValue.Content = missions[i].mission_Date.Day + "/" + missions[i].mission_Date.Month + "/" + missions[i].mission_Date.Year;
@@ -430,9 +433,24 @@ namespace ntra_missions
                 dateWrapPanel.Children.Add(dateLabel);
                 dateWrapPanel.Children.Add(dateLabelValue);
 
-                missionGrid.Children.Add(dateWrapPanel);
-                Grid.SetRow(dateWrapPanel, 2);
-                Grid.SetColumn(dateWrapPanel, 1);
+                WrapPanel endDateWrapPanel = new WrapPanel();
+                endDateWrapPanel.HorizontalAlignment = HorizontalAlignment.Center;
+                endDateWrapPanel.VerticalAlignment = VerticalAlignment.Center;
+
+                Label endDateLabel = new Label();
+                endDateLabel.Style = (Style)FindResource("labelStyleBlack");
+                endDateLabel.Content = "End Date: ";
+
+                Label endDateLabelValue = new Label();
+                endDateLabelValue.Content = missions[i].end_date.Day + "/" + missions[i].end_date.Month + "/" + missions[i].end_date.Year;
+                endDateLabelValue.Style = (Style)FindResource("mediumLabelStyle");
+
+                endDateWrapPanel.Children.Add(endDateLabel);
+                endDateWrapPanel.Children.Add(endDateLabelValue);
+
+                missionGrid.Children.Add(dateStackPanel);
+                Grid.SetRow(dateStackPanel, 2);
+                Grid.SetColumn(dateStackPanel, 1);
 
                 Expander expander = new Expander();
                 expander.Tag = missions[i].company_serial + "," + missions[i].complaint_serial + "," + missions[i].mission_serial;

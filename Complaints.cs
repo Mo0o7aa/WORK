@@ -232,6 +232,9 @@ namespace ntra_missions
 
             GetNewComplaintId();
 
+            if (ticketNumber == "0")
+                ticketNumber = serial.ToString();
+
             if (!InsertIntoComplaints())
                 return false;
 
@@ -264,6 +267,21 @@ namespace ntra_missions
 
             if (!DeleteComplaintSites())
                 return false;
+
+
+            complaintId = companyName + "-";
+
+            complaintId += complaintDate.Year.ToString()[2];
+            complaintId += complaintDate.Year.ToString()[3];
+            complaintId += "-";
+
+            for (int i = 3; i > serial.ToString().Length; i--)
+            {
+                complaintId += "0";
+            }
+
+            complaintId += serial;
+
 
             if (!UpdateComplaint())
                 return false;
@@ -482,7 +500,8 @@ namespace ntra_missions
             sqlQuery += ticketNumber + "', complaint_status = ";
             sqlQuery += complaintStatusId + ", added_by = ";
             sqlQuery += addedBy.GetEmployeeId() + ", complaint_date = '";
-            sqlQuery += complaintDate + "' ";
+            sqlQuery += complaintDate + "', complaint_id =  '";
+            sqlQuery += complaintId + "' ";
             sqlQuery += sqlQueryPart2;
             sqlQuery += companySerial;
             sqlQuery += sqlQueryPart3;
@@ -777,6 +796,7 @@ namespace ntra_missions
         {
             return region;
         }
+
 
         public void SetSerial(int mSerial)
         {

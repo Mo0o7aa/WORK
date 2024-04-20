@@ -113,9 +113,23 @@ namespace ntra_missions
             {
                 if (searchCheckBox.IsChecked == true && searchTextBox.Text != "")
                 {
-                    string search = searchTextBox.Text;
-                    bool contains = complaints[i].complaint_id.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0;
+                    //string search = searchTextBox.Text;
+                    //bool contains = false;
+                    //contains = complaints[i].complaint_id.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0;
+                    //
+                    //
+                    //if (!contains)
+                    //    continue;
 
+                    bool contains = false;
+                    string search = searchTextBox.Text;
+                    for (int j = 0; j < complaints[i].sites.Count; j++)
+                    {
+                        contains = complaints[i].sites[j].site_number.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0;
+
+                        if (contains)
+                            break;
+                    }
                     if (!contains)
                         continue;
                 }
@@ -753,6 +767,27 @@ namespace ntra_missions
         private void OnSelChangedStatusCombo(object sender, SelectionChangedEventArgs e)
         {
             InitializeCompaintsStackPanel();
+        }
+
+        private void OnBtnClickImport(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog fileDialog = new OpenFileDialog();
+
+            if (fileDialog.ShowDialog() == DialogResult.OK)
+            {
+
+                String filePath = fileDialog.FileNames[0];
+                String fileName = System.IO.Path.GetFileName(filePath);
+
+
+                ExcelExport excelExport = new ExcelExport();
+                excelExport.ImportComplaint(fileName, filePath, ref loggedInUser);
+
+                if (!commonQueries.GetComplaints(ref complaints))
+                    return;
+
+                InitializeCompaintsStackPanel();
+            }
         }
     }
 }

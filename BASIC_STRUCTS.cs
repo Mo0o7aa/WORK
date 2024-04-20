@@ -145,6 +145,7 @@ namespace ntra_missions
             public List<REPEATER_STRUCT> repeaters;
 
             public DateTime mission_Date;
+            public DateTime end_date;
         };
 
         public struct EMPLOYEE_MIN_STRUCT

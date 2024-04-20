@@ -94,7 +94,7 @@
                     <CheckBox Grid.Row="4" Grid.Column="0" Name="statusCheckBox" Content="Status" Style="{StaticResource checkBoxStyle}" Checked="OnCheckStatusCheckBox" Unchecked="OnUncheckStatusCheckBox"/>
 
 
-                    <TextBox Grid.Row="0" Grid.Column="1" Name="searchTextBox"  Style="{StaticResource miniTextboxStyle}" IsEnabled='False' TextChanged="OnTextChangedSearchTextBox"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" Name="searchTextBox"  Style="{StaticResource miniTextboxStyle}" IsEnabled='False' TextChanged="OnTextChangedSearchTextBox" ToolTip="Search site name"/>
                     <ComboBox Grid.Row="1" Grid.Column="1" Name="yearComboBox" Style="{StaticResource miniComboBoxStyle}" IsEnabled='False' SelectionChanged="OnSelChangedYearCombo"/>
                     <ComboBox Grid.Row="2" Grid.Column="1" Name="monthComboBox" Style="{StaticResource miniComboBoxStyle}" IsEnabled='False' SelectionChanged="OnSelChangedMonthCombo"/>
                     <ComboBox Grid.Row="3" Grid.Column="1" Name="companyComboBox" Style="{StaticResource miniComboBoxStyle}" IsEnabled='False' SelectionChanged="OnSelChangedCompanyCombo"/>
@@ -128,6 +128,14 @@
             </Grid>
         </Grid>
 
-        <Button Grid.Row="3" Style="{StaticResource buttonStyle}" Content="Add" Click="OnBtnClickAdd"/>
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            
+            <Button Grid.Column="0" Style="{StaticResource buttonStyle}" Content="Add" Click="OnBtnClickAdd"/>
+            <Button Grid.Column="1" Style="{StaticResource buttonStyle}" Content="Import" Click="OnBtnClickImport"/>
+        </Grid>
     </Grid>
 </Page>
