@@ -112,7 +112,8 @@ namespace ntra_missions
 
         private void DashboardMenuSelection(object sender, RoutedEventArgs e)
         {
-
+            DashBoard dashBoard = new DashBoard(ref loggedInUser);
+            NavigationService.Navigate(dashBoard);
         }
 
         private void employeeMenuSelection(object sender, RoutedEventArgs e)
@@ -238,6 +239,10 @@ namespace ntra_missions
             InitializeVehiclesGrid();
         }
 
-        
+        private void RepeatersMenueSelection(object sender, RoutedEventArgs e)
+        {
+            RepeatersPage repeatersPage = new RepeatersPage(ref loggedInUser);
+            NavigationService.Navigate(repeatersPage);
+        }
     }
 }

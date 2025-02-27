@@ -95,8 +95,13 @@ namespace ntra_missions
 
                 SetUIValues();
 
-                InitializeSitesGrid();
-
+                if (viewAddCondition == BASIC_STRUCTS.COMPLAINT_VIEW_CONDITION)
+                    InitializeSitesGrid();
+                else
+                {
+                    sitesGrid.Visibility = Visibility.Collapsed;
+                    addSiteButton.IsEnabled = false;
+                }
                 companyNameComboBox.IsEnabled = false;
 
                 if (viewAddCondition == BASIC_STRUCTS.COMPLAINT_VIEW_CONDITION)
@@ -439,6 +444,8 @@ namespace ntra_missions
                         sectorGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(50) });
                         sectorGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(50) });
                         sectorGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(50) });
+                        sectorGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(50) });
+                        sectorGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(50) });
                         sectorGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(30) });
 
                         WrapPanel sectorWrappanel = new WrapPanel();
@@ -516,6 +523,50 @@ namespace ntra_missions
                         Grid.SetRow(sharedWrappanel, 2);
                         Grid.SetColumn(sharedWrappanel, 0);
 
+                        WrapPanel currentAzimuthWrappanel = new WrapPanel();
+                        currentAzimuthWrappanel.VerticalAlignment = VerticalAlignment.Center;
+                        currentAzimuthWrappanel.HorizontalAlignment = HorizontalAlignment.Center;
+
+                        Label currentAzimuthLabel = new Label();
+                        currentAzimuthLabel.Style = (Style)FindResource("mediumLabelStyleBlack");
+                        currentAzimuthLabel.Content = "Azimuth";
+
+                        TextBox currentAzimuthTextBox = new TextBox();
+                        currentAzimuthTextBox.Style = (Style)FindResource("miniTextboxStyle");
+                        currentAzimuthTextBox.Margin = new Thickness(12, 0, 0, 0);
+                        currentAzimuthTextBox.Text = complaint.sites[i].sectors[j].azimuth.ToString();
+                        if (viewAddCondition == BASIC_STRUCTS.COMPLAINT_VIEW_CONDITION)
+                            currentAzimuthTextBox.IsEnabled = false;
+
+                        currentAzimuthWrappanel.Children.Add(currentAzimuthLabel);
+                        currentAzimuthWrappanel.Children.Add(currentAzimuthTextBox);
+
+                        sectorGrid.Children.Add(currentAzimuthWrappanel);
+                        Grid.SetRow(currentAzimuthWrappanel, 3);
+                        Grid.SetColumn(currentAzimuthWrappanel, 0);
+
+                        WrapPanel currentRTWPWrappanel = new WrapPanel();
+                        currentRTWPWrappanel.VerticalAlignment = VerticalAlignment.Center;
+                        currentRTWPWrappanel.HorizontalAlignment = HorizontalAlignment.Center;
+
+                        Label currentRTWPLabel = new Label();
+                        currentRTWPLabel.Style = (Style)FindResource("mediumLabelStyleBlack");
+                        currentRTWPLabel.Content = "RTWP";
+
+                        TextBox currentRTWPTextBox = new TextBox();
+                        currentRTWPTextBox.Style = (Style)FindResource("miniTextboxStyle");
+                        currentRTWPTextBox.Margin = new Thickness(12, 0, 0, 0);
+                        currentRTWPTextBox.Text = complaint.sites[i].sectors[j].rtwp.ToString();
+                        if (viewAddCondition == BASIC_STRUCTS.COMPLAINT_VIEW_CONDITION)
+                            currentRTWPTextBox.IsEnabled = false;
+
+                        currentRTWPWrappanel.Children.Add(currentRTWPLabel);
+                        currentRTWPWrappanel.Children.Add(currentRTWPTextBox);
+
+                        sectorGrid.Children.Add(currentRTWPWrappanel);
+                        Grid.SetRow(currentRTWPWrappanel, 4);
+                        Grid.SetColumn(currentRTWPWrappanel, 0);
+
                         Label sectorBandsLabel = new Label();
                         sectorBandsLabel.Style = (Style)FindResource("headerLabelStyle");
                         sectorBandsLabel.FontSize = 20;
@@ -539,7 +590,7 @@ namespace ntra_missions
 
                         sectorGrid.Children.Add(scrollViewer);
                         Grid.SetRow(scrollViewer, 1);
-                        Grid.SetRowSpan(scrollViewer, 3);
+                        Grid.SetRowSpan(scrollViewer, 5);
                         Grid.SetColumn(scrollViewer, 1);
 
                         if (viewAddCondition == BASIC_STRUCTS.COMPLAINT_EDIT_CONDITION)
@@ -1036,160 +1087,183 @@ namespace ntra_missions
             
             complaint.InitializeAddedBy(loggedInUser.GetEmployeeId());
 
-            List<BASIC_STRUCTS.SITE_STRUCT> tempSites = new List<BASIC_STRUCTS.SITE_STRUCT>();
-
-            for (int i = 0; i < sitesGrid.RowDefinitions.Count; i++)
+            if (viewAddCondition == BASIC_STRUCTS.COMPLAINT_EDIT_CONDITION)
             {
-                BASIC_STRUCTS.SITE_STRUCT site = new BASIC_STRUCTS.SITE_STRUCT();
-                site.sectors = new List<BASIC_STRUCTS.SECTOR_STRUCT>();
 
-                Border currentBorder = (Border)sitesGrid.Children[i];
-                Grid currentGrid = (Grid)currentBorder.Child;
-
-                WrapPanel currentSiteNumberWrapPanel = (WrapPanel)currentGrid.Children[1];
-                ComboBox currentSiteNumberComboBox = (ComboBox)currentSiteNumberWrapPanel.Children[1];
-
-                if (currentSiteNumberComboBox.SelectedIndex != -1)
-                {
-                    Site currentSite = new Site();
-                    //if(!currentSite.InitializeSite(companies[companyNameComboBox.SelectedIndex].key, companySites[currentSiteNumberComboBox.SelectedIndex].site_serial))
-                    //{
-                    //    MessageBox.Show("Server connection failed, check your internet connection!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    //    return;
-                    //}
-
-                    site.site_serial = companySites[currentSiteNumberComboBox.SelectedIndex].site_serial;
-
-                    WrapPanel currentSiteStatusWrapPanel = (WrapPanel)currentGrid.Children[2];
-                    ComboBox currentSiteStatusComboBox = (ComboBox)currentSiteStatusWrapPanel.Children[1];
-                    site.site_status = currentSiteStatusComboBox.SelectedItem.ToString();
-                    site.site_status_id = siteStatus[currentSiteStatusComboBox.SelectedIndex].key;
-
-                }
-                else
-                {
-                    Site currentSite = new Site();
-
-                    currentSite.SetSiteNumber(currentSiteNumberComboBox.Text);
-
-                    currentSite.SetAddedBy(loggedInUser.GetEmployeeName());
-                    currentSite.SetAddedById(loggedInUser.GetEmployeeId());
-
-                    currentSite.SetCompanySerial(companies[companyNameComboBox.SelectedIndex].key);
-                    currentSite.SetCompanyName(companies[companyNameComboBox.SelectedIndex].value);
-
-                    WrapPanel currentCityWrapPanel = (WrapPanel)currentGrid.Children[3];
-                    ComboBox currentCityComboBox = (ComboBox)currentCityWrapPanel.Children[1];
-                    currentSite.SetCity(cities[currentCityComboBox.SelectedIndex].value);
-                    currentSite.SetCityId(cities[currentCityComboBox.SelectedIndex].key);
-
-                    WrapPanel currentRegionWrapPanel = (WrapPanel)currentGrid.Children[4];
-                    TextBox currentRegionTextBox = (TextBox)currentRegionWrapPanel.Children[1];
-                    currentSite.SetRegion(currentRegionTextBox.Text);
-
-                    WrapPanel currentLongWrapPanel = (WrapPanel)currentGrid.Children[5];
-                    TextBox currentLongTextBox = (TextBox)currentLongWrapPanel.Children[1];
-                    currentSite.SetLong(currentLongTextBox.Text);
-
-                    WrapPanel currentLatWrapPanel = (WrapPanel)currentGrid.Children[6];
-                    TextBox currentLatTextBox = (TextBox)currentLatWrapPanel.Children[1];
-                    currentSite.SetLat(currentLatTextBox.Text);
-
-                    if(!currentSite.IssueNewSite())
-                    {
-                        MessageBox.Show("Server connection failed, check your internet connection!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        return;
-                    }
-
-                    site.site_serial = currentSite.GetSiteSerial();
-
-                    WrapPanel currentSiteStatusWrapPanel = (WrapPanel)currentGrid.Children[2];
-                    ComboBox currentSiteStatusComboBox = (ComboBox)currentSiteStatusWrapPanel.Children[1];
-                    site.site_status = currentSiteStatusComboBox.SelectedItem.ToString();
-                    site.site_status_id = siteStatus[currentSiteStatusComboBox.SelectedIndex].key;
-
-                }
-                
-                
-                int childIndex = 7;
-
-                //if (i != 0)
-                //    childIndex = 8;
-
-                if (selectedCompany.GetCompanyFieldOfWorkId() == BASIC_STRUCTS.MOBILE_OPERATOR)
-                {
-                    for (int j = childIndex; j < currentGrid.Children.Count; j++)
-                    {
-                        BASIC_STRUCTS.SECTOR_STRUCT sector = new BASIC_STRUCTS.SECTOR_STRUCT();
-                        sector.sector_bands = new List<string>();
-
-                        if (currentGrid.Children[j].GetType() == typeof(Image))
-                            continue;
-
-                        Grid currentSectorGrid = (Grid)currentGrid.Children[j];
-                        //childIndex++;
-                        ////Because remove site icon is added after Grid in the handler add site, so for all sites except first site has to increment by 2
-
-
-                        WrapPanel currentSectorNumberWrapPanel = (WrapPanel)currentSectorGrid.Children[0];
-                        TextBox currentSectorNumberTextBox = (TextBox)currentSectorNumberWrapPanel.Children[1];
-                        sector.sector_number = currentSectorNumberTextBox.Text;
-
-                        WrapPanel currentrruWrapPanel = (WrapPanel)currentSectorGrid.Children[1];
-                        ComboBox currentrruComboBox = (ComboBox)currentrruWrapPanel.Children[1];
-                        sector.rru = currentrruComboBox.Text;
-
-                        WrapPanel currentSharedWrapPanel = (WrapPanel)currentSectorGrid.Children[2];
-                        ComboBox currentSharedComboBox = (ComboBox)currentSharedWrapPanel.Children[1];
-                        if (currentSharedComboBox.SelectedIndex != -1 && currentSharedComboBox.SelectedIndex != companies.Count)
-                        {
-                            sector.shared_with = companies[currentSharedComboBox.SelectedIndex].value;
-                            sector.shared_with_id = companies[currentSharedComboBox.SelectedIndex].key;
-                        }
-                        else
-                        {
-                            sector.shared_with = "";
-                            sector.shared_with_id = 0;
-                        }
-
-                        ScrollViewer currentScrollViewer = (ScrollViewer)currentSectorGrid.Children[4];
-                        Grid bandsGrid = (Grid)currentScrollViewer.Content;
-
-                        for (int k = 0; k < bandsGrid.Children.Count; k++)
-                        {
-                            CheckBox currentCheckBox = (CheckBox)bandsGrid.Children[k];
-
-                            if (currentCheckBox.IsChecked == true)
-                            {
-                                sector.sector_bands.Add(currentCheckBox.Content.ToString());
-                            }
-                        }
-
-                        site.sectors.Add(sector);
-                    }
-                }
-
-                if(i == 0 || (tempSites.Count != 0 && !tempSites.Exists(x1 => x1.site_serial == site.site_serial)))
-                    tempSites.Add(site);
-                else
-                {
-                    MessageBox.Show("Site " + currentSiteNumberComboBox.Text + " is a duplicated site!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
-
-            }
-
-            complaint.SetComplaintSites(ref tempSites);
-
-            if (viewAddCondition == BASIC_STRUCTS.COMPLAINT_ADD_CONDITION)
-            {
-                if (!complaint.IssueNewComplaint(selectedCompany.GetCompanyFieldOfWorkId()))
+                if (!complaint.EditComplaint(selectedCompany.GetCompanyFieldOfWorkId()))
                     return;
             }
             else
             {
-                if (!complaint.EditComplaint(selectedCompany.GetCompanyFieldOfWorkId()))
-                    return;
+
+                List<BASIC_STRUCTS.SITE_STRUCT> tempSites = new List<BASIC_STRUCTS.SITE_STRUCT>();
+
+                for (int i = 0; i < sitesGrid.RowDefinitions.Count; i++)
+                {
+                    BASIC_STRUCTS.SITE_STRUCT site = new BASIC_STRUCTS.SITE_STRUCT();
+                    site.sectors = new List<BASIC_STRUCTS.SECTOR_STRUCT>();
+
+                    Border currentBorder = (Border)sitesGrid.Children[i];
+                    Grid currentGrid = (Grid)currentBorder.Child;
+
+                    WrapPanel currentSiteNumberWrapPanel = (WrapPanel)currentGrid.Children[1];
+                    ComboBox currentSiteNumberComboBox = (ComboBox)currentSiteNumberWrapPanel.Children[1];
+
+                    if (currentSiteNumberComboBox.SelectedIndex != -1)
+                    {
+                        Site currentSite = new Site();
+                        //if(!currentSite.InitializeSite(companies[companyNameComboBox.SelectedIndex].key, companySites[currentSiteNumberComboBox.SelectedIndex].site_serial))
+                        //{
+                        //    MessageBox.Show("Server connection failed, check your internet connection!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        //    return;
+                        //}
+
+                        site.site_serial = companySites[currentSiteNumberComboBox.SelectedIndex].site_serial;
+
+                        WrapPanel currentSiteStatusWrapPanel = (WrapPanel)currentGrid.Children[2];
+                        ComboBox currentSiteStatusComboBox = (ComboBox)currentSiteStatusWrapPanel.Children[1];
+                        site.site_status = currentSiteStatusComboBox.SelectedItem.ToString();
+                        site.site_status_id = siteStatus[currentSiteStatusComboBox.SelectedIndex].key;
+
+                    }
+                    else
+                    {
+                        Site currentSite = new Site();
+
+                        currentSite.SetSiteNumber(currentSiteNumberComboBox.Text);
+
+                        currentSite.SetAddedBy(loggedInUser.GetEmployeeName());
+                        currentSite.SetAddedById(loggedInUser.GetEmployeeId());
+
+                        currentSite.SetCompanySerial(companies[companyNameComboBox.SelectedIndex].key);
+                        currentSite.SetCompanyName(companies[companyNameComboBox.SelectedIndex].value);
+
+                        WrapPanel currentCityWrapPanel = (WrapPanel)currentGrid.Children[3];
+                        ComboBox currentCityComboBox = (ComboBox)currentCityWrapPanel.Children[1];
+                        currentSite.SetCity(cities[currentCityComboBox.SelectedIndex].value);
+                        currentSite.SetCityId(cities[currentCityComboBox.SelectedIndex].key);
+
+                        WrapPanel currentRegionWrapPanel = (WrapPanel)currentGrid.Children[4];
+                        TextBox currentRegionTextBox = (TextBox)currentRegionWrapPanel.Children[1];
+                        currentSite.SetRegion(currentRegionTextBox.Text);
+
+                        WrapPanel currentLongWrapPanel = (WrapPanel)currentGrid.Children[5];
+                        TextBox currentLongTextBox = (TextBox)currentLongWrapPanel.Children[1];
+                        currentSite.SetLong(currentLongTextBox.Text);
+
+                        WrapPanel currentLatWrapPanel = (WrapPanel)currentGrid.Children[6];
+                        TextBox currentLatTextBox = (TextBox)currentLatWrapPanel.Children[1];
+                        currentSite.SetLat(currentLatTextBox.Text);
+
+                        if (!currentSite.IssueNewSite())
+                        {
+                            MessageBox.Show("Server connection failed, check your internet connection!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            return;
+                        }
+
+                        site.site_serial = currentSite.GetSiteSerial();
+
+                        WrapPanel currentSiteStatusWrapPanel = (WrapPanel)currentGrid.Children[2];
+                        ComboBox currentSiteStatusComboBox = (ComboBox)currentSiteStatusWrapPanel.Children[1];
+                        site.site_status = currentSiteStatusComboBox.SelectedItem.ToString();
+                        site.site_status_id = siteStatus[currentSiteStatusComboBox.SelectedIndex].key;
+
+                    }
+
+
+                    int childIndex = 7;
+
+                    //if (i != 0)
+                    //    childIndex = 8;
+
+                    if (selectedCompany.GetCompanyFieldOfWorkId() == BASIC_STRUCTS.MOBILE_OPERATOR)
+                    {
+                        for (int j = childIndex; j < currentGrid.Children.Count; j++)
+                        {
+                            BASIC_STRUCTS.SECTOR_STRUCT sector = new BASIC_STRUCTS.SECTOR_STRUCT();
+                            sector.sector_bands = new List<string>();
+
+                            if (currentGrid.Children[j].GetType() == typeof(Image))
+                                continue;
+
+                            Grid currentSectorGrid = (Grid)currentGrid.Children[j];
+                            //childIndex++;
+                            ////Because remove site icon is added after Grid in the handler add site, so for all sites except first site has to increment by 2
+
+
+                            WrapPanel currentSectorNumberWrapPanel = (WrapPanel)currentSectorGrid.Children[0];
+                            TextBox currentSectorNumberTextBox = (TextBox)currentSectorNumberWrapPanel.Children[1];
+                            sector.sector_number = currentSectorNumberTextBox.Text;
+
+                            WrapPanel currentrruWrapPanel = (WrapPanel)currentSectorGrid.Children[1];
+                            ComboBox currentrruComboBox = (ComboBox)currentrruWrapPanel.Children[1];
+                            sector.rru = currentrruComboBox.Text;
+
+                            WrapPanel currentSharedWrapPanel = (WrapPanel)currentSectorGrid.Children[2];
+                            ComboBox currentSharedComboBox = (ComboBox)currentSharedWrapPanel.Children[1];
+                            if (currentSharedComboBox.SelectedIndex != -1 && currentSharedComboBox.SelectedIndex != companies.Count)
+                            {
+                                sector.shared_with = companies[currentSharedComboBox.SelectedIndex].value;
+                                sector.shared_with_id = companies[currentSharedComboBox.SelectedIndex].key;
+                            }
+                            else
+                            {
+                                sector.shared_with = "";
+                                sector.shared_with_id = 0;
+                            }
+
+                            WrapPanel currentAzimuthWrapPanel = (WrapPanel)currentSectorGrid.Children[3];
+                            TextBox currentAzimuthTextBox = (TextBox)currentAzimuthWrapPanel.Children[1];
+                            if (int.TryParse(currentAzimuthTextBox.Text, out int intValue))
+                            {
+                                MessageBox.Show("Azimuth must be an Integer or a decimal value, Please check your input for site " + currentSiteNumberComboBox.Text, "Error", MessageBoxButton.OK);
+                                return;
+                            }
+                            sector.azimuth = int.Parse(currentAzimuthTextBox.Text);
+
+                            WrapPanel currentRTWPWrapPanel = (WrapPanel)currentSectorGrid.Children[4];
+                            TextBox currentRTWPTextBox = (TextBox)currentRTWPWrapPanel.Children[1];
+                            if (decimal.TryParse(currentAzimuthTextBox.Text, out decimal decimalValue))
+                            {
+                                MessageBox.Show("RTWP mus be an Integer or a decimal value, Please check your input for site " + currentSiteNumberComboBox.Text, "Error", MessageBoxButton.OK);
+                                return;
+                            }
+                            sector.rtwp = int.Parse(currentRTWPTextBox.Text);
+
+                            ScrollViewer currentScrollViewer = (ScrollViewer)currentSectorGrid.Children[6];
+                            Grid bandsGrid = (Grid)currentScrollViewer.Content;
+
+                            for (int k = 0; k < bandsGrid.Children.Count; k++)
+                            {
+                                CheckBox currentCheckBox = (CheckBox)bandsGrid.Children[k];
+
+                                if (currentCheckBox.IsChecked == true)
+                                {
+                                    sector.sector_bands.Add(currentCheckBox.Content.ToString());
+                                }
+                            }
+
+                            site.sectors.Add(sector);
+                        }
+                    }
+
+                    if (i == 0 || (tempSites.Count != 0 && !tempSites.Exists(x1 => x1.site_serial == site.site_serial)))
+                        tempSites.Add(site);
+                    else
+                    {
+                        MessageBox.Show("Site " + currentSiteNumberComboBox.Text + " is a duplicated site!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
+                }
+
+                complaint.SetComplaintSites(ref tempSites);
+
+                if (viewAddCondition == BASIC_STRUCTS.COMPLAINT_ADD_CONDITION)
+                {
+                    if (!complaint.IssueNewComplaint(selectedCompany.GetCompanyFieldOfWorkId()))
+                        return;
+                }
             }
 
             this.Close();
@@ -1235,7 +1309,7 @@ namespace ntra_missions
                 }
 
                 newCurrentGrid.Children.Add(currentAddSectorIcon);
-                Grid.SetRow(currentAddSectorIcon, 3);
+                Grid.SetRow(currentAddSectorIcon, 5);
                 Grid.SetColumnSpan(currentAddSectorIcon, 3);
 
                 if (!lastItemIsImage)
@@ -1290,6 +1364,8 @@ namespace ntra_missions
             grid.ColumnDefinitions.Add(new ColumnDefinition());
             grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(50) });
 
+            grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(50) });
+            grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(50) });
             grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(50) });
             grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(50) });
             grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(50) });
@@ -1354,6 +1430,44 @@ namespace ntra_missions
             Grid.SetRow(currentSharedWrappanel, 2);
             Grid.SetColumn(currentSharedWrappanel, 0);
 
+            WrapPanel currentAzimuthWrappanel = new WrapPanel();
+            currentAzimuthWrappanel.VerticalAlignment = VerticalAlignment.Center;
+            currentAzimuthWrappanel.HorizontalAlignment = HorizontalAlignment.Center;
+
+            Label currentAzimuthLabel = new Label();
+            currentAzimuthLabel.Style = (Style)FindResource("mediumLabelStyleBlack");
+            currentAzimuthLabel.Content = "Azimuth";
+
+            TextBox currentAzimuthTextBox = new TextBox();
+            currentAzimuthTextBox.Style = (Style)FindResource("miniTextboxStyle");
+            currentAzimuthTextBox.Margin = new Thickness(12, 0, 0, 0);
+
+            currentAzimuthWrappanel.Children.Add(currentAzimuthLabel);
+            currentAzimuthWrappanel.Children.Add(currentAzimuthTextBox);
+
+            grid.Children.Add(currentAzimuthWrappanel);
+            Grid.SetRow(currentAzimuthWrappanel, 3);
+            Grid.SetColumn(currentAzimuthWrappanel, 0);
+
+            WrapPanel currentRTWPWrappanel = new WrapPanel();
+            currentRTWPWrappanel.VerticalAlignment = VerticalAlignment.Center;
+            currentRTWPWrappanel.HorizontalAlignment = HorizontalAlignment.Center;
+
+            Label currentRTWPLabel = new Label();
+            currentRTWPLabel.Style = (Style)FindResource("mediumLabelStyleBlack");
+            currentRTWPLabel.Content = "RTWP";
+
+            TextBox currentRTWPTextBox = new TextBox();
+            currentRTWPTextBox.Style = (Style)FindResource("miniTextboxStyle");
+            currentRTWPTextBox.Margin = new Thickness(12, 0, 0, 0);
+
+            currentRTWPWrappanel.Children.Add(currentRTWPLabel);
+            currentRTWPWrappanel.Children.Add(currentRTWPTextBox);
+
+            grid.Children.Add(currentRTWPWrappanel);
+            Grid.SetRow(currentRTWPWrappanel, 4);
+            Grid.SetColumn(currentRTWPWrappanel, 0);
+
             Label currentSectorBandsLabel = new Label();
             currentSectorBandsLabel.Style = (Style)FindResource("headerLabelStyle");
             currentSectorBandsLabel.FontSize = 20;
@@ -1369,7 +1483,7 @@ namespace ntra_missions
             ScrollViewer currentScrollViewer = new ScrollViewer();
             currentScrollViewer.HorizontalAlignment = HorizontalAlignment.Center;
             currentScrollViewer.VerticalAlignment = VerticalAlignment.Top;
-            currentScrollViewer.Height = 80;
+            //currentScrollViewer.Height = 80;
 
             Grid tempSectorsGrid = new Grid();
             tempSectorsGrid.HorizontalAlignment = HorizontalAlignment.Center;
@@ -1379,7 +1493,7 @@ namespace ntra_missions
 
             grid.Children.Add(currentScrollViewer);
             Grid.SetRow(currentScrollViewer, 1);
-            Grid.SetRowSpan(currentScrollViewer, 3);
+            Grid.SetRowSpan(currentScrollViewer, 7);
             Grid.SetColumn(currentScrollViewer, 1);
 
             FillBandsGrid(ref tempSectorsGrid);
@@ -1396,7 +1510,7 @@ namespace ntra_missions
                 redCrossImage.MouseLeftButtonDown += OnClickRemoveSector;
 
                 grid.Children.Add(redCrossImage);
-                Grid.SetRowSpan(redCrossImage, 4);
+                Grid.SetRowSpan(redCrossImage, 6);
                 Grid.SetColumn(redCrossImage, 2);
             }
 
@@ -1410,7 +1524,7 @@ namespace ntra_missions
             plusIcon.MouseLeftButtonDown += OnClickAddSector;
 
             grid.Children.Add(plusIcon);
-            Grid.SetRow(plusIcon, 3);
+            Grid.SetRow(plusIcon, 5);
             Grid.SetColumnSpan(plusIcon, 3);
 
 
@@ -1610,15 +1724,15 @@ namespace ntra_missions
 
             ///shelt remove site icon mn hena
 
-            if (selectedCompany.GetCompanyFieldOfWorkId() == BASIC_STRUCTS.MOBILE_OPERATOR)
-            {
+            //if (selectedCompany.GetCompanyFieldOfWorkId() == BASIC_STRUCTS.MOBILE_OPERATOR)
+            //{
                 Grid sectorGrid = new Grid();
                 CreateNewSectorGrid(ref sectorGrid, false);
 
                 grid.Children.Add(sectorGrid);
                 Grid.SetRow(sectorGrid, 4);
                 Grid.SetColumnSpan(sectorGrid, 2);
-            }
+            //}
 
 
             grid.Children.Add(removeSiteIcon);

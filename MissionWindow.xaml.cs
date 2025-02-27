@@ -764,14 +764,14 @@ namespace ntra_missions
                     if (!mission.InsertIntoMissionSites())
                         return;
 
-                    for(int i = 0; i < mission.GetSites().Count; i++)
-                    {
-                        if (!mission.complaint.ConfirmSiteStatus(mission.GetSites()[i].site_serial, mission.GetStatusId()))
-                            return;
-                    }
+                    //for(int i = 0; i < mission.GetSites().Count; i++)
+                    //{
+                    //    if (!mission.complaint.ConfirmSiteStatus(mission.GetSites()[i].site_serial, mission.GetStatusId()))
+                    //        return;
+                    //}
 
-                    if (!mission.complaint.UpdateComplaintStatus())
-                        return;
+                    //if (!mission.complaint.UpdateComplaintStatus())
+                    //    return;
                 }
                 else if(missionCondition == BASIC_STRUCTS.MISSION_EDIT_CONDITION)
                 {
@@ -805,8 +805,8 @@ namespace ntra_missions
                     //    }
                     //}
 
-                    if (!mission.complaint.UpdateComplaintStatus())
-                        return;
+                    //if (!mission.complaint.UpdateComplaintStatus())
+                    //    return;
                 }
             }
 

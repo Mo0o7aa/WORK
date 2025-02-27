@@ -1891,6 +1891,10 @@ namespace ntra_missions
 											complaints.complaint_status as complaint_status_id,
 											complaint_sites.site_status as site_status_id,
 											complaint_site_sectors.shared_with,
+                                            complaint_site_sectors.azimuth,
+                                            complaint_site_sectors.status as sector_status_id,
+
+                                            complaint_site_sectors.rtwp,
                                             
 	                                        complaints.complaint_date,
 	                                        
@@ -1908,7 +1912,8 @@ namespace ntra_missions
 											employee_info.name,
                                             complaints.complaint_id,
 											complaint_status.status as complaint_Status,
-											site_status.status as site_status
+											site_status.status as site_status,
+											sector_status.status as sector_status
             
             
                                      from NTRA.dbo.complaints
@@ -1920,7 +1925,8 @@ namespace ntra_missions
                                      and complaint_sites.complaint_serial = complaint_site_sectors.complaint_serial
                                      and complaint_sites.site_serial = complaint_site_sectors.site_serial
                                      left join NTRA.dbo.complaint_site_sector_bands
-                                     on complaint_site_sectors.complaint_serial = complaint_site_sector_bands.complaint_serial
+									 on complaint_site_sectors.company_serial = complaint_site_sector_bands.company_serial
+                                     and complaint_site_sectors.complaint_serial = complaint_site_sector_bands.complaint_serial
                                      and complaint_site_sectors.site_serial = complaint_site_sector_bands.site_serial
                                      and complaint_site_sectors.sector_serial = complaint_site_sector_bands.sector_serial
 									 left join NTRA.dbo.company_sites
@@ -1938,16 +1944,19 @@ namespace ntra_missions
 									 on complaint_sites.site_status = site_status.id
 									 left join get_shared_with
 									 on complaint_site_sectors.shared_with = get_shared_with.serial
+									 left join NTRA.dbo.sector_status
+									 on complaint_site_sectors.status = sector_status.id
                                      order by complaints.date_added DESC";
             
             String sqlQuery = string.Empty;
             sqlQuery = sqlQueryPart1;
             
             BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT SQL_COLUMN_COUNT_STRUCT = new BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT();
-            SQL_COLUMN_COUNT_STRUCT.sql_int = 10;
+            SQL_COLUMN_COUNT_STRUCT.sql_int = 12;
+            SQL_COLUMN_COUNT_STRUCT.sql_money = 1;
             SQL_COLUMN_COUNT_STRUCT.sql_datetime = 1;
-            SQL_COLUMN_COUNT_STRUCT.sql_string = 15;
-            
+            SQL_COLUMN_COUNT_STRUCT.sql_string = 16;
+
             if (!sqlDatabase.GetRows(sqlQuery, SQL_COLUMN_COUNT_STRUCT))
                 return false;
             
@@ -2017,7 +2026,14 @@ namespace ntra_missions
                     tempComplaint.complaint_status = sqlDatabase.rows[i].sql_string[13];
                     
                     tempSite.site_status = sqlDatabase.rows[i].sql_string[14];
-                    
+
+                    tempSector.rtwp = sqlDatabase.rows[i].sql_money[0];
+
+                    tempSector.azimuth = sqlDatabase.rows[i].sql_int[10];
+                    tempSector.sector_status_id = sqlDatabase.rows[i].sql_int[11];
+
+                    tempSector.sector_status = sqlDatabase.rows[i].sql_string[15];
+
                     tempSite.sectors.Add(tempSector);
                     tempComplaint.sites.Add(tempSite);
                     
@@ -2358,12 +2374,12 @@ namespace ntra_missions
             String sqlQuery = "update NTRA.dbo.repeaters set address = N'";
             sqlQuery += mRepeater.address + "', status = ";
             sqlQuery += mRepeater.status_id + ", comment = N'";
-            sqlQuery += mRepeater.comment + "', area = N'";
-            sqlQuery += mRepeater.area + "' where lat ='";
+            sqlQuery += mRepeater.comment + "', date = '";
+            sqlQuery += mRepeater.date + "' where lat ='";
             sqlQuery += mRepeater.latitude + "' and long = '";
             sqlQuery += mRepeater.longitude + "';";
 
-            if (!sqlDatabase.InsertRows(sqlQuery))
+                if (!sqlDatabase.InsertRows(sqlQuery))
                 return false;
 
             return true;

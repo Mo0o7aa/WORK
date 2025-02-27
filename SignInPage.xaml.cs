@@ -45,9 +45,9 @@ namespace ntra_missions
 
         private void PageLoaded(object sender, RoutedEventArgs e)
         {
-            ButtonAutomationPeer peer = new ButtonAutomationPeer(signInButton);
-            IInvokeProvider invokeProv = (IInvokeProvider)peer.GetPattern(PatternInterface.Invoke);
-            invokeProv.Invoke();
+            //ButtonAutomationPeer peer = new ButtonAutomationPeer(signInButton);
+            //IInvokeProvider invokeProv = (IInvokeProvider)peer.GetPattern(PatternInterface.Invoke);
+            //invokeProv.Invoke();
         }
 
         private void OnBtnClickSignIn(object sender, RoutedEventArgs e)

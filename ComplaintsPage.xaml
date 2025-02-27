@@ -38,6 +38,7 @@
                             <MenuItem Header="EMF" Name="emfMenuItem" Click="emfMenuSelection"/>
                             <MenuItem Header="Complaints" Name="ComplaintsMenuItem" IsChecked="True" IsHitTestVisible="False"/>
                             <MenuItem Header="Monitoring Missions" Name="monitoringMenuItem" Click="MonitoringMenuSelection"/>
+                            <MenuItem Header="Repeaters" Name="repeatersMenuItem" Click="RepeatersMenueSelection"/>
                             <MenuItem Header="Inspection Missions" Name="inspectionMenuItem" Click="InspectionMenuSelection"/>
                         </ContextMenu>
                     </MenuItem.ContextMenu>
@@ -132,10 +133,12 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
+                <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             
-            <Button Grid.Column="0" Style="{StaticResource buttonStyle}" Content="Add" Click="OnBtnClickAdd"/>
+            <Button Grid.Column="0" Style="{StaticResource buttonStyle}" Content="Add" Click="OnBtnClickAdd" Visibility="Collapsed"/>
             <Button Grid.Column="1" Style="{StaticResource buttonStyle}" Content="Import" Click="OnBtnClickImport"/>
+            <Button Grid.Column="2" Style="{StaticResource buttonStyle}" Content="Excel Format" Click="OnBtnClickformat"/>
         </Grid>
     </Grid>
 </Page>

@@ -55,9 +55,11 @@ namespace ntra_missions
         public const int MISSION_PENDING_OPERATOR_ACTION_STATUS = 2;
         public const int MISSION_CLOSED_STATUS = 3;
 
-        public const int OPEN_SITE_STATUS = 1;
-        public const int PENDING_SITE_STATUS = 2;
-        public const int CLOSED_SITE_STATUS = 3;
+        public const int INTERFERED_SITE_STATUS = 1;
+        public const int CLEARED_SITE_STATUS = 2;
+
+        public const int INTERFERED_SECTOR_STATUS = 1;
+        public const int CLEARED_SECTOR_STATUS = 2;
 
         public const int OPEN_COMPLAINT_STATUS = 1;
         public const int PENDING_COMPLAINT_STATUS = 2;
@@ -268,6 +270,12 @@ namespace ntra_missions
 
             public int shared_with_id;
             public String shared_with;
+
+            public Decimal rtwp;
+            public int azimuth;
+
+            public int sector_status_id;
+            public string sector_status;
 
             public List<String> sector_bands;
         };

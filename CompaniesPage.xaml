@@ -38,6 +38,7 @@
                             <MenuItem Header="EMF" Name="emfMenuItem" Click="emfMenuSelection"/>
                             <MenuItem Header="Complaints" Name="ComplaintsMenuItem" Click="ComplaintsMenuSelection"/>
                             <MenuItem Header="Monitoring Missions" Name="monitoringMenuItem" Click="MonitoringMenuSelection"/>
+                            <MenuItem Header="Repeaters" Name="repeatersMenuItem" Click="RepeatersMenueSelection"/>
                             <MenuItem Header="Inspection Missions" Name="inspectionMenuItem" Click="InspectionMenuSelection"/>
                         </ContextMenu>
                     </MenuItem.ContextMenu>

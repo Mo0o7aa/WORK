@@ -802,7 +802,8 @@ namespace ntra_missions
 
         private void DashboardMenuSelection(object sender, RoutedEventArgs e)
         {
-
+            DashBoard dashBoard = new DashBoard(ref loggedInUser);
+            NavigationService.Navigate(dashBoard);
         }
 
         private void employeeMenuSelection(object sender, RoutedEventArgs e)
@@ -980,6 +981,11 @@ namespace ntra_missions
             e.Handled = regex.IsMatch(e.Text);
         }
 
+        private void RepeatersMenueSelection(object sender, RoutedEventArgs e)
+        {
+            RepeatersPage repeatersPage = new RepeatersPage(ref loggedInUser);
+            NavigationService.Navigate(repeatersPage);
+        }
     }
 }
 

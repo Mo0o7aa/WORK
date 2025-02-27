@@ -55,8 +55,18 @@ D:\NTRA Software\ntra_missions\ntra_missions\obj\Debug\EMFPage.baml
 D:\NTRA Software\ntra_missions\ntra_missions\obj\Debug\EMFWindow.baml
 D:\NTRA Software\ntra_missions\ntra_missions\obj\Debug\EMFPlanWindow.g.cs
 D:\NTRA Software\ntra_missions\ntra_missions\obj\Debug\EMFPlanWindow.baml
+D:\NTRA\WORK\bin\Debug\ntra_missions.exe.config
+D:\NTRA\WORK\bin\Debug\ntra_missions.exe.manifest
+D:\NTRA\WORK\bin\Debug\ntra_missions.application
+D:\NTRA\WORK\bin\Debug\ntra_missions.exe
+D:\NTRA\WORK\bin\Debug\ntra_missions.pdb
+D:\NTRA\WORK\bin\Debug\LiveCharts.dll
+D:\NTRA\WORK\bin\Debug\LiveCharts.Wpf.dll
+D:\NTRA\WORK\bin\Debug\LiveCharts.pdb
+D:\NTRA\WORK\bin\Debug\LiveCharts.xml
+D:\NTRA\WORK\bin\Debug\LiveCharts.Wpf.pdb
+D:\NTRA\WORK\bin\Debug\LiveCharts.Wpf.xml
 D:\NTRA\WORK\obj\Debug\ntra_missions.csproj.AssemblyReference.cache
-D:\NTRA\WORK\obj\Debug\ntra_missions.csproj.SuggestedBindingRedirects.cache
 D:\NTRA\WORK\obj\Debug\ChangePasswordWindow.g.cs
 D:\NTRA\WORK\obj\Debug\CompaniesPage.g.cs
 D:\NTRA\WORK\obj\Debug\CompanyEquipmentPage.g.cs
@@ -65,13 +75,16 @@ D:\NTRA\WORK\obj\Debug\CompanyWindow.g.cs
 D:\NTRA\WORK\obj\Debug\ComplaintsHistoryWindow.g.cs
 D:\NTRA\WORK\obj\Debug\ComplaintsPage.g.cs
 D:\NTRA\WORK\obj\Debug\ComplaintsWindow.g.cs
+D:\NTRA\WORK\obj\Debug\DashBoard.g.cs
 D:\NTRA\WORK\obj\Debug\EMFPage.g.cs
 D:\NTRA\WORK\obj\Debug\EMFPlanWindow.g.cs
 D:\NTRA\WORK\obj\Debug\EMFWindow.g.cs
 D:\NTRA\WORK\obj\Debug\EmployeesPage.g.cs
 D:\NTRA\WORK\obj\Debug\MainWindow.g.cs
+D:\NTRA\WORK\obj\Debug\MissionFeedbackWindow.g.cs
 D:\NTRA\WORK\obj\Debug\MissionsPage.g.cs
 D:\NTRA\WORK\obj\Debug\MissionWindow.g.cs
+D:\NTRA\WORK\obj\Debug\RepeatersPage.g.cs
 D:\NTRA\WORK\obj\Debug\RepeatersWindow.g.cs
 D:\NTRA\WORK\obj\Debug\SignInPage.g.cs
 D:\NTRA\WORK\obj\Debug\SignInWindow.g.cs
@@ -81,11 +94,6 @@ D:\NTRA\WORK\obj\Debug\SiteWindow.g.cs
 D:\NTRA\WORK\obj\Debug\App.g.cs
 D:\NTRA\WORK\obj\Debug\ntra_missions_MarkupCompile.cache
 D:\NTRA\WORK\obj\Debug\ntra_missions_MarkupCompile.lref
-D:\NTRA\WORK\bin\Debug\ntra_missions.exe.config
-D:\NTRA\WORK\bin\Debug\ntra_missions.exe.manifest
-D:\NTRA\WORK\bin\Debug\ntra_missions.application
-D:\NTRA\WORK\bin\Debug\ntra_missions.exe
-D:\NTRA\WORK\bin\Debug\ntra_missions.pdb
 D:\NTRA\WORK\obj\Debug\App.baml
 D:\NTRA\WORK\obj\Debug\ChangePasswordWindow.baml
 D:\NTRA\WORK\obj\Debug\CompaniesPage.baml
@@ -95,13 +103,16 @@ D:\NTRA\WORK\obj\Debug\CompanyWindow.baml
 D:\NTRA\WORK\obj\Debug\ComplaintsHistoryWindow.baml
 D:\NTRA\WORK\obj\Debug\ComplaintsPage.baml
 D:\NTRA\WORK\obj\Debug\ComplaintsWindow.baml
+D:\NTRA\WORK\obj\Debug\DashBoard.baml
 D:\NTRA\WORK\obj\Debug\EMFPage.baml
 D:\NTRA\WORK\obj\Debug\EMFPlanWindow.baml
 D:\NTRA\WORK\obj\Debug\EMFWindow.baml
 D:\NTRA\WORK\obj\Debug\EmployeesPage.baml
 D:\NTRA\WORK\obj\Debug\MainWindow.baml
+D:\NTRA\WORK\obj\Debug\MissionFeedbackWindow.baml
 D:\NTRA\WORK\obj\Debug\MissionsPage.baml
 D:\NTRA\WORK\obj\Debug\MissionWindow.baml
+D:\NTRA\WORK\obj\Debug\RepeatersPage.baml
 D:\NTRA\WORK\obj\Debug\RepeatersWindow.baml
 D:\NTRA\WORK\obj\Debug\SignInPage.baml
 D:\NTRA\WORK\obj\Debug\SignInWindow.baml
@@ -114,7 +125,6 @@ D:\NTRA\WORK\obj\Debug\ntra_missions.csproj.GenerateResource.cache
 D:\NTRA\WORK\obj\Debug\ntra_missions.csproj.CoreCompileInputs.cache
 D:\NTRA\WORK\obj\Debug\ntra_missions.exe.manifest
 D:\NTRA\WORK\obj\Debug\ntra_missions.application
+D:\NTRA\WORK\obj\Debug\ntra_mis.D2F0A999.Up2Date
 D:\NTRA\WORK\obj\Debug\ntra_missions.exe
 D:\NTRA\WORK\obj\Debug\ntra_missions.pdb
-D:\NTRA\WORK\obj\Debug\RepeatersPage.g.cs
-D:\NTRA\WORK\obj\Debug\RepeatersPage.baml

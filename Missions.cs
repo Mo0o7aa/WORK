@@ -277,7 +277,8 @@ namespace ntra_missions
             String sqlQuery = "update NTRA.dbo.interference_missions set vehichle = ";
             sqlQuery += vehicle_id + ", status = ";
             sqlQuery += missionStatusId + ", mission_date = ";
-            sqlQuery += "'" + mission_date + "', comment = ";
+            sqlQuery += "'" + mission_date + "', end_date = ";
+            sqlQuery += "'" + mission_end_date + "', comment = ";
             sqlQuery += "N'" + missionComment + "' where company_serial = ";
             sqlQuery += complaint.GetCompanySerial() + " and complaint_serial = ";
             sqlQuery += complaint.GetSerial() + " and serial = ";

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -613,25 +614,27 @@ namespace ntra_missions
 
         }
 
-        private void OnBtnClickImport(object sender, RoutedEventArgs e)
+        private void OnBtnClickFormat(object sender, RoutedEventArgs e)
         {
-            System.Windows.Forms.OpenFileDialog fileDialog = new System.Windows.Forms.OpenFileDialog();
+            //System.Windows.Forms.OpenFileDialog fileDialog = new System.Windows.Forms.OpenFileDialog();
+            //
+            //if (fileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            //{
+            //
+            //    String filePath = fileDialog.FileNames[0];
+            //    String fileName = System.IO.Path.GetFileName(filePath);
+            //
+            //
+            //    ExcelExport excelExport = new ExcelExport();
+            //    excelExport.ImportRepeaters(fileName, filePath, ref loggedInUser);
+            //
+            //    if (!commonQueries.GetRepeaters(ref repeaters))
+            //        return;
+            //
+            //    InitializeRepeatersStackPanel();
+            //}
 
-            if (fileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-
-                String filePath = fileDialog.FileNames[0];
-                String fileName = System.IO.Path.GetFileName(filePath);
-
-
-                ExcelExport excelExport = new ExcelExport();
-                excelExport.ImportRepeaters(fileName, filePath, ref loggedInUser);
-
-                if (!commonQueries.GetRepeaters(ref repeaters))
-                    return;
-
-                InitializeRepeatersStackPanel();
-            }
+            Process.Start("\\\\GIZA-ASAMEH\\Giza Software\\Excel formats\\repeaters format.xlsx");
         }
 
 
@@ -698,7 +701,8 @@ namespace ntra_missions
 
         private void DashboardMenuSelection(object sender, RoutedEventArgs e)
         {
-
+            DashBoard dashBoard = new DashBoard(ref loggedInUser);
+            NavigationService.Navigate(dashBoard);
         }
 
         private void employeeMenuSelection(object sender, RoutedEventArgs e)

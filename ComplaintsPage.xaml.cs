@@ -166,10 +166,10 @@ namespace ntra_missions
                 grid.RowDefinitions.Add(new RowDefinition());
                 grid.RowDefinitions.Add(new RowDefinition());
                 grid.RowDefinitions.Add(new RowDefinition());
-                grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(350)});
-                grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(350)});
+                grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(250)});
+                grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(250)});
                 grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(400)});
-                grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(300)});
+                grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(200)});
 
                 Label complaintHeaderLabel = new Label();
                 complaintHeaderLabel.Style = (Style)FindResource("stackPanelHeaderLabelStyleBlue");
@@ -320,8 +320,12 @@ namespace ntra_missions
 
 
                 expanderstackPanel.Children.Add(viewButton);
-                expanderstackPanel.Children.Add(editButton);
+
+                if (complaints[i].added_by_id == loggedInUser.GetEmployeeId())
+                    expanderstackPanel.Children.Add(editButton);
+
                 expanderstackPanel.Children.Add(AddMissionButton);
+
                 if (complaints[i].added_by_id == loggedInUser.GetEmployeeId())
                     expanderstackPanel.Children.Add(attachmentButton);
 
@@ -574,7 +578,8 @@ namespace ntra_missions
         }
         private void DashboardMenuSelection(object sender, RoutedEventArgs e)
         {
-
+            DashBoard dashBoard = new DashBoard(ref loggedInUser);
+            NavigationService.Navigate(dashBoard);
         }
 
         private void employeeMenuSelection(object sender, RoutedEventArgs e)
@@ -788,6 +793,17 @@ namespace ntra_missions
 
                 InitializeCompaintsStackPanel();
             }
+        }
+
+        private void OnBtnClickformat(object sender, RoutedEventArgs e)
+        {
+            Process.Start("\\\\GIZA-ASAMEH\\Giza Software\\Excel formats\\complaint format.xlsx");
+        }
+
+        private void RepeatersMenueSelection(object sender, RoutedEventArgs e)
+        {
+            RepeatersPage repeatersPage = new RepeatersPage(ref loggedInUser);
+            NavigationService.Navigate(repeatersPage);
         }
     }
 }

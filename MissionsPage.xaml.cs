@@ -170,10 +170,10 @@ namespace ntra_missions
                 missionGrid.RowDefinitions.Add(new RowDefinition());
                 missionGrid.RowDefinitions.Add(new RowDefinition());
         
-                missionGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(300)});
-                missionGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(500)});
+                missionGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(250)});
                 missionGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(400)});
-                missionGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(300)});
+                missionGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(350)});
+                missionGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(200)});
         
                 BrushConverter brushConverter = new BrushConverter();
         
@@ -212,11 +212,11 @@ namespace ntra_missions
                     wrapPanel.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
 
                     Label tempEngineerLabel = new Label();
-                    tempEngineerLabel.Content = "Eng." + (j + 1) + " :";
-                    tempEngineerLabel.Style = (Style)FindResource("labelStyleBlack");
+                    tempEngineerLabel.Content = "Eng. :";
+                    tempEngineerLabel.Style = (Style)FindResource("miniLabelStyleBlack");
 
                     Label tempNameLabel = new Label();
-                    tempNameLabel.Style = (Style)FindResource("mediumLabelStyle");
+                    tempNameLabel.Style = (Style)FindResource("wideLabelStyle");
                     tempNameLabel.Content = missions[i].engineers[j].value;
 
                     wrapPanel.Children.Add(tempEngineerLabel);
@@ -352,24 +352,24 @@ namespace ntra_missions
                 //Grid.SetRow(equipmentScrollViewer, 2);
                 //Grid.SetColumn(equipmentScrollViewer, 0);
 
-                WrapPanel repeatersCountWrapPanel = new WrapPanel();
-                repeatersCountWrapPanel.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
-                repeatersCountWrapPanel.VerticalAlignment = VerticalAlignment.Center;
-
-                Label repeatersCountLabel = new Label();
-                repeatersCountLabel.Content = "Repeaters: ";
-                repeatersCountLabel.Style = (Style)FindResource("labelStyle");
-
-                Label repeatersCountValueLabel = new Label();
-                //repeatersCountValueLabel.Content = missions[i].repeaters.Count;
-                repeatersCountValueLabel.Style = (Style)FindResource("labelStyleBlack");
-
-                repeatersCountWrapPanel.Children.Add(repeatersCountLabel);
-                repeatersCountWrapPanel.Children.Add(repeatersCountValueLabel);
-
-                missionGrid.Children.Add(repeatersCountWrapPanel);
-                Grid.SetRow(repeatersCountWrapPanel, 1);
-                Grid.SetColumn(repeatersCountWrapPanel, 1);
+                //WrapPanel repeatersCountWrapPanel = new WrapPanel();
+                //repeatersCountWrapPanel.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
+                //repeatersCountWrapPanel.VerticalAlignment = VerticalAlignment.Center;
+                //
+                //Label repeatersCountLabel = new Label();
+                //repeatersCountLabel.Content = "Repeaters: ";
+                //repeatersCountLabel.Style = (Style)FindResource("labelStyle");
+                //
+                //Label repeatersCountValueLabel = new Label();
+                ////repeatersCountValueLabel.Content = missions[i].repeaters.Count;
+                //repeatersCountValueLabel.Style = (Style)FindResource("labelStyleBlack");
+                //
+                //repeatersCountWrapPanel.Children.Add(repeatersCountLabel);
+                //repeatersCountWrapPanel.Children.Add(repeatersCountValueLabel);
+                //
+                //missionGrid.Children.Add(repeatersCountWrapPanel);
+                //Grid.SetRow(repeatersCountWrapPanel, 1);
+                //Grid.SetColumn(repeatersCountWrapPanel, 1);
 
                 Border statusBorder = new Border();
                 statusBorder.Style = (Style)FindResource("statusBorderStyle");
@@ -454,6 +454,11 @@ namespace ntra_missions
                 editButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
                 editButton.Click += OnClickEdit;
 
+                Button feedbackButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
+                feedbackButton.Content = "Add Feedback";
+                feedbackButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
+                feedbackButton.Click += OnClickFeedback;
+
                 Button attachmentButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
                 attachmentButton.Content = "Attach File";
                 attachmentButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
@@ -482,10 +487,12 @@ namespace ntra_missions
         
                 expanderStackPanel.Children.Add(viewButton);
                 expanderStackPanel.Children.Add(viewComplaintButton);
-                expanderStackPanel.Children.Add(editButton);
-                expanderStackPanel.Children.Add(repeaterButton);
-                expanderStackPanel.Children.Add(showRepeatersButton);
-                expanderStackPanel.Children.Add(attachmentButton);
+                if (missions[i].added_by_id == loggedInUser.GetEmployeeId())
+                    expanderStackPanel.Children.Add(editButton);
+                expanderStackPanel.Children.Add(feedbackButton);
+                //expanderStackPanel.Children.Add(showRepeatersButton);
+                if (missions[i].added_by_id == loggedInUser.GetEmployeeId())
+                    expanderStackPanel.Children.Add(attachmentButton);
                 expanderStackPanel.Children.Add(wordExportButton);
                 //expanderStackPanel.Children.Add(deleteButton);
                 
@@ -541,7 +548,8 @@ namespace ntra_missions
 
                         currentWrapPanel.Children.Add(currentFileImage);
                         currentWrapPanel.Children.Add(currentFile);
-                        currentWrapPanel.Children.Add(currentRemoveImage);
+                        if (missions[i].added_by_id == loggedInUser.GetEmployeeId())
+                            currentWrapPanel.Children.Add(currentRemoveImage);
 
                         fileStackPanel.Children.Add(currentWrapPanel);
                     }
@@ -703,6 +711,23 @@ namespace ntra_missions
             SiteWindow siteWindow = new SiteWindow(ref loggedInUser, ref currentSite, ref viewAddCondition);
 
             siteWindow.Show();
+        }
+
+        private void OnClickFeedback(object sender, RoutedEventArgs e)
+        {
+            Button currentButton = (Button)sender;
+            StackPanel currentStackPanel = (StackPanel)currentButton.Parent;
+            Expander currentExpander = (Expander)currentStackPanel.Parent;
+
+            Missions mission = new Missions();
+
+            if (!mission.InitializeMission(int.Parse(currentExpander.Tag.ToString().Split(',')[0]), int.Parse(currentExpander.Tag.ToString().Split(',')[1]), int.Parse(currentExpander.Tag.ToString().Split(',')[2])))
+                return;
+
+            MissionFeedbackWindow missionFeedBackWindow = new MissionFeedbackWindow(ref loggedInUser, ref mission);
+            missionFeedBackWindow.Closed += OnClosedMissionWindow;
+            missionFeedBackWindow.Show();
+
         }
 
         ///////BUTTON CLICK HANDLERS////////////////////////
@@ -940,7 +965,8 @@ namespace ntra_missions
         
         private void DashboardMenuSelection(object sender, RoutedEventArgs e)
         {
-
+            DashBoard dashBoard = new DashBoard(ref loggedInUser);
+            NavigationService.Navigate(dashBoard);
         }
 
         private void InspectionMenuSelection(object sender, RoutedEventArgs e)

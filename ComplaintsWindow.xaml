@@ -164,6 +164,8 @@
                                     <RowDefinition Height="50"/>
                                     <RowDefinition Height="50"/>
                                     <RowDefinition Height="50"/>
+                                    <RowDefinition Height="50"/>
+                                    <RowDefinition Height="50"/>
                                     <RowDefinition Height="30"/>
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
@@ -187,6 +189,16 @@
                                     <ComboBox Name="sharedComboBox" Style="{StaticResource miniComboBoxStyle}" Margin="12,0,0,0" />
                                 </WrapPanel>
 
+                                <WrapPanel Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" >
+                                    <Label Content="Azimuth: " Style="{StaticResource mediumLabelStyleBlack}"/>
+                                    <TextBox Name="azimuthTextBox" Style="{StaticResource miniTextboxStyle}" Margin="12,0,0,0" />
+                                </WrapPanel>
+                                
+                                <WrapPanel Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" >
+                                    <Label Content="RTWP: " Style="{StaticResource mediumLabelStyleBlack}"/>
+                                    <TextBox Name="rtwpTextBox" Style="{StaticResource miniTextboxStyle}" Margin="12,0,0,0" />
+                                </WrapPanel>
+
 
                                 <Label Grid.Row="0" Grid.Column="1" Content="Sector Bands" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Background="#000080" FontSize="20"  Style="{StaticResource headerLabelStyle}"/>
 
@@ -198,7 +210,7 @@
                                     </Grid>
                                 </ScrollViewer>
 
-                                <Image Name="addSectorIcon" Grid.Row="3" Grid.ColumnSpan="3" HorizontalAlignment="Center" VerticalAlignment="Center" Source="\Photos\plus_icon.png" Height="30" Width="30" ToolTip="Add Sector" MouseLeftButtonDown="OnClickAddSector"/>
+                                <Image Name="addSectorIcon" Grid.Row="5" Grid.ColumnSpan="3" HorizontalAlignment="Center" VerticalAlignment="Center" Source="\Photos\plus_icon.png" Height="30" Width="30" ToolTip="Add Sector" MouseLeftButtonDown="OnClickAddSector"/>
                             </Grid>
                         </Grid>
                     </Border>

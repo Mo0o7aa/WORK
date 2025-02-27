@@ -76,6 +76,10 @@ namespace ntra_missions
 											complaints.complaint_status as complaint_status_id,
 											complaint_sites.site_status as site_status_id,
 											complaint_site_sectors.shared_with,
+                                            complaint_site_sectors.azimuth,
+                                            complaint_site_sectors.status as sector_status_id,
+
+                                            complaint_site_sectors.rtwp,
                                             
 	                                        complaints.complaint_date,
 	                                        
@@ -93,7 +97,8 @@ namespace ntra_missions
 											employee_info.name,
                                             complaints.complaint_id,
 											complaint_status.status as complaint_Status,
-											site_status.status as site_status
+											site_status.status as site_status,
+											sector_status.status as sector_status
             
             
                                      from NTRA.dbo.complaints
@@ -124,6 +129,8 @@ namespace ntra_missions
 									 on complaint_sites.site_status = site_status.id
 									 left join get_shared_with
 									 on complaint_site_sectors.shared_with = get_shared_with.serial
+									 left join NTRA.dbo.sector_status
+									 on complaint_site_sectors.status = sector_status.id
                                      where complaints.company_serial = ";
 
             String sqlQUeryPart2 = " and complaints.serial = ";
@@ -134,9 +141,10 @@ namespace ntra_missions
             sqlQuery += serial;
             
             BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT SQL_COLUMN_COUNT_STRUCT = new BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT();
-            SQL_COLUMN_COUNT_STRUCT.sql_int = 10;
+            SQL_COLUMN_COUNT_STRUCT.sql_int = 12;
+            SQL_COLUMN_COUNT_STRUCT.sql_money = 1;
             SQL_COLUMN_COUNT_STRUCT.sql_datetime = 1;
-            SQL_COLUMN_COUNT_STRUCT.sql_string = 15;
+            SQL_COLUMN_COUNT_STRUCT.sql_string = 16;
             
             if (!sql.GetRows(sqlQuery, SQL_COLUMN_COUNT_STRUCT))
                 return false;
@@ -176,6 +184,10 @@ namespace ntra_missions
                     tempSite.city_id = sql.rows[i].sql_int[5];
                     tempSite.site_status_id = sql.rows[i].sql_int[8];
                     tempSector.shared_with_id = sql.rows[i].sql_int[9];
+                    tempSector.azimuth = sql.rows[i].sql_int[10];
+                    tempSector.sector_status_id = sql.rows[i].sql_int[11];
+
+                    tempSector.rtwp = sql.rows[i].sql_money[0];
 
 
                     tempSite.region = sql.rows[i].sql_string[1];
@@ -186,6 +198,7 @@ namespace ntra_missions
                     tempSector.shared_with = sql.rows[i].sql_string[6];
                 
                     tempSector.sector_number = sql.rows[i].sql_string[7];
+                    tempSector.sector_status = sql.rows[i].sql_string[15];
 
                     if(sql.rows[i].sql_string[8] != "")
                         tempSector.sector_bands.Add(sql.rows[i].sql_string[8]);
@@ -256,17 +269,17 @@ namespace ntra_missions
 
         public bool EditComplaint(int mFieldOfWorkId)
         {
-            if (mFieldOfWorkId == BASIC_STRUCTS.MOBILE_OPERATOR)
-            {
-                if (!DeleteSectorBands())
-                    return false;
-
-                if (!DeleteSiteSectors())
-                    return false;
-            }
-
-            if (!DeleteComplaintSites())
-                return false;
+            //if (mFieldOfWorkId == BASIC_STRUCTS.MOBILE_OPERATOR)
+            //{
+            //    if (!DeleteSectorBands())
+            //        return false;
+            //
+            //    if (!DeleteSiteSectors())
+            //        return false;
+            //}
+            //
+            //if (!DeleteComplaintSites())
+            //    return false;
 
 
             complaintId = companyName + "-";
@@ -286,18 +299,18 @@ namespace ntra_missions
             if (!UpdateComplaint())
                 return false;
 
-            if (!InsertIntoComplaintSites())
-                return false;
-
-
-            if (mFieldOfWorkId == BASIC_STRUCTS.MOBILE_OPERATOR)
-            {
-                if (!InsertIntoSiteSectors())
-                    return false;
-
-                if (!InsertIntoSectorBands())
-                    return false;
-            }
+            //if (!InsertIntoComplaintSites())
+            //    return false;
+            //
+            //
+            //if (mFieldOfWorkId == BASIC_STRUCTS.MOBILE_OPERATOR)
+            //{
+            //    if (!InsertIntoSiteSectors())
+            //        return false;
+            //
+            //    if (!InsertIntoSectorBands())
+            //        return false;
+            //}
 
             return true;
 
@@ -445,9 +458,12 @@ namespace ntra_missions
                     sqlQuery += sites[i].sectors[j].sector_number + "','";
                     sqlQuery += sites[i].sectors[j].rru + "',";
                     if (sites[i].sectors[j].shared_with_id != 0)
-                        sqlQuery += sites[i].sectors[j].shared_with_id + ");";
+                        sqlQuery += sites[i].sectors[j].shared_with_id + ",";
                     else
-                        sqlQuery += "null);";
+                        sqlQuery += "null,";
+                    sqlQuery += sites[i].sectors[j].rtwp + ",";
+                    sqlQuery += sites[i].sectors[j].azimuth + ",";
+                    sqlQuery += sites[i].sectors[j].sector_status_id + ")";
                     if (!sql.InsertRows(sqlQuery))
                         return false;
                 }
@@ -579,9 +595,9 @@ namespace ntra_missions
 
             sqlQuery = sqlQueryPart1;
             if (mMissionStatus == BASIC_STRUCTS.MISSION_PENDING_NTRA_ACTION_STATUS || mMissionStatus == BASIC_STRUCTS.MISSION_PENDING_OPERATOR_ACTION_STATUS)
-                sqlQuery += BASIC_STRUCTS.PENDING_SITE_STATUS;
+                sqlQuery += BASIC_STRUCTS.INTERFERED_SITE_STATUS;
             else
-                sqlQuery += BASIC_STRUCTS.CLOSED_SITE_STATUS;
+                sqlQuery += BASIC_STRUCTS.CLEARED_SITE_STATUS;
             sqlQuery += sqlQueryPart2;
             sqlQuery += GetCompanySerial();
             sqlQuery += sqlQueryPart3;
@@ -594,27 +610,102 @@ namespace ntra_missions
 
             return true;
         }
-
-        public bool UpdateSiteStatus(int mSiteSerial, int mSiteStatus)
+        public bool UpdateSectorStatus(int mSiteSerial, int mSectorSerial, int mSectorStatus)
         {
             String sqlQuery = string.Empty;
 
-            String sqlQueryPart1 = @"update NTRA.dbo.complaint_sites set site_status = ";
+            String sqlQueryPart1 = @"update NTRA.dbo.complaint_site_sectors set status = ";
             String sqlQueryPart2 = @" where company_serial = ";
             String sqlQueryPart3 = @" and complaint_Serial =   ";
             String sqlQueryPart4 = @" and site_serial = ";
+            String sqlQueryPart5 = @" and sector_serial = ";
 
             sqlQuery = sqlQueryPart1;
-            sqlQuery += mSiteStatus;
+            sqlQuery += mSectorStatus;
             sqlQuery += sqlQueryPart2;
             sqlQuery += GetCompanySerial();
             sqlQuery += sqlQueryPart3;
             sqlQuery += GetSerial();
             sqlQuery += sqlQueryPart4;
             sqlQuery += mSiteSerial;
+            sqlQuery += sqlQueryPart5;
+            sqlQuery += mSectorSerial;
 
             if (!sql.InsertRows(sqlQuery))
                 return false;
+
+            return true;
+        }
+
+        public bool UpdateSiteStatus(int mSiteSerial)
+        {
+            String sqlQuery = string.Empty;
+
+            String sqlQueryPart1 = @"select status
+                                     from NTRA.dbo.complaint_site_sectors
+                                     where company_serial =";
+            String sqlQueryPart2 = @" and complaint_serial = ";
+            String sqlQueryPart3 = @" and site_serial = ";
+            String sqlQueryPart4 = @" and status = ";
+
+            sqlQuery = sqlQueryPart1;
+            sqlQuery += GetCompanySerial();
+            sqlQuery += sqlQueryPart2;
+            sqlQuery += GetSerial();
+            sqlQuery += sqlQueryPart3;
+            sqlQuery += mSiteSerial;
+            sqlQuery += sqlQueryPart4;
+            sqlQuery += BASIC_STRUCTS.INTERFERED_SECTOR_STATUS;
+
+            BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT SQL_COLUMN_COUNT_STRUCT = new BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT();
+            SQL_COLUMN_COUNT_STRUCT.sql_int = 1;
+
+            if (!sql.GetRows(sqlQuery, SQL_COLUMN_COUNT_STRUCT))
+                return false;
+
+            if (sql.rows.Count == 0)
+            {
+                sqlQuery = String.Empty;
+
+                String sqlQueryPart7 = @"update NTRA.dbo.complaint_sites set site_status = ";
+                String sqlQueryPart8 = @" where company_serial = ";
+                String sqlQueryPart9 = @" and complaint_serial = ";
+                String sqlQueryPart10 = @" and site_serial = ";
+
+                sqlQuery = sqlQueryPart7;
+                sqlQuery += BASIC_STRUCTS.CLEARED_SITE_STATUS;
+                sqlQuery += sqlQueryPart8;
+                sqlQuery += GetCompanySerial();
+                sqlQuery += sqlQueryPart9;
+                sqlQuery += GetSerial();
+                sqlQuery += sqlQueryPart10;
+                sqlQuery += mSiteSerial;
+
+                if (!sql.InsertRows(sqlQuery))
+                    return false;
+            }
+            else
+            {
+                sqlQuery = String.Empty;
+
+                String sqlQueryPart11 = @"update NTRA.dbo.complaint_sites set site_status = ";
+                String sqlQueryPart12 = @" where company_serial = ";
+                String sqlQueryPart13 = @" and complaint_serial = ";
+                String sqlQueryPart14 = @" and site_serial = ";
+
+                sqlQuery = sqlQueryPart11;
+                sqlQuery += BASIC_STRUCTS.INTERFERED_SITE_STATUS;
+                sqlQuery += sqlQueryPart12;
+                sqlQuery += GetCompanySerial();
+                sqlQuery += sqlQueryPart13;
+                sqlQuery += GetSerial();
+                sqlQuery += sqlQueryPart14;
+                sqlQuery += mSiteSerial;
+
+                if (!sql.InsertRows(sqlQuery))
+                    return false;
+
+            }
 
             return true;
         }
@@ -635,7 +726,7 @@ namespace ntra_missions
             sqlQuery += sqlQueryPart3;
             sqlQuery += mSiteSerial;
             sqlQuery += sqlQueryPart4;
-            sqlQuery += BASIC_STRUCTS.CLOSED_SITE_STATUS;
+            sqlQuery += BASIC_STRUCTS.CLEARED_SITE_STATUS;
 
             BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT SQL_COLUMN_COUNT_STRUCT = new BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT();
             SQL_COLUMN_COUNT_STRUCT.sql_int = 1;
@@ -653,28 +744,18 @@ namespace ntra_missions
         {
             String sqlQuery = string.Empty;
 
-            String sqlQueryPart1 = @"select complaint_sites.site_status
-                                     from NTRA.dbo.complaints
-                                     left join NTRA.dbo.complaint_sites
-                                     on complaint_sites.company_serial = complaints.company_serial
-                                     and complaint_sites.complaint_serial = complaints.serial
-                                     where complaints.company_serial =";
-            String sqlQueryPart2 = @" and complaints.serial = ";
-            String sqlQueryPart3 = @" and complaint_sites.site_status = 1";
-            String sqlQueryPart4 = @" or complaints.company_serial = ";
-            String sqlQueryPart5 = @" and complaints.serial = ";
-            String sqlQueryPart6 = @" and complaint_sites.site_status = 2";
+            String sqlQueryPart1 = @"select site_status
+                                     from NTRA.dbo.complaint_sites
+                                     where company_serial =";
+            String sqlQueryPart2 = @" and complaint_serial = ";
+            String sqlQueryPart3 = @" and site_status = ";
 
             sqlQuery = sqlQueryPart1;
             sqlQuery += GetCompanySerial();
             sqlQuery += sqlQueryPart2;
             sqlQuery += GetSerial();
             sqlQuery += sqlQueryPart3;
-            sqlQuery += sqlQueryPart4;
-            sqlQuery += GetCompanySerial();
-            sqlQuery += sqlQueryPart5;
-            sqlQuery += GetSerial();
-            sqlQuery += sqlQueryPart6;
+            sqlQuery += BASIC_STRUCTS.INTERFERED_SITE_STATUS;
 
             BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT SQL_COLUMN_COUNT_STRUCT = new BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT();
             SQL_COLUMN_COUNT_STRUCT.sql_int = 1;
@@ -686,12 +767,15 @@ namespace ntra_missions
             {
                 sqlQuery = String.Empty;
 
-                String sqlQueryPart7 = @"update NTRA.dbo.complaints set complaint_status = 3 where company_serial = ";
-                String sqlQueryPart8 = @" and serial = ";
+                String sqlQueryPart7 = @"update NTRA.dbo.complaints set complaint_status = ";
+                String sqlQueryPart8 = @"where company_serial = ";
+                String sqlQueryPart9 = @"and serial = ";
 
                 sqlQuery = sqlQueryPart7;
-                sqlQuery += GetCompanySerial();
+                sqlQuery += BASIC_STRUCTS.CLOSED_COMPLAINT_STATUS;
                 sqlQuery += sqlQueryPart8;
+                sqlQuery += GetCompanySerial();
+                sqlQuery += sqlQueryPart9;
                 sqlQuery += GetSerial();
 
                 if (!sql.InsertRows(sqlQuery))
@@ -701,12 +785,15 @@ namespace ntra_missions
             {
                 sqlQuery = String.Empty;
 
-                String sqlQueryPart9 = @"update NTRA.dbo.complaints set complaint_status = 2 where company_serial = ";
-                String sqlQueryPart10 = @" and serial = ";
+                String sqlQueryPart10 = @"update NTRA.dbo.complaints set complaint_status = ";
+                String sqlQueryPart11 = @"where company_serial = ";
+                String sqlQueryPart12 = @"and serial = ";
 
-                sqlQuery = sqlQueryPart9;
+                sqlQuery = sqlQueryPart10;
+                sqlQuery += BASIC_STRUCTS.PENDING_COMPLAINT_STATUS;
+                sqlQuery += sqlQueryPart11;
                 sqlQuery += GetCompanySerial();
-                sqlQuery += sqlQueryPart10;
+                sqlQuery += sqlQueryPart12;
                 sqlQuery += GetSerial();
 
                 if (!sql.InsertRows(sqlQuery))

@@ -147,7 +147,7 @@
 
             <Button Grid.Column="0" Style="{StaticResource buttonStyle}" Content="Add" Click="OnBtnClickAdd"/>
             <Button Grid.Column="1" Style="{StaticResource buttonStyle}" Content="Export" Click="OnBtnClickExport"/>
-            <Button Grid.Column="2" Style="{StaticResource buttonStyle}" Content="Import" Click="OnBtnClickImport"/>
+            <Button Grid.Column="2" Style="{StaticResource buttonStyle}" Content="Excel Format" Click="OnBtnClickFormat"/>
             <Button Grid.Column="3" Style="{StaticResource buttonStyle}" Content="Re Import" Click="OnBtnClickReImport"/>
             
         </Grid>

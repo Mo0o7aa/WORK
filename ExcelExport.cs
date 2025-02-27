@@ -258,7 +258,7 @@ namespace ntra_missions
                 Excel.Worksheet workSheet = excelApp.ActiveSheet;
 
                 int rowNumber = 2;
-                int maxColumn = 12;
+                int maxColumn = 15;
 
                 int companyNameColumn = 0;
                 int siteNameColumn = 0;
@@ -268,6 +268,8 @@ namespace ntra_missions
                 int longColumn = 0;
                 int sectorColumn = 0;
                 int bandColumn = 0;
+                int azimuthColumn = 0;
+                int rtwpColumn = 0;
 
                 for (int i = 1; i < maxColumn; i++)
                 {
@@ -328,6 +330,18 @@ namespace ntra_missions
                         continue;
                     }
 
+                    if (workSheet.Cells[1, i].Value.ToString() == @"RTWP" || workSheet.Cells[1, i].Value.ToString() == "rtwp")
+                    {
+                        rtwpColumn = i;
+                        continue;
+                    }
+
+                    if (workSheet.Cells[1, i].Value.ToString() == @"Azimuth" || workSheet.Cells[1, i].Value.ToString() == "AZIMUTH" || workSheet.Cells[1, i].Value.ToString() == "azimuth")
+                    {
+                        azimuthColumn = i;
+                        continue;
+                    }
+
                 }
 
                 if (companyNameColumn == 0)
@@ -382,6 +396,20 @@ namespace ntra_missions
                 if (bandColumn == 0)
                 {
                     MessageBox.Show("Excel sheet is not in the correct format for import, Band column doesn't exist");
+                    excelWorkBook.Close();
+                    return;
+                }
+
+                if (azimuthColumn == 0)
+                {
+                    MessageBox.Show("Excel sheet is not in the correct format for import, Azimuth column doesn't exist");
+                    excelWorkBook.Close();
+                    return;
+                }
+
+                if (rtwpColumn == 0)
+                {
+                    MessageBox.Show("Excel sheet is not in the correct format for import, RTWP column doesn't exist");
                     excelWorkBook.Close();
                     return;
                 }
@@ -557,12 +585,55 @@ namespace ntra_missions
                             return;
                         }
 
+                        if (workSheet.Cells[rowNumber, azimuthColumn].Value2 != null)
+                        {
+                            String temp = workSheet.Cells[rowNumber, azimuthColumn].Value.ToString();
+                            bool numeric = int.TryParse(workSheet.Cells[rowNumber, azimuthColumn].Value.ToString(), out int n);
+
+                            if (numeric)
+                            {
+                                tempSector.azimuth = int.Parse(workSheet.Cells[rowNumber, azimuthColumn].Value.ToString());
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("Value of cell in row '" + rowNumber + "' and column " + azimuthColumn + " cant be null", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            excelWorkBook.Close();
+                            return;
+                        }
+
+                        if (workSheet.Cells[rowNumber, rtwpColumn].Value2 != null)
+                        {
+                            String temp = workSheet.Cells[rowNumber, rtwpColumn].Value.ToString();
+                            bool numeric = decimal.TryParse(workSheet.Cells[rowNumber, rtwpColumn].Value.ToString(), out decimal n);
+
+                            if (numeric)
+                            {
+                                tempSector.rtwp = decimal.Parse(workSheet.Cells[rowNumber, rtwpColumn].Value.ToString());
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("Value of cell in row '" + rowNumber + "' and column " + rtwpColumn + " cant be null", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            excelWorkBook.Close();
+                            return;
+                        }
+
 
                         tempSector.rru = "On Tower";
+                        tempSector.sector_status = "Interfered";
+                        tempSector.sector_status_id = BASIC_STRUCTS.INTERFERED_SECTOR_STATUS;
 
-
-                        tempSite.site_status_id = BASIC_STRUCTS.OPEN_SITE_STATUS;
-                        tempSite.site_status = "Open";
+                        tempSite.site_status_id = BASIC_STRUCTS.INTERFERED_SITE_STATUS;
+                        tempSite.site_status = "Interfered";
                         
 
                         if (complaint.sites.Exists(x1 => x1.site_number == tempSite.site_number))
@@ -797,13 +868,22 @@ namespace ntra_missions
                         if (workSheet.Cells[rowNumber, cityColumn].Value2 != null)
                         {
                             site.SetCity(workSheet.Cells[rowNumber, cityColumn].Value.ToString());
-                            site.SetCityId(cities[cities.FindIndex(x1 => x1.value == site.GetCity())].key);
-                            if(site.GetCityId() == 0)
+                            try
                             {
-                                MessageBox.Show("City in row '" + rowNumber + "' is not correct", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                                excelWorkBook.Close();
-                                return;
-                            }
+                                site.SetCityId(cities[cities.FindIndex(x1 => x1.value == site.GetCity())].key);
+								if (site.GetCityId() == 0)
+								{
+									MessageBox.Show("City in row '" + rowNumber + "' is not correct", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+									excelWorkBook.Close();
+									return;
+								}
+							}
+                            catch
+                            {
+								MessageBox.Show("City '" + site.GetCity() + "' is not correct! Check spelling and try again!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                                break;
+							}
+                            
 
                         }
                         else
@@ -882,24 +962,27 @@ namespace ntra_missions
 
                 }
 
-                String errorMessage = "Sites ";
-
-                for (int i = 0; i < existingSites.Count; i++)
+                if (existingSites.Count > 0)
                 {
-                    if (!errorMessage.Contains(existingSites[i]))
-                    {
-                        errorMessage += existingSites[i];
+                    String errorMessage = "Sites ";
 
-                        if (i != existingSites.Count - 1)
+                    for (int i = 0; i < existingSites.Count; i++)
+                    {
+                        if (!errorMessage.Contains(existingSites[i]))
                         {
-                            errorMessage += ", ";
+                            errorMessage += existingSites[i];
+
+                            if (i != existingSites.Count - 1)
+                            {
+                                errorMessage += ", ";
+                            }
                         }
                     }
+
+                    errorMessage += " already exists in the database!";
+
+                    MessageBox.Show(errorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-
-                errorMessage += " already exists in the database!";
-
-                MessageBox.Show(errorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 
                 excelWorkBook.Close();
 
@@ -1644,9 +1727,10 @@ namespace ntra_missions
             excelWorkSheet.Cells[1, 3] = "Area";
             excelWorkSheet.Cells[1, 4] = "Lat";
             excelWorkSheet.Cells[1, 5] = "Long";
-            excelWorkSheet.Cells[1, 6] = "Adress";
+            excelWorkSheet.Cells[1, 6] = "Address";
             excelWorkSheet.Cells[1, 7] = "Status";
             excelWorkSheet.Cells[1, 8] = "Comment";
+            excelWorkSheet.Cells[1, 9] = "Date";
 
 
 
@@ -1663,6 +1747,7 @@ namespace ntra_missions
                 excelWorkSheet.Cells[rowNumber, 6] = repeaters[i].address;
                 excelWorkSheet.Cells[rowNumber, 7] = repeaters[i].status;
                 excelWorkSheet.Cells[rowNumber, 8] = repeaters[i].comment;
+                excelWorkSheet.Cells[rowNumber, 9] = repeaters[i].date;
 
                 rowNumber++;
             }
