@@ -289,6 +289,8 @@ namespace ntra_missions
             public String reason_of_interference;
 
             public String comment;
+
+            public String region;
         };
 
         public struct MISSION_EQUIPMENT_STRUCT

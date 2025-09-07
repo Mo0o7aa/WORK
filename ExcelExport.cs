@@ -1703,6 +1703,77 @@ namespace ntra_missions
 
         }
 
+        public void ExportComplaint(Complaints complaint)
+        {
+            var excelApp = new Excel.Application();
+            excelApp.Visible = false;
+
+            Excel.Workbooks excelWorkBooks = null;
+            Excel.Workbook excelWorkBook = null;
+            Excel.Worksheet excelWorkSheet = null;
+
+            excelWorkBooks = excelApp.Workbooks;
+            excelApp.Workbooks.Add();
+            excelWorkBook = excelWorkBooks[1];
+            excelWorkSheet = excelWorkBook.Worksheets[1];
+
+            object misValue = System.Reflection.Missing.Value;
+
+
+            Microsoft.Office.Interop.Excel.Range columnsNameRange;
+
+            excelWorkSheet.Cells[1, 1] = "Company Name";
+            excelWorkSheet.Cells[1, 2] = "Site";
+            excelWorkSheet.Cells[1, 3] = "City";
+            excelWorkSheet.Cells[1, 4] = "Region";
+            excelWorkSheet.Cells[1, 5] = "Sector";
+            excelWorkSheet.Cells[1, 6] = "Azimuth";
+            excelWorkSheet.Cells[1, 7] = "Latitude";
+            excelWorkSheet.Cells[1, 8] = "Longitude";
+            excelWorkSheet.Cells[1, 9] = "Band";
+            excelWorkSheet.Cells[1, 10] = "RTWP";
+            excelWorkSheet.Cells[1, 11] = "Site Status";
+            excelWorkSheet.Cells[1, 12] = "Sector Status";
+
+
+
+
+            int rowNumber = 2;
+
+            for (int i = 0; i < complaint.sites.Count; i++)
+            {
+                for(int j = 0; j < complaint.sites[i].sectors.Count; j++)
+                {
+
+                    for (int k = 0; k < complaint.sites[i].sectors[j].sector_bands.Count; k++)
+                    {
+                        excelWorkSheet.Cells[rowNumber, 1] = complaint.GetCompanyName();
+                        excelWorkSheet.Cells[rowNumber, 2] = complaint.sites[i].site_number;
+                        excelWorkSheet.Cells[rowNumber, 3] = complaint.sites[i].city;
+                        excelWorkSheet.Cells[rowNumber, 4] = complaint.sites[i].region;
+                        excelWorkSheet.Cells[rowNumber, 5] = complaint.sites[i].sectors[j].sector_number;
+                        excelWorkSheet.Cells[rowNumber, 6] = complaint.sites[i].sectors[j].azimuth;
+                        excelWorkSheet.Cells[rowNumber, 7] = complaint.sites[i].latitude;
+                        excelWorkSheet.Cells[rowNumber, 8] = complaint.sites[i].longitude;
+                        excelWorkSheet.Cells[rowNumber, 9] = complaint.sites[i].sectors[j].sector_bands[k];
+                        excelWorkSheet.Cells[rowNumber, 10] = complaint.sites[i].sectors[j].rtwp;
+                        excelWorkSheet.Cells[rowNumber, 11] = complaint.sites[i].site_status;
+                        excelWorkSheet.Cells[rowNumber, 12] = complaint.sites[i].sectors[j].sector_status;
+
+                        rowNumber++;
+                    }
+                }
+
+                
+            }
+
+            excelWorkSheet.Columns.AutoFit();
+            //excelWorkSheet.Columns.HorizontalAlignment = HorizontalAlignment.Center;
+            //columnsNameRange = excelWorkSheet.get_Range("A1", misValue).get_Resize(1, 6);
+            //columnsNameRange.Columns.AutoFit();
+            excelApp.Visible = true;
+        }
+
         public void ExportRepeaters(ref List<BASIC_STRUCTS.REPEATER_STRUCT> repeaters)
         {
             var excelApp = new Excel.Application();

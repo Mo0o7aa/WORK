@@ -476,7 +476,7 @@ namespace ntra_missions
 
             String coordinates;
 
-            coordinates = repeaters.Find(x1 => x1.repeater_serial == repeaterSerial).latitude.ToString() + repeaters.Find(x1 => x1.repeater_serial == repeaterSerial).longitude.ToString();
+            coordinates = repeaters.Find(x1 => x1.repeater_serial == repeaterSerial).latitude.ToString() + ", " + repeaters.Find(x1 => x1.repeater_serial == repeaterSerial).longitude.ToString();
 
             Clipboard.SetText(coordinates);
 

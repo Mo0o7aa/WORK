@@ -1049,7 +1049,8 @@ namespace ntra_missions
 		                              mission_equipment.equipment,
 		                              reasons_of_interference.reason,
 		                              company_sites.site_number,
-		                              mission_sites.comment as site_comment
+		                              mission_sites.comment as site_comment,
+									  company_sites.region
 
              from NTRA.dbo.interference_missions
              
@@ -1099,7 +1100,7 @@ namespace ntra_missions
             BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT SQL_COLUMN_COUNT_STRUCT = new BASIC_STRUCTS.SQL_COLUMN_COUNT_STRUCT();
             SQL_COLUMN_COUNT_STRUCT.sql_int = 9;
             SQL_COLUMN_COUNT_STRUCT.sql_datetime = 2;
-            SQL_COLUMN_COUNT_STRUCT.sql_string = 11;
+            SQL_COLUMN_COUNT_STRUCT.sql_string = 12;
 
             if (!sqlDatabase.GetRows(sqlQuery, SQL_COLUMN_COUNT_STRUCT))
                 return false;
@@ -1139,6 +1140,7 @@ namespace ntra_missions
                     tempSite.reason_of_interference = sqlDatabase.rows[i].sql_string[8];
                     tempSite.site_name = sqlDatabase.rows[i].sql_string[9];
                     tempSite.comment = sqlDatabase.rows[i].sql_string[10];
+                    tempSite.region = sqlDatabase.rows[i].sql_string[11];
 
                     tempMission.sites.Add(tempSite);
 
@@ -2372,7 +2374,8 @@ namespace ntra_missions
         public bool UpdateRepeater(ref BASIC_STRUCTS.REPEATER_STRUCT mRepeater)
         {
             String sqlQuery = "update NTRA.dbo.repeaters set address = N'";
-            sqlQuery += mRepeater.address + "', status = ";
+            sqlQuery += mRepeater.address + "', area = N'";
+            sqlQuery += mRepeater.area + "', status = ";
             sqlQuery += mRepeater.status_id + ", comment = N'";
             sqlQuery += mRepeater.comment + "', date = '";
             sqlQuery += mRepeater.date + "' where lat ='";

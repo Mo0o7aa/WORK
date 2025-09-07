@@ -229,6 +229,24 @@ namespace ntra_missions
                 Grid.SetRow(engineersStackPanel, 1);
                 Grid.SetColumn(engineersStackPanel, 0);
 
+                WrapPanel regionWrapPanel = new WrapPanel();
+                regionWrapPanel.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
+
+                Label regionLabel = new Label();
+                regionLabel.Content = "Area:";
+                regionLabel.Style = (Style)FindResource("miniLabelStyleBlack");
+
+                Label regionLabelValue = new Label();
+                regionLabelValue.Style = (Style)FindResource("wideLabelStyle");
+                regionLabelValue.Content = missions[i].sites[0].region;
+
+                regionWrapPanel.Children.Add(regionLabel);
+                regionWrapPanel.Children.Add(regionLabelValue);
+
+                missionGrid.Children.Add(regionWrapPanel);
+                Grid.SetRow(regionWrapPanel, 1);
+                Grid.SetColumn(regionWrapPanel, 1);
+
                 ScrollViewer sitesScrollViewer = new ScrollViewer();
                 sitesScrollViewer.Height = 150;
                 //sitesScrollViewer.Margin = new Thickness(12);
@@ -246,17 +264,17 @@ namespace ntra_missions
 
                 Label siteNumberLabelHeader = new Label();
                 siteNumberLabelHeader.Content = "Site Number";
-                siteNumberLabelHeader.Style = (Style)FindResource("wideLabelStyle");
+                siteNumberLabelHeader.Style = (Style)FindResource("stackPanelSecondaryHeaderLabelStyle");
                 siteNumberLabelHeader.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center; ;
 
                 Label reasonOfIntLabelHeader = new Label();
                 reasonOfIntLabelHeader.Content = "Reason of Int.";
-                reasonOfIntLabelHeader.Style = (Style)FindResource("wideLabelStyle");
+                reasonOfIntLabelHeader.Style = (Style)FindResource("stackPanelSecondaryHeaderLabelStyle");
                 reasonOfIntLabelHeader.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
 
                 Label commentLabelHeader = new Label();
                 commentLabelHeader.Content = "Comment";
-                commentLabelHeader.Style = (Style)FindResource("wideLabelStyle");
+                commentLabelHeader.Style = (Style)FindResource("stackPanelSecondaryHeaderLabelStyle");
                 commentLabelHeader.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
 
                 sitesGrid.Children.Add(siteNumberLabelHeader);

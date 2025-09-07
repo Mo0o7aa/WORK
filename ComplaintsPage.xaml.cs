@@ -231,6 +231,23 @@ namespace ntra_missions
                 Grid.SetRow(ticketNumberWrapPanel, 1);
                 Grid.SetColumn(ticketNumberWrapPanel, 1);
 
+                WrapPanel regionWrapPanel = new WrapPanel();
+
+                Label regionLabel = new Label();
+                regionLabel.Style = (Style)FindResource("mediumLabelStyleBlack");
+                regionLabel.Content = "Area: ";
+
+                Label regionLabelValue = new Label();
+                regionLabelValue.Style = (Style)FindResource("stackPanelLabelStyle");
+                regionLabelValue.Content = complaints[i].sites[0].region;
+
+                regionWrapPanel.Children.Add(regionLabel);
+                regionWrapPanel.Children.Add(regionLabelValue);
+
+                grid.Children.Add(regionWrapPanel);
+                Grid.SetRow(regionWrapPanel, 3);
+                Grid.SetColumn(regionWrapPanel, 1);
+
                 //WrapPanel regionWrapPanel = new WrapPanel();
                 //
                 //Label regionLabel = new Label();
@@ -308,6 +325,17 @@ namespace ntra_missions
                 AddMissionButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
                 AddMissionButton.Click += OnClickAddMissionButton;
 
+                Button excelButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
+                excelButton.Content = "Export Excel";
+                excelButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
+                excelButton.Click += OnClickExportExcel;
+
+                Button mapButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
+                mapButton.Content = "Export KML";
+                mapButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
+                mapButton.Click += OnClickExportMap;
+
+
                 Button attachmentButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
                 attachmentButton.Content = "Attach File";
                 attachmentButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
@@ -328,6 +356,9 @@ namespace ntra_missions
 
                 if (complaints[i].added_by_id == loggedInUser.GetEmployeeId())
                     expanderstackPanel.Children.Add(attachmentButton);
+
+                expanderstackPanel.Children.Add(excelButton);
+                expanderstackPanel.Children.Add(mapButton);
 
                 expander.Content = expanderstackPanel;
 
@@ -422,6 +453,8 @@ namespace ntra_missions
             }
         }
 
+        
+
         private void OnClickRemoveFile(object sender, MouseButtonEventArgs e)
         {
             Image currentImage = (Image)sender;
@@ -443,6 +476,26 @@ namespace ntra_missions
             {
                 MessageBox.Show("Current file is not available!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void OnClickExportExcel(object sender, RoutedEventArgs e)
+        {
+            Button currentButton = (Button)sender;
+            StackPanel currentStackPanel = (StackPanel)currentButton.Parent;
+            Expander expander = (Expander)currentStackPanel.Parent;
+
+            Complaints complaint = new Complaints();
+
+            if (!complaint.InitializeComplaint(complaints[int.Parse(expander.Tag.ToString())].company_serial, complaints[int.Parse(expander.Tag.ToString())].complaint_serial))
+                return;
+
+            ExcelExport excelExport = new ExcelExport();
+            excelExport.ExportComplaint(complaint);
+        }
+
+        private void OnClickExportMap(object sender, RoutedEventArgs e)
+        {
+            //throw new NotImplementedException();
         }
 
         private void OnClickAttachFile(object sender, RoutedEventArgs e)
