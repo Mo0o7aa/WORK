@@ -181,8 +181,7 @@
                                             Grid.RowSpan="3"
                                             Width="200"
                                             Height="40"
-                                            Margin="0,8,0,0"
-                                            Style="{StaticResource statusBorderStyle}">
+                                            Margin="0,8,0,0">
                                         <Border.Style>
                                             <Style TargetType="Border" BasedOn="{StaticResource statusBorderStyle}">
                                                 <Setter Property="Background" Value="Green"/>
