@@ -126,9 +126,97 @@
                     <Label Name="countLabel" Style="{StaticResource labelStyle}" />
                 </StackPanel>
                 
-                <ScrollViewer Grid.Row="1" Name="listViewScrollViewer" VerticalContentAlignment="Stretch" >
-                    <StackPanel Name="repeatersStackPanel" Background="White"/>
-                </ScrollViewer>
+                <ListView Grid.Row="1"
+                          Name="repeatersListView"
+                          Background="White"
+                          BorderThickness="0"
+                          VirtualizingPanel.IsVirtualizing="True"
+                          VirtualizingPanel.VirtualizationMode="Recycling"
+                          ScrollViewer.CanContentScroll="True">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="{x:Type ListViewItem}">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="Margin" Value="0,8,0,0"/>
+                            <Setter Property="Padding" Value="0"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderThickness="2" BorderBrush="#000080" Padding="12" Tag="{Binding RepeaterSerial}">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="220"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding SerialText}" FontWeight="SemiBold" FontSize="16"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding CityText}" FontWeight="SemiBold" FontSize="16"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding AreaText}" FontWeight="SemiBold" FontSize="16"/>
+
+                                    <Button Grid.Row="1" Grid.Column="0"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            Cursor="Hand"
+                                            HorizontalAlignment="Left"
+                                            Foreground="#000080"
+                                            FontWeight="SemiBold"
+                                            Tag="{Binding RepeaterSerial}"
+                                            ToolTip="Left click to Copy coordinates!"
+                                            Click="OnClickCopyCoordinates"
+                                            Content="{Binding CoordinatesText}"/>
+
+                                    <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding AddressText}" TextWrapping="Wrap" FontSize="14"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding CommentText}" TextWrapping="Wrap" FontSize="14"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding AddedByText}" FontSize="14" FontWeight="SemiBold"/>
+
+                                    <Border Grid.Row="0" Grid.Column="3"
+                                            Grid.RowSpan="3"
+                                            Width="200"
+                                            Height="40"
+                                            Margin="0,8,0,0"
+                                            Style="{StaticResource statusBorderStyle}">
+                                        <Border.Style>
+                                            <Style TargetType="Border" BasedOn="{StaticResource statusBorderStyle}">
+                                                <Setter Property="Background" Value="Green"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsPending}" Value="True">
+                                                        <Setter Property="Background" Value="Red"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <Label Content="{Binding Status}"
+                                               Style="{StaticResource statusLabelStyle}"
+                                               Width="200"/>
+                                    </Border>
+
+                                    <Expander Grid.Row="3"
+                                              Grid.Column="0"
+                                              Grid.ColumnSpan="4"
+                                              Margin="0,12,0,0"
+                                              HorizontalAlignment="Left"
+                                              ExpandDirection="Down"
+                                              Expanded="OnExpandExpander">
+                                        <Expander.Content>
+                                            <Button Style="{StaticResource expanderButtonStyle}"
+                                                    Content="Edit"
+                                                    HorizontalContentAlignment="Center"
+                                                    Click="OnClickEdit"/>
+                                        </Expander.Content>
+                                    </Expander>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
                 <ScrollViewer Grid.Row="1" Name="tableViewScrollViewer"  Visibility="Collapsed" HorizontalScrollBarVisibility="Auto">
                     <DataGrid Name="repeatersGrid" Background="White" />
 
