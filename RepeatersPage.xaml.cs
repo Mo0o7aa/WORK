@@ -72,7 +72,6 @@ namespace ntra_missions
             InitializeRepeatersGrid();
         }
 
-
         private bool InitializeEmployeeCombo()
         {
             //if (!commonQueries.GetEngineers(ref employees))
@@ -117,6 +116,7 @@ namespace ntra_missions
                 {
                     bool contains = false;
                     string search = latTextBox.Text;
+
 
                     contains = repeaters[i].latitude.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0;
 
@@ -256,6 +256,7 @@ namespace ntra_missions
                 repeatersGrid.Children.Add(coordinatedWrapPanel);
                 Grid.SetRow(coordinatedWrapPanel, 1);
                 Grid.SetColumn(coordinatedWrapPanel, 0);
+
 
 
 
