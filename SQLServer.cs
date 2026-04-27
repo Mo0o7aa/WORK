@@ -45,7 +45,8 @@ namespace ntra_missions
         ////trying on my work pc
 
 
-        private String sqlConnectionString = @"Server=GIZA-ASAMEH\SQLEXPRESS,1433;Initial Catalog=NTRA;User=sa;Password=NTRA@1234!;";
+        //private String sqlConnectionString = @"Server=GIZA-ASAMEH\SQLEXPRESS,1433;Initial Catalog=NTRA;User=sa;Password=NTRA@1234!;";
+        private String sqlConnectionString = @"Server=10.165.202.23,1433;Initial Catalog=NTRA;User=sa;Password=NTRA@1234!;";
 
         //private String sqlConnectionString = @"Server = tcp:169.254.67.19,1433;Database=NTRA;Trusted_Connection=True;User=sa;Password=ntra1234";
 
