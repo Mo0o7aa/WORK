@@ -22,6 +22,34 @@
             <Setter Property="Padding" Value="10,6"/>
             <Setter Property="Background" Value="#EDF2FF"/>
         </Style>
+
+        <Style x:Key="HeaderActionButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#F2F5FF"/>
+            <Setter Property="Foreground" Value="#000080"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Height" Value="42"/>
+            <Setter Property="Padding" Value="14,0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="10" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="MenuButtonSurfaceStyle" TargetType="Border">
+            <Setter Property="CornerRadius" Value="14"/>
+            <Setter Property="Background" Value="#E8ECFA"/>
+            <Setter Property="Width" Value="62"/>
+            <Setter Property="Height" Value="62"/>
+            <Setter Property="Margin" Value="0,0,14,0"/>
+        </Style>
     </Page.Resources>
 
     <Grid Margin="16">
@@ -42,14 +70,19 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <Border Width="62" Height="62" CornerRadius="12" Background="#DFE4F7" Margin="0,0,14,0">
+                    <Border Style="{StaticResource MenuButtonSurfaceStyle}">
                         <Grid Name="mainMenuGrid"
                               Cursor="Hand"
                               ToolTip="Main Menu"
                               MouseEnter="MouseEnterMainMenu"
                               MouseLeave="MouseLeaveMainMenu"
                               MouseLeftButtonDown="OnClickMainMenu">
-                            <Image Name="menuItemImage" Source="Photos\tab_icon.png" Height="34" Width="34"/>
+                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <Rectangle Width="24" Height="3" RadiusX="2" RadiusY="2" Fill="#000080" Margin="0,2"/>
+                                <Rectangle Width="24" Height="3" RadiusX="2" RadiusY="2" Fill="#000080" Margin="0,2"/>
+                                <Rectangle Width="24" Height="3" RadiusX="2" RadiusY="2" Fill="#000080" Margin="0,2"/>
+                            </StackPanel>
+                            <Image Name="menuItemImage" Source="Photos\tab_icon.png" Height="1" Width="1" Opacity="0"/>
                         </Grid>
                     </Border>
 
@@ -83,10 +116,8 @@
                 <Button Grid.Column="1"
                         Name="changePasswordButton"
                         Content="Change Password"
-                        Style="{StaticResource negativeButtonStyle}"
-                        Width="188"
-                        Height="42"
-                        FontWeight="Bold"
+                        Style="{StaticResource HeaderActionButtonStyle}"
+                        Width="196"
                         VerticalAlignment="Center"
                         Click="OnClickChangePasswordButton"/>
 
@@ -107,14 +138,12 @@
                         <Button Grid.Row="1"
                                 Name="logoutButton"
                                 Content="Sign out"
-                                Style="{StaticResource buttonStyle}"
-                                Width="130"
-                                Height="32"
+                                Style="{StaticResource HeaderActionButtonStyle}"
+                                Width="140"
+                                Height="34"
                                 Margin="0,6,0,0"
                                 HorizontalAlignment="Center"
-                                Background="#F2F4FC"
-                                Foreground="#000080"
-                                FontWeight="Bold"
+                                Background="#F8FAFF"
                                 Click="OnClickLogoutButton"/>
                     </Grid>
                 </Border>
