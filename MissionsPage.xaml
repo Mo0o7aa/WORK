@@ -209,30 +209,26 @@
 
                                     <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding RegionText}" Foreground="#1D2A4E" FontWeight="SemiBold"/>
 
-                                    <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" BorderThickness="1" BorderBrush="#D9E1F4" Background="#F7F9FF" CornerRadius="10" Padding="6" Margin="0,6,0,0">
-                                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" MaxHeight="180">
-                                            <ItemsControl ItemsSource="{Binding Sites}">
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <Border BorderThickness="1" BorderBrush="#E2E7F5" CornerRadius="8" Padding="6" Margin="0,4,0,0" Background="White">
-                                                            <Grid>
-                                                                <Grid.ColumnDefinitions>
-                                                                    <ColumnDefinition Width="220"/>
-                                                                    <ColumnDefinition Width="250"/>
-                                                                    <ColumnDefinition Width="*"/>
-                                                                    <ColumnDefinition Width="70"/>
-                                                                </Grid.ColumnDefinitions>
-                                                                <TextBlock Grid.Column="0" Text="{Binding SiteName}" Foreground="#1D2A4E"/>
-                                                                <TextBlock Grid.Column="1" Text="{Binding Reason}" Foreground="#435172"/>
-                                                                <TextBlock Grid.Column="2" Text="{Binding Comment}" Foreground="#435172" TextWrapping="Wrap"/>
-                                                                <Button Grid.Column="3" Content="View" Style="{StaticResource expanderButtonStyle}" Height="26" Width="56" FontSize="12" Tag="{Binding SiteTag}" Click="OnClickShowSite"/>
-                                                            </Grid>
-                                                        </Border>
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                            </ItemsControl>
-                                        </ScrollViewer>
-                                    </Border>
+                                    <ItemsControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" ItemsSource="{Binding Sites}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border BorderThickness="1" BorderBrush="#E2E7F5" CornerRadius="8" Padding="6" Margin="0,4,0,0" Background="White">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="220"/>
+                                                            <ColumnDefinition Width="250"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="70"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Grid.Column="0" Text="{Binding SiteName}" Foreground="#1D2A4E"/>
+                                                        <TextBlock Grid.Column="1" Text="{Binding Reason}" Foreground="#435172"/>
+                                                        <TextBlock Grid.Column="2" Text="{Binding Comment}" Foreground="#435172" TextWrapping="Wrap"/>
+                                                        <Button Grid.Column="3" Content="View" Style="{StaticResource expanderButtonStyle}" Height="26" Width="56" FontSize="12" Tag="{Binding SiteTag}" Click="OnClickShowSite"/>
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
 
                                     <Border Grid.Row="1" Grid.Column="2" Width="190" Height="40" HorizontalAlignment="Center">
                                         <Border.Style>
