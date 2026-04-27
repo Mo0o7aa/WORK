@@ -1,204 +1,243 @@
-﻿<Page x:Class="ntra_missions.RepeatersPage"
+<Page x:Class="ntra_missions.RepeatersPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:ntra_missions"
-      mc:Ignorable="d"
-      Title="RepeatersPage"
-      Background="#EEF2FA">
+      mc:Ignorable="d" 
+      Title="RepeatersPage">
 
-    <Page.Resources>
-        <Style x:Key="CardBorderStyle" TargetType="Border">
-            <Setter Property="CornerRadius" Value="16"/>
-            <Setter Property="Background" Value="White"/>
-            <Setter Property="BorderBrush" Value="#D8E0F1"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Padding" Value="16"/>
-        </Style>
-
-        <Style x:Key="PanelTitleStyle" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="#000080"/>
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="FontSize" Value="18"/>
-            <Setter Property="Margin" Value="0,0,0,10"/>
-        </Style>
-    </Page.Resources>
-
-    <Grid Margin="18">
+    <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="130"/>
-            <RowDefinition Height="88"/>
+            <RowDefinition Height="150"/>
+            <RowDefinition Height="100"/>
             <RowDefinition/>
-            <RowDefinition Height="88"/>
+            <RowDefinition Height="100"/>
         </Grid.RowDefinitions>
 
-        <Border Grid.Row="0" CornerRadius="18" Background="#000080" Padding="16" BorderBrush="#14277F" BorderThickness="1">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="220"/>
-                    <ColumnDefinition Width="260"/>
-                </Grid.ColumnDefinitions>
-
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <Border CornerRadius="12" Width="64" Height="64" Background="#DDE2F5" Margin="0,0,14,0">
-                        <Grid Name="mainMenuGrid" Background="Transparent" IsHitTestVisible="True" MouseEnter="MouseEnterMainMenu" MouseLeave="MouseLeaveMainMenu" ToolTip="Main Menu" MouseLeftButtonDown="OnClickMainMenu" Cursor="Hand">
-                            <Image Name="menuItemImage" Source="Photos\tab_icon.png" Height="34" Width="34"/>
-                        </Grid>
-                    </Border>
-
-                    <MenuItem Name="tabMenuButton" Visibility="Collapsed">
-                        <MenuItem.ContextMenu>
-                            <ContextMenu Closed="OnClosedMenuContectMenu">
-                                <MenuItem Header="DashBoard" Name="dashboardMenuItem" Click="DashboardMenuSelection"/>
-                                <MenuItem Header="Employees" Name="EmployeeMenuItem" Click="employeeMenuSelection"/>
-                                <MenuItem Header="Companies" Name="CompanyMenuItem" Click="CompanyMenuSelection"/>
-                                <MenuItem Header="Company Equipment" Name="CompanyEquipmentMenuItem" Click="CompanyEquipmentMenuSelection"/>
-                                <MenuItem Header="Sites" Name="sitesMenuItem" Click="SitesMenuSelection"/>
-                                <MenuItem Header="EMF" Name="emfMenuItem" Click="emfMenuSelection"/>
-                                <MenuItem Header="Complaints" Name="ComplaintsMenuItem" Click="ComplaintsMenuSelection"/>
-                                <MenuItem Header="Monitoring Missions" Name="monitoringMenuItem" Click="MonitoringMenuSelection"/>
-                                <MenuItem Header="Repeaters" Name="repeatersMenuItem" IsChecked="True" IsHitTestVisible="False"/>
-                                <MenuItem Header="Inspection Missions" Name="inspectionMenuItem" Click="InspectionMenuSelection"/>
-                            </ContextMenu>
-                        </MenuItem.ContextMenu>
-                    </MenuItem>
-
-                    <StackPanel>
-                        <Image Source="Photos\NTRA_white1.png" Height="74" HorizontalAlignment="Left"/>
-                        <TextBlock Text="National Telecom Regulatory Authority" Foreground="#DCE4FF" FontSize="12" Margin="4,2,0,0"/>
-                    </StackPanel>
-                </StackPanel>
-
-                <Button Grid.Column="1" Name="changePasswordButton" Content="Change Password" VerticalAlignment="Bottom" FontWeight="Bold" Style="{StaticResource negativeButtonStyle}" Height="42" Width="190" Click="OnClickChangePasswordButton"/>
-
-                <Border Grid.Column="2" Background="#1C2B88" CornerRadius="12" Padding="12,8">
-                    <Grid Name="userNameGrid">
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-
-                        <Label Grid.Row="0" Name="userNameLabel" Foreground="White" FontSize="18" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="Username:"/>
-                        <Button Grid.Row="1" Name="logoutButton" Content="Sign out" Style="{StaticResource buttonStyle}" Background="#F1F3FA" FontWeight="Bold" Foreground="#000080" Height="32" Width="128" HorizontalAlignment="Center" Click="OnClickLogoutButton"/>
-                    </Grid>
-                </Border>
-            </Grid>
-        </Border>
-
-        <Border Grid.Row="1" Style="{StaticResource CardBorderStyle}" Margin="0,14,0,0" Padding="18,10">
-            <DockPanel>
-                <StackPanel DockPanel.Dock="Left">
-                    <TextBlock Text="Repeaters" Foreground="#000080" FontSize="28" FontWeight="Bold"/>
-                    <TextBlock Text="Modern workspace for filtering, reviewing, and exporting repeater data" Foreground="#4D5A7D" FontSize="13"/>
-                </StackPanel>
-
-                <Border DockPanel.Dock="Right" CornerRadius="10" Background="#EEF2FF" Padding="14,8" HorizontalAlignment="Right" VerticalAlignment="Center">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Data is shown live from existing logic" Foreground="#2F447A" FontWeight="SemiBold"/>
-                    </StackPanel>
-                </Border>
-            </DockPanel>
-        </Border>
-
-        <Grid Grid.Row="2" Margin="0,14,0,0">
+        <Grid Grid.Row="0" Background="#000080">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="420"/>
-                <ColumnDefinition Width="14"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="250"/>
+            </Grid.ColumnDefinitions>
+
+            <WrapPanel>
+                <Grid Name="mainMenuGrid" Background="LightGray" VerticalAlignment="Stretch" Width="70" IsHitTestVisible="True" MouseEnter="MouseEnterMainMenu" MouseLeave="MouseLeaveMainMenu" ToolTip="Main Menu" MouseLeftButtonDown="OnClickMainMenu" Cursor="Hand">
+                    <Image Name="menuItemImage" Source="Photos\tab_icon.png" Height="50" Width="50"/>
+                </Grid>
+
+                <MenuItem Name="tabMenuButton" Visibility="Collapsed">
+                    <MenuItem.ContextMenu>
+                        <ContextMenu Closed="OnClosedMenuContectMenu">
+                            <MenuItem Header="DashBoard" Name="dashboardMenuItem" Click="DashboardMenuSelection"/>
+                            <MenuItem Header="Employees" Name="EmployeeMenuItem"  Click="employeeMenuSelection"/>
+                            <MenuItem Header="Companies" Name="CompanyMenuItem" Click="CompanyMenuSelection"/>
+                            <MenuItem Header="Company Equipment" Name="CompanyEquipmentMenuItem" Click="CompanyEquipmentMenuSelection"/>
+                            <MenuItem Header="Sites" Name="sitesMenuItem" Click="SitesMenuSelection"/>
+                            <MenuItem Header="EMF" Name="emfMenuItem" Click="emfMenuSelection"/>
+                            <MenuItem Header="Complaints" Name="ComplaintsMenuItem" Click="ComplaintsMenuSelection"/>
+                            <MenuItem Header="Monitoring Missions" Name="monitoringMenuItem" Click="MonitoringMenuSelection"/>
+                            <MenuItem Header="Repeaters" Name="repeatersMenuItem" IsChecked="True" IsHitTestVisible="False"/>
+                            <MenuItem Header="Inspection Missions" Name="inspectionMenuItem" Click="InspectionMenuSelection"/>
+                        </ContextMenu>
+                    </MenuItem.ContextMenu>
+                </MenuItem>
+
+                <Image Source="Photos\NTRA_white1.png" VerticalAlignment="Center" Height="200"  HorizontalAlignment="Left"/>
+            </WrapPanel>
+
+            <Grid Name="userNameGrid" Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <Label Grid.Row="0" Name="userNameLabel" Foreground="White" FontSize="20" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="Username:"/>
+                <Button Grid.Row="1" Name="logoutButton" Content="Sign out" Style="{StaticResource buttonStyle}" VerticalAlignment="Bottom" Background="LightGray" FontWeight="Bold" Foreground="#000080" Click="OnClickLogoutButton"/>
+            </Grid>
+
+            <Button Grid.Column="1" Name="changePasswordButton" Content="Change Password" VerticalAlignment="Bottom" FontWeight="Bold" Style="{StaticResource negativeButtonStyle}" Width="200" Click="OnClickChangePasswordButton"/>
+
+        </Grid>
+
+        <!--<ScrollViewer Grid.Row="1">
+        <WebBrowser  x:Name="wbMaps" Source="https://www.google.com/maps" GotTouchCapture="wbMaps_GotTouchCapture" Navigated="wbMaps_Navigated" Navigating="wbMaps_Navigating"/>
+        </ScrollViewer>-->
+
+        <Label Grid.Row="1" Style="{StaticResource headerLabelStyle}" Content="Repeaters" HorizontalAlignment="Center" Foreground="#000080"/>
+
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="400"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
-            <Border Grid.Column="0" Style="{StaticResource CardBorderStyle}">
-                <Grid>
+            <ScrollViewer Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="24">
+                <Grid >
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition/>
+                        <RowDefinition Height="70"/>
+                        <RowDefinition Height="70"/>
+                        <RowDefinition Height="70"/>
+                        <RowDefinition Height="70"/>
+                        <RowDefinition Height="70"/>
+                        <RowDefinition Height="70"/>
                     </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Row="0" Style="{StaticResource PanelTitleStyle}" Text="Smart Filters"/>
+                    <CheckBox Grid.Row="0" Grid.Column="0" Name="searchLatCheckBox" Content="Search &#10;Lat" Checked="OnCheckSearchLatCheckBox" Unchecked="OnUncheckSearchCheckBox" Style="{StaticResource checkBoxStyle}" Cursor="Hand"/>
+                    <CheckBox Grid.Row="1" Grid.Column="0" Name="searchLongCheckBox" Content="Search &#10;Long" Checked="OnCheckSearchLongCheckBox" Unchecked="OnUncheckSearchLongCheckBox" Style="{StaticResource checkBoxStyle}" Cursor="Hand"/>
+                    <CheckBox Grid.Row="2" Grid.Column="0" Name="cityCheckBox" Content="City" Checked="OnCheckCityCheckBox" Unchecked="OnUncheckCityCheckBox" Style="{StaticResource checkBoxStyle}" Cursor="Hand"/>
+                    <CheckBox Grid.Row="3" Grid.Column="0" Name="areaCheckBox" Content="Area" Checked="OnCheckAreaCheckBox" Unchecked="OnUnCheckAreaCheckBox" Style="{StaticResource checkBoxStyle}" Cursor="Hand"/>
+                    <CheckBox Grid.Row="4" Grid.Column="0" Name="statusCheckBox" Content="Status" Checked="OnCheckStatusCheckBox" Unchecked="OnUncheckStatusCheckBox" Style="{StaticResource checkBoxStyle}" Cursor="Hand"/>
 
-                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                        <Grid Margin="0,6,0,0">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="64"/>
-                                <RowDefinition Height="64"/>
-                                <RowDefinition Height="64"/>
-                                <RowDefinition Height="64"/>
-                                <RowDefinition Height="64"/>
-                                <RowDefinition Height="64"/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="150"/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
 
-                            <CheckBox Grid.Row="0" Grid.Column="0" Name="searchLatCheckBox" Content="Search &#10;Lat" Checked="OnCheckSearchLatCheckBox" Unchecked="OnUncheckSearchCheckBox" Style="{StaticResource checkBoxStyle}" Cursor="Hand"/>
-                            <CheckBox Grid.Row="1" Grid.Column="0" Name="searchLongCheckBox" Content="Search &#10;Long" Checked="OnCheckSearchLongCheckBox" Unchecked="OnUncheckSearchLongCheckBox" Style="{StaticResource checkBoxStyle}" Cursor="Hand"/>
-                            <CheckBox Grid.Row="2" Grid.Column="0" Name="cityCheckBox" Content="City" Checked="OnCheckCityCheckBox" Unchecked="OnUncheckCityCheckBox" Style="{StaticResource checkBoxStyle}" Cursor="Hand"/>
-                            <CheckBox Grid.Row="3" Grid.Column="0" Name="areaCheckBox" Content="Area" Checked="OnCheckAreaCheckBox" Unchecked="OnUnCheckAreaCheckBox" Style="{StaticResource checkBoxStyle}" Cursor="Hand"/>
-                            <CheckBox Grid.Row="4" Grid.Column="0" Name="statusCheckBox" Content="Status" Checked="OnCheckStatusCheckBox" Unchecked="OnUncheckStatusCheckBox" Style="{StaticResource checkBoxStyle}" Cursor="Hand"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" Name="latTextBox" TextChanged="OnTextChangedLatTextBox" Style="{StaticResource miniTextboxStyle}" IsEnabled='False'/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Name="longTextBox" TextChanged="OnTextChangedLongTextBox" Style="{StaticResource miniTextboxStyle}" IsEnabled='False'/>
+                    <ComboBox Grid.Row="2" Grid.Column="1" Name="cityComboBox" SelectionChanged="OnSelChangedCityCombo" Style="{StaticResource miniComboBoxStyle}" IsEnabled='False'/>
+                    <ComboBox Grid.Row="3" Grid.Column="1" Name="areaComboBox" SelectionChanged="OnSelChangedAreaCombo" Style="{StaticResource miniComboBoxStyle}" IsEnabled='False'/>
+                    <ComboBox Grid.Row="4" Grid.Column="1" Name="statusComboBox" SelectionChanged="OnSelChangedStatusCombo" Style="{StaticResource miniComboBoxStyle}" IsEnabled='False'/>
 
-                            <TextBox Grid.Row="0" Grid.Column="1" Name="latTextBox" TextChanged="OnTextChangedLatTextBox" Style="{StaticResource miniTextboxStyle}" IsEnabled="False"/>
-                            <TextBox Grid.Row="1" Grid.Column="1" Name="longTextBox" TextChanged="OnTextChangedLongTextBox" Style="{StaticResource miniTextboxStyle}" IsEnabled="False"/>
-                            <ComboBox Grid.Row="2" Grid.Column="1" Name="cityComboBox" SelectionChanged="OnSelChangedCityCombo" Style="{StaticResource miniComboBoxStyle}" IsEnabled="False"/>
-                            <ComboBox Grid.Row="3" Grid.Column="1" Name="areaComboBox" SelectionChanged="OnSelChangedAreaCombo" Style="{StaticResource miniComboBoxStyle}" IsEnabled="False"/>
-                            <ComboBox Grid.Row="4" Grid.Column="1" Name="statusComboBox" SelectionChanged="OnSelChangedStatusCombo" Style="{StaticResource miniComboBoxStyle}" IsEnabled="False"/>
-                        </Grid>
-                    </ScrollViewer>
+
                 </Grid>
-            </Border>
+            </ScrollViewer>
 
-            <Border Grid.Column="2" Style="{StaticResource CardBorderStyle}">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
+            <Grid Grid.Column="1" Margin="12">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
 
-                    <DockPanel Grid.Row="0" Margin="0,0,0,8">
-                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                            <Border Name="listViewBorder" CornerRadius="10,10,0,0" BorderThickness="2" BorderBrush="#000080" Background="White" Width="145" Height="42" MouseLeftButtonDown="OnClickListView" Margin="0,0,8,0">
-                                <Label Style="{StaticResource mediumLabelStyle}" Content="List View" Foreground="#000080" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
+                <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left">
+                    <Border Name="listViewBorder" CornerRadius="0,30,0,0" BorderThickness="3" BorderBrush="#000080" Background="White" Width="150" MouseLeftButtonDown="OnClickListView">
+                        <Label Style="{StaticResource mediumLabelStyle}" Content="List View" Foreground="#000080" HorizontalAlignment="Left" FontWeight="Bold"/>
+                    </Border>
+                    <Border Name="tableViewBorder" CornerRadius="0,30,0,0" BorderThickness="3" BorderBrush="#000080" Background="#000080" Width="150" MouseLeftButtonDown="OnClickTableView">
+                        <Label Style="{StaticResource mediumLabelStyle}" Content="Table View" Foreground="White" HorizontalAlignment="Left" FontWeight="Bold"/>
+                    </Border>
+                </StackPanel>
+
+                <StackPanel Grid.Row="0" HorizontalAlignment="Right" Orientation="Horizontal">
+                    <Label  Style="{StaticResource wideLabelStyle}" Content="Repeaters Count: "/>
+                    <Label Name="countLabel" Style="{StaticResource labelStyle}" />
+                </StackPanel>
+                
+                <ListView Grid.Row="1"
+                          Name="repeatersListView"
+                          Background="White"
+                          BorderThickness="0"
+                          VirtualizingPanel.IsVirtualizing="True"
+                          VirtualizingPanel.VirtualizationMode="Recycling"
+                          ScrollViewer.CanContentScroll="True">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="{x:Type ListViewItem}">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="Margin" Value="0,8,0,0"/>
+                            <Setter Property="Padding" Value="0"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderThickness="2" BorderBrush="#000080" Padding="12" Tag="{Binding RepeaterSerial}">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="220"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding SerialText}" FontWeight="SemiBold" FontSize="16"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding CityText}" FontWeight="SemiBold" FontSize="16"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding AreaText}" FontWeight="SemiBold" FontSize="16"/>
+
+                                    <Button Grid.Row="1" Grid.Column="0"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            Cursor="Hand"
+                                            HorizontalAlignment="Left"
+                                            Foreground="#000080"
+                                            FontWeight="SemiBold"
+                                            Tag="{Binding RepeaterSerial}"
+                                            ToolTip="Left click to Copy coordinates!"
+                                            Click="OnClickCopyCoordinates"
+                                            Content="{Binding CoordinatesText}"/>
+
+                                    <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding AddressText}" TextWrapping="Wrap" FontSize="14"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding CommentText}" TextWrapping="Wrap" FontSize="14"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding AddedByText}" FontSize="14" FontWeight="SemiBold"/>
+
+                                    <Border Grid.Row="0" Grid.Column="3"
+                                            Grid.RowSpan="3"
+                                            Width="200"
+                                            Height="40"
+                                            Margin="0,8,0,0"
+                                            Style="{StaticResource statusBorderStyle}">
+                                        <Border.Style>
+                                            <Style TargetType="Border" BasedOn="{StaticResource statusBorderStyle}">
+                                                <Setter Property="Background" Value="Green"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsPending}" Value="True">
+                                                        <Setter Property="Background" Value="Red"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <Label Content="{Binding Status}"
+                                               Style="{StaticResource statusLabelStyle}"
+                                               Width="200"/>
+                                    </Border>
+
+                                    <Expander Grid.Row="3"
+                                              Grid.Column="0"
+                                              Grid.ColumnSpan="4"
+                                              Margin="0,12,0,0"
+                                              HorizontalAlignment="Left"
+                                              ExpandDirection="Down"
+                                              Expanded="OnExpandExpander">
+                                        <Expander.Content>
+                                            <Button Style="{StaticResource expanderButtonStyle}"
+                                                    Content="Edit"
+                                                    HorizontalContentAlignment="Center"
+                                                    Click="OnClickEdit"/>
+                                        </Expander.Content>
+                                    </Expander>
+                                </Grid>
                             </Border>
-                            <Border Name="tableViewBorder" CornerRadius="10,10,0,0" BorderThickness="2" BorderBrush="#000080" Background="#000080" Width="145" Height="42" MouseLeftButtonDown="OnClickTableView">
-                                <Label Style="{StaticResource mediumLabelStyle}" Content="Table View" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
-                            </Border>
-                        </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <ScrollViewer Grid.Row="1" Name="tableViewScrollViewer"  Visibility="Collapsed" HorizontalScrollBarVisibility="Auto">
+                    <DataGrid Name="repeatersGrid" Background="White" />
 
-                        <Border DockPanel.Dock="Right" Background="#EEF2FF" CornerRadius="10" Padding="10,4" HorizontalAlignment="Right">
-                            <StackPanel Orientation="Horizontal">
-                                <Label Style="{StaticResource wideLabelStyle}" Content="Repeaters Count:" Padding="3,0"/>
-                                <Label Name="countLabel" Style="{StaticResource labelStyle}" Padding="3,0"/>
-                            </StackPanel>
-                        </Border>
-                    </DockPanel>
-
-                    <ScrollViewer Grid.Row="1" Name="listViewScrollViewer" VerticalContentAlignment="Stretch">
-                        <StackPanel Name="repeatersStackPanel" Background="White"/>
-                    </ScrollViewer>
-
-                    <ScrollViewer Grid.Row="1" Name="tableViewScrollViewer" Visibility="Collapsed" HorizontalScrollBarVisibility="Auto">
-                        <DataGrid Name="repeatersGrid" Background="White"/>
-                    </ScrollViewer>
-                </Grid>
-            </Border>
+                </ScrollViewer>
+            </Grid>
         </Grid>
 
-        <Border Grid.Row="3" Style="{StaticResource CardBorderStyle}" Margin="0,14,0,0" Padding="12">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
 
-                <Button Grid.Column="0" Style="{StaticResource buttonStyle}" Content="Add" Click="OnBtnClickAdd" Margin="8,4"/>
-                <Button Grid.Column="1" Style="{StaticResource buttonStyle}" Content="Export" Click="OnBtnClickExport" Margin="8,4"/>
-                <Button Grid.Column="2" Style="{StaticResource buttonStyle}" Content="Excel Format" Click="OnBtnClickFormat" Margin="8,4"/>
-                <Button Grid.Column="3" Style="{StaticResource buttonStyle}" Content="Re Import" Click="OnBtnClickReImport" Margin="8,4"/>
-            </Grid>
-        </Border>
+
+            <Button Grid.Column="0" Style="{StaticResource buttonStyle}" Content="Add" Click="OnBtnClickAdd"/>
+            <Button Grid.Column="1" Style="{StaticResource buttonStyle}" Content="Export" Click="OnBtnClickExport"/>
+            <Button Grid.Column="2" Style="{StaticResource buttonStyle}" Content="Excel Format" Click="OnBtnClickFormat"/>
+            <Button Grid.Column="3" Style="{StaticResource buttonStyle}" Content="Re Import" Click="OnBtnClickReImport"/>
+            
+        </Grid>
     </Grid>
 </Page>
