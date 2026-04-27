@@ -50,6 +50,32 @@
             <Setter Property="Height" Value="62"/>
             <Setter Property="Margin" Value="0,0,14,0"/>
         </Style>
+
+        <Style x:Key="FilterItemLabelStyle" TargetType="CheckBox" BasedOn="{StaticResource checkBoxStyle}">
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Foreground" Value="#000080"/>
+            <Setter Property="Margin" Value="0,6,0,6"/>
+        </Style>
+
+        <Style x:Key="FooterActionButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#000080"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="Height" Value="46"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="10" Padding="14,0">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Page.Resources>
 
     <Grid Margin="16">
@@ -212,17 +238,17 @@
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
 
-                            <CheckBox Grid.Row="0" Grid.Column="0" Name="searchLatCheckBox" Content="Search &#10;Lat" Checked="OnCheckSearchLatCheckBox" Unchecked="OnUncheckSearchCheckBox" Style="{StaticResource checkBoxStyle}" Cursor="Hand"/>
-                            <CheckBox Grid.Row="1" Grid.Column="0" Name="searchLongCheckBox" Content="Search &#10;Long" Checked="OnCheckSearchLongCheckBox" Unchecked="OnUncheckSearchLongCheckBox" Style="{StaticResource checkBoxStyle}" Cursor="Hand"/>
-                            <CheckBox Grid.Row="2" Grid.Column="0" Name="cityCheckBox" Content="City" Checked="OnCheckCityCheckBox" Unchecked="OnUncheckCityCheckBox" Style="{StaticResource checkBoxStyle}" Cursor="Hand"/>
-                            <CheckBox Grid.Row="3" Grid.Column="0" Name="areaCheckBox" Content="Area" Checked="OnCheckAreaCheckBox" Unchecked="OnUnCheckAreaCheckBox" Style="{StaticResource checkBoxStyle}" Cursor="Hand"/>
-                            <CheckBox Grid.Row="4" Grid.Column="0" Name="statusCheckBox" Content="Status" Checked="OnCheckStatusCheckBox" Unchecked="OnUncheckStatusCheckBox" Style="{StaticResource checkBoxStyle}" Cursor="Hand"/>
+                            <CheckBox Grid.Row="0" Grid.Column="0" Name="searchLatCheckBox" Content="Search &#10;Lat" Checked="OnCheckSearchLatCheckBox" Unchecked="OnUncheckSearchCheckBox" Style="{StaticResource FilterItemLabelStyle}" Cursor="Hand"/>
+                            <CheckBox Grid.Row="1" Grid.Column="0" Name="searchLongCheckBox" Content="Search &#10;Long" Checked="OnCheckSearchLongCheckBox" Unchecked="OnUncheckSearchLongCheckBox" Style="{StaticResource FilterItemLabelStyle}" Cursor="Hand"/>
+                            <CheckBox Grid.Row="2" Grid.Column="0" Name="cityCheckBox" Content="City" Checked="OnCheckCityCheckBox" Unchecked="OnUncheckCityCheckBox" Style="{StaticResource FilterItemLabelStyle}" Cursor="Hand"/>
+                            <CheckBox Grid.Row="3" Grid.Column="0" Name="areaCheckBox" Content="Area" Checked="OnCheckAreaCheckBox" Unchecked="OnUnCheckAreaCheckBox" Style="{StaticResource FilterItemLabelStyle}" Cursor="Hand"/>
+                            <CheckBox Grid.Row="4" Grid.Column="0" Name="statusCheckBox" Content="Status" Checked="OnCheckStatusCheckBox" Unchecked="OnUncheckStatusCheckBox" Style="{StaticResource FilterItemLabelStyle}" Cursor="Hand"/>
 
-                            <TextBox Grid.Row="0" Grid.Column="1" Name="latTextBox" TextChanged="OnTextChangedLatTextBox" Style="{StaticResource miniTextboxStyle}" IsEnabled="False"/>
-                            <TextBox Grid.Row="1" Grid.Column="1" Name="longTextBox" TextChanged="OnTextChangedLongTextBox" Style="{StaticResource miniTextboxStyle}" IsEnabled="False"/>
-                            <ComboBox Grid.Row="2" Grid.Column="1" Name="cityComboBox" SelectionChanged="OnSelChangedCityCombo" Style="{StaticResource miniComboBoxStyle}" IsEnabled="False"/>
-                            <ComboBox Grid.Row="3" Grid.Column="1" Name="areaComboBox" SelectionChanged="OnSelChangedAreaCombo" Style="{StaticResource miniComboBoxStyle}" IsEnabled="False"/>
-                            <ComboBox Grid.Row="4" Grid.Column="1" Name="statusComboBox" SelectionChanged="OnSelChangedStatusCombo" Style="{StaticResource miniComboBoxStyle}" IsEnabled="False"/>
+                            <TextBox Grid.Row="0" Grid.Column="1" Name="latTextBox" TextChanged="OnTextChangedLatTextBox" Style="{StaticResource miniTextboxStyle}" IsEnabled="False" Margin="0,10,0,10"/>
+                            <TextBox Grid.Row="1" Grid.Column="1" Name="longTextBox" TextChanged="OnTextChangedLongTextBox" Style="{StaticResource miniTextboxStyle}" IsEnabled="False" Margin="0,10,0,10"/>
+                            <ComboBox Grid.Row="2" Grid.Column="1" Name="cityComboBox" SelectionChanged="OnSelChangedCityCombo" Style="{StaticResource miniComboBoxStyle}" IsEnabled="False" Margin="0,10,0,10"/>
+                            <ComboBox Grid.Row="3" Grid.Column="1" Name="areaComboBox" SelectionChanged="OnSelChangedAreaCombo" Style="{StaticResource miniComboBoxStyle}" IsEnabled="False" Margin="0,10,0,10"/>
+                            <ComboBox Grid.Row="4" Grid.Column="1" Name="statusComboBox" SelectionChanged="OnSelChangedStatusCombo" Style="{StaticResource miniComboBoxStyle}" IsEnabled="False" Margin="0,10,0,10"/>
                         </Grid>
                     </ScrollViewer>
                 </Grid>
@@ -348,10 +374,10 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
 
-                <Button Grid.Column="0" Style="{StaticResource buttonStyle}" Content="Add" Click="OnBtnClickAdd" Margin="8,4"/>
-                <Button Grid.Column="1" Style="{StaticResource buttonStyle}" Content="Export" Click="OnBtnClickExport" Margin="8,4"/>
-                <Button Grid.Column="2" Style="{StaticResource buttonStyle}" Content="Excel Format" Click="OnBtnClickFormat" Margin="8,4"/>
-                <Button Grid.Column="3" Style="{StaticResource buttonStyle}" Content="Re Import" Click="OnBtnClickReImport" Margin="8,4"/>
+                <Button Grid.Column="0" Style="{StaticResource FooterActionButtonStyle}" Content="Add" Click="OnBtnClickAdd" Margin="8,6"/>
+                <Button Grid.Column="1" Style="{StaticResource FooterActionButtonStyle}" Content="Export" Click="OnBtnClickExport" Margin="8,6"/>
+                <Button Grid.Column="2" Style="{StaticResource FooterActionButtonStyle}" Content="Excel Format" Click="OnBtnClickFormat" Margin="8,6"/>
+                <Button Grid.Column="3" Style="{StaticResource FooterActionButtonStyle}" Content="Re Import" Click="OnBtnClickReImport" Margin="8,6"/>
             </Grid>
         </Border>
     </Grid>
