@@ -26,10 +26,10 @@
 
     <Grid Margin="16">
         <Grid.RowDefinitions>
-            <RowDefinition Height="126"/>
-            <RowDefinition Height="88"/>
+            <RowDefinition Height="136"/>
+            <RowDefinition Height="96"/>
             <RowDefinition/>
-            <RowDefinition Height="94"/>
+            <RowDefinition Height="102"/>
         </Grid.RowDefinitions>
 
         <!-- Top application bar -->
@@ -37,8 +37,8 @@
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
-                    <ColumnDefinition Width="220"/>
-                    <ColumnDefinition Width="260"/>
+                    <ColumnDefinition Width="230"/>
+                    <ColumnDefinition Width="300"/>
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
@@ -87,10 +87,10 @@
                         Width="188"
                         Height="42"
                         FontWeight="Bold"
-                        VerticalAlignment="Bottom"
+                        VerticalAlignment="Center"
                         Click="OnClickChangePasswordButton"/>
 
-                <Border Grid.Column="2" Background="#1D2C89" CornerRadius="12" Padding="12,8">
+                <Border Grid.Column="2" Background="#1D2C89" CornerRadius="12" Padding="12,12">
                     <Grid Name="userNameGrid">
                         <Grid.RowDefinitions>
                             <RowDefinition/>
@@ -110,6 +110,7 @@
                                 Style="{StaticResource buttonStyle}"
                                 Width="130"
                                 Height="32"
+                                Margin="0,6,0,0"
                                 HorizontalAlignment="Center"
                                 Background="#F2F4FC"
                                 Foreground="#000080"
@@ -122,7 +123,7 @@
 
         <!-- Page heading -->
         <Border Grid.Row="1" Style="{StaticResource CardBorderStyle}" Margin="0,14,0,0" Padding="18,10">
-            <DockPanel LastChildFill="False">
+            <DockPanel LastChildFill="False" VerticalAlignment="Center">
                 <StackPanel DockPanel.Dock="Left">
                     <TextBlock Text="Repeaters" FontSize="30" FontWeight="Bold" Foreground="#000080"/>
                     <TextBlock Text="Filter, review, and export repeaters with a cleaner workflow"
@@ -157,12 +158,14 @@
                     </Grid.RowDefinitions>
 
                     <DockPanel Grid.Row="0" Margin="0,0,0,8">
-                        <TextBlock Text="Filters" FontSize="18" FontWeight="Bold" Foreground="#000080"/>
-                        <TextBlock Text="Choose criteria"
-                                   DockPanel.Dock="Right"
-                                   VerticalAlignment="Center"
-                                   Foreground="#6A7696"
-                                   FontSize="12"/>
+                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+                            <TextBlock Text="Filters" FontSize="18" FontWeight="Bold" Foreground="#000080"/>
+                            <TextBlock Text="Choose criteria"
+                                       Margin="8,5,0,0"
+                                       VerticalAlignment="Center"
+                                       Foreground="#6A7696"
+                                       FontSize="12"/>
+                        </StackPanel>
                     </DockPanel>
 
                     <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
