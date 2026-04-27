@@ -32,6 +32,7 @@ namespace ntra_missions
         private Expander previousExpander;
 
         private List<BASIC_STRUCTS.REPEATER_STRUCT> repeaters;
+        private List<BASIC_STRUCTS.REPEATER_STRUCT> filteredRepeaters;
         private List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT> repeatersStatus;
         private List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT> employees;
         private List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT> cities;
@@ -44,6 +45,7 @@ namespace ntra_missions
             commonQueries = new CommonQueries();
 
             repeaters = new List<BASIC_STRUCTS.REPEATER_STRUCT>();
+            filteredRepeaters = new List<BASIC_STRUCTS.REPEATER_STRUCT>();
             repeatersStatus = new List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT>();
             employees = new List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT>();
             cities = new List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT>();
@@ -70,6 +72,20 @@ namespace ntra_missions
 
             InitializeRepeatersStackPanel();
             InitializeRepeatersGrid();
+        }
+
+        private class RepeaterListItemViewModel
+        {
+            public int RepeaterSerial { get; set; }
+            public string SerialText { get; set; }
+            public string CityText { get; set; }
+            public string AreaText { get; set; }
+            public string CoordinatesText { get; set; }
+            public string AddressText { get; set; }
+            public string CommentText { get; set; }
+            public string AddedByText { get; set; }
+            public string Status { get; set; }
+            public bool IsPending { get; set; }
         }
 
         private bool InitializeEmployeeCombo()
@@ -107,8 +123,7 @@ namespace ntra_missions
 
         private void InitializeRepeatersStackPanel()
         {
-            repeatersStackPanel.Orientation = System.Windows.Controls.Orientation.Vertical;
-            repeatersStackPanel.Children.Clear();
+            filteredRepeaters.Clear();
 
             for (int i = 0; i < repeaters.Count; i++)
             {
@@ -116,7 +131,6 @@ namespace ntra_missions
                 {
                     bool contains = false;
                     string search = latTextBox.Text;
-
 
                     contains = repeaters[i].latitude.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0;
 
@@ -153,229 +167,24 @@ namespace ntra_missions
                         continue;
                 }
 
-
-                
-
-
-                Grid repeatersGrid = new Grid();
-                repeatersGrid.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
-                repeatersGrid.VerticalAlignment = VerticalAlignment.Stretch;
-
-                repeatersGrid.RowDefinitions.Add(new RowDefinition());
-                repeatersGrid.RowDefinitions.Add(new RowDefinition());
-                repeatersGrid.RowDefinitions.Add(new RowDefinition());
-                repeatersGrid.RowDefinitions.Add(new RowDefinition());
-
-                repeatersGrid.ColumnDefinitions.Add(new ColumnDefinition());
-                repeatersGrid.ColumnDefinitions.Add(new ColumnDefinition());
-                repeatersGrid.ColumnDefinitions.Add(new ColumnDefinition());
-                repeatersGrid.ColumnDefinitions.Add(new ColumnDefinition());
-
-                BrushConverter brushConverter = new BrushConverter();
-
-                Border border = new Border() { BorderThickness = new Thickness(3) };
-                border.Tag = repeaters[i].repeater_serial;
-                border.BorderBrush = (Brush)brushConverter.ConvertFrom("#000080");
-
-
-                WrapPanel serialWrapPanel = new WrapPanel();
-
-                Label serialLabel = new Label();
-                serialLabel.Content = "Serial: ";
-                serialLabel.Style = (Style)FindResource("labelStyleBlack");
-
-                Label serialLabelValue = new Label();
-                serialLabelValue.Content = repeaters[i].repeater_serial;
-                serialLabelValue.Style = (Style)FindResource("mediumLabelStyle");
-
-                serialWrapPanel.Children.Add(serialLabel);
-                serialWrapPanel.Children.Add(serialLabelValue);
-
-                repeatersGrid.Children.Add(serialWrapPanel);
-                Grid.SetRow(serialWrapPanel, 0);
-                Grid.SetColumn(serialWrapPanel, 0);
-
-
-
-
-                WrapPanel cityWrapPanel = new WrapPanel();
-
-                Label cityLabel = new Label();
-                cityLabel.Content = "City: ";
-                cityLabel.Style = (Style)FindResource("labelStyleBlack");
-
-                Label cityValue = new Label();
-                cityValue.Content = repeaters[i].city;
-                cityValue.Style = (Style)FindResource("mediumLabelStyle");
-
-                cityWrapPanel.Children.Add(cityLabel);
-                cityWrapPanel.Children.Add(cityValue);
-
-                repeatersGrid.Children.Add(cityWrapPanel);
-                Grid.SetRow(cityWrapPanel, 0);
-                Grid.SetColumn(cityWrapPanel, 1);
-
-
-
-                WrapPanel areaWrapPanel = new WrapPanel();
-
-                Label areaLabel = new Label();
-                areaLabel.Content = "Area: ";
-                areaLabel.Style = (Style)FindResource("labelStyleBlack");
-
-                Label areaValue = new Label();
-                areaValue.Content = repeaters[i].area;
-                areaValue.Style = (Style)FindResource("wideLabelStyle");
-
-                areaWrapPanel.Children.Add(areaLabel);
-                areaWrapPanel.Children.Add(areaValue);
-
-                repeatersGrid.Children.Add(areaWrapPanel);
-                Grid.SetRow(areaWrapPanel, 0);
-                Grid.SetColumn(areaWrapPanel, 2);
-
-
-
-
-
-                WrapPanel coordinatedWrapPanel = new WrapPanel();
-
-                Label coordinatesLabel = new Label();
-                coordinatesLabel.Content = "Coordinates: ";
-                coordinatesLabel.Style = (Style)FindResource("labelStyleBlack");
-
-                Label coordinatesValue = new Label() { Cursor = Cursors.Hand, ToolTip = "Left click to Copy coordinates!"};
-                coordinatesValue.Content = repeaters[i].latitude + ", " + repeaters[i].longitude;
-                coordinatesValue.Style = (Style)FindResource("wideLabelStyle");
-                coordinatesValue.Tag = repeaters[i].repeater_serial;
-                coordinatesValue.MouseLeftButtonDown += OnClickCopyCoordinates;
-
-                coordinatedWrapPanel.Children.Add(coordinatesLabel);
-                coordinatedWrapPanel.Children.Add(coordinatesValue);
-
-                repeatersGrid.Children.Add(coordinatedWrapPanel);
-                Grid.SetRow(coordinatedWrapPanel, 1);
-                Grid.SetColumn(coordinatedWrapPanel, 0);
-
-
-
-
-                WrapPanel addressWrapPanel = new WrapPanel();
-
-                Label addressLabel = new Label();
-                addressLabel.Content = "Address: ";
-                addressLabel.Style = (Style)FindResource("labelStyleBlack");
-
-                Label AddressValue = new Label();
-                AddressValue.Content = repeaters[i].address;
-                AddressValue.Style = (Style)FindResource("wideLabelStyle");
-                AddressValue.Width = 400;
-
-                addressWrapPanel.Children.Add(addressLabel);
-                addressWrapPanel.Children.Add(AddressValue);
-
-                repeatersGrid.Children.Add(addressWrapPanel);
-                Grid.SetRow(addressWrapPanel, 1);
-                Grid.SetColumn(addressWrapPanel, 1);
-                Grid.SetColumnSpan(addressWrapPanel, 2);
-
-
-                WrapPanel commentWrapPanel = new WrapPanel();
-
-                Label commentLabel = new Label();
-                commentLabel.Content = "Comment: ";
-                commentLabel.Style = (Style)FindResource("labelStyleBlack");
-
-                Label commentValue = new Label();
-                commentValue.Content = repeaters[i].comment;
-                commentValue.Style = (Style)FindResource("wideLabelStyle");
-                commentValue.Width = 400;
-
-                commentWrapPanel.Children.Add(commentLabel);
-                commentWrapPanel.Children.Add(commentValue);
-
-                repeatersGrid.Children.Add(commentWrapPanel);
-                Grid.SetRow(commentWrapPanel, 2);
-                Grid.SetColumn(commentWrapPanel, 1);
-                Grid.SetColumnSpan(commentWrapPanel, 2);
-
-
-
-
-                WrapPanel addedByWrapPanel = new WrapPanel();
-
-                Label addedByLabel = new Label();
-                addedByLabel.Content = "Added By: ";
-                addedByLabel.Style = (Style)FindResource("labelStyleBlack");
-
-                Label addedByLabelValue = new Label();
-                addedByLabelValue.Content = repeaters[i].added_by;
-                addedByLabelValue.Style = (Style)FindResource("mediumLabelStyle");
-
-                addedByWrapPanel.Children.Add(addedByLabel);
-                addedByWrapPanel.Children.Add(addedByLabelValue);
-
-                repeatersGrid.Children.Add(addedByWrapPanel);
-                Grid.SetRow(addedByWrapPanel, 2);
-                Grid.SetColumn(addedByWrapPanel, 0);
-
-
-
-
-                Border statusBorder = new Border() { Margin = new Thickness(6)};
-                statusBorder.Style = (Style)FindResource("statusBorderStyle");
-                statusBorder.Width = 200;
-                if (repeaters[i].status_id == BASIC_STRUCTS.PENDING_REPEATER_STATUS)
-                    statusBorder.Background = Brushes.Red;
-                else
-                    statusBorder.Background = Brushes.Green;
-
-                Label statusLabel = new Label();
-                statusLabel.Content = repeaters[i].status;
-                statusLabel.Style = (Style)FindResource("statusLabelStyle");
-                statusLabel.Width = 200;
-
-                statusBorder.Child = statusLabel;
-
-                repeatersGrid.Children.Add(statusBorder);
-                Grid.SetRow(statusBorder, 2);
-                Grid.SetColumn(statusBorder, 3);
-
-
-
-
-                Expander expander = new Expander();
-                expander.Tag = repeaters[i].repeater_serial;
-                expander.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Left;
-                expander.VerticalAlignment = VerticalAlignment.Top;
-                expander.ExpandDirection = ExpandDirection.Down;
-                expander.Expanded += OnExpandExpander;
-                expander.Margin = new Thickness(0, 24, 0, 0);
-
-                StackPanel expanderStackPanel = new StackPanel();
-
-                Button editButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
-                editButton.Content = "Edit";
-                editButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
-                editButton.Click += OnClickEdit; ;
-
-
-                expanderStackPanel.Children.Add(editButton);
-
-                expander.Content = expanderStackPanel;
-
-                repeatersGrid.Children.Add(expander);
-                Grid.SetColumn(expander, 4);
-
-
-                border.Child = repeatersGrid;
-
-                repeatersStackPanel.Children.Add(border);
+                filteredRepeaters.Add(repeaters[i]);
             }
 
+            repeatersListView.ItemsSource = filteredRepeaters.Select(repeater => new RepeaterListItemViewModel
+            {
+                RepeaterSerial = repeater.repeater_serial,
+                SerialText = "Serial: " + repeater.repeater_serial,
+                CityText = "City: " + repeater.city,
+                AreaText = "Area: " + repeater.area,
+                CoordinatesText = "Coordinates: " + repeater.latitude + ", " + repeater.longitude,
+                AddressText = "Address: " + repeater.address,
+                CommentText = "Comment: " + repeater.comment,
+                AddedByText = "Added By: " + repeater.added_by,
+                Status = repeater.status,
+                IsPending = repeater.status_id == BASIC_STRUCTS.PENDING_REPEATER_STATUS
+            }).ToList();
 
-            countLabel.Content = repeatersStackPanel.Children.Count.ToString();
-
+            countLabel.Content = filteredRepeaters.Count.ToString();
         }
 
         private void InitializeRepeatersGrid()
@@ -470,10 +279,13 @@ namespace ntra_missions
 
         }
 
-        private void OnClickCopyCoordinates(object sender, MouseButtonEventArgs e)
+        private void OnClickCopyCoordinates(object sender, RoutedEventArgs e)
         {
-            Label currentLabel = sender as Label;
-            int repeaterSerial = int.Parse(currentLabel.Tag.ToString());
+            FrameworkElement sourceElement = sender as FrameworkElement;
+            if (sourceElement == null || sourceElement.Tag == null)
+                return;
+
+            int repeaterSerial = int.Parse(sourceElement.Tag.ToString());
 
             String coordinates;
 
@@ -662,16 +474,11 @@ namespace ntra_missions
 
         private void OnBtnClickExport(object sender, RoutedEventArgs e)
         {
-            List<BASIC_STRUCTS.REPEATER_STRUCT> selectedRepeaters = new List<BASIC_STRUCTS.REPEATER_STRUCT>();
-
-            for (int i = 0; i < repeatersStackPanel.Children.Count; i++)
-            {
-                Border currentBorder = (Border)repeatersStackPanel.Children[i];
-                selectedRepeaters.Add(repeaters.Find(x1 => x1.repeater_serial == int.Parse(currentBorder.Tag.ToString())));
-            }
+            if (filteredRepeaters == null)
+                return;
 
             ExcelExport export = new ExcelExport();
-            export.ExportRepeaters(ref selectedRepeaters);
+            export.ExportRepeaters(ref filteredRepeaters);
         }
 
         /////////////////////////// Common Functions for every page///////////////////////
@@ -777,7 +584,10 @@ namespace ntra_missions
 
         private void OnClickListView(object sender, MouseButtonEventArgs e)
         {
-            listViewScrollViewer.Visibility = Visibility.Visible;
+            if (repeatersListView == null || tableViewScrollViewer == null)
+                return;
+
+            repeatersListView.Visibility = Visibility.Visible;
             tableViewScrollViewer.Visibility = Visibility.Collapsed;
 
             BrushConverter brushConverter = new BrushConverter();
@@ -794,7 +604,10 @@ namespace ntra_missions
 
         private void OnClickTableView(object sender, MouseButtonEventArgs e)
         {
-            listViewScrollViewer.Visibility = Visibility.Collapsed;
+            if (repeatersListView == null || tableViewScrollViewer == null)
+                return;
+
+            repeatersListView.Visibility = Visibility.Collapsed;
             tableViewScrollViewer.Visibility = Visibility.Visible;
 
             BrushConverter brushConverter = new BrushConverter();
