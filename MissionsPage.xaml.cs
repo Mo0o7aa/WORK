@@ -35,6 +35,7 @@ namespace ntra_missions
         CommonQueries commonQueries;
 
         private List<BASIC_STRUCTS.INTERFERENCE_MISSION_STRUCT> missions;
+        private List<BASIC_STRUCTS.INTERFERENCE_MISSION_STRUCT> filteredMissions;
         private List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT> engineers;
         private List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT> serviceProviders;
 
@@ -49,6 +50,7 @@ namespace ntra_missions
             commonFunctions = new CommonFunctions();
 
             missions = new List<BASIC_STRUCTS.INTERFERENCE_MISSION_STRUCT>();
+            filteredMissions = new List<BASIC_STRUCTS.INTERFERENCE_MISSION_STRUCT>();
             engineers = new List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT>();
             serviceProviders = new List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT>();
 
@@ -73,6 +75,29 @@ namespace ntra_missions
             InitializeServiceProviderCombo();
 
             InitializeMissionsStackPanel();
+        }
+
+        private class MissionSiteItemViewModel
+        {
+            public string SiteName { get; set; }
+            public string Reason { get; set; }
+            public string Comment { get; set; }
+            public string SiteTag { get; set; }
+        }
+
+        private class MissionListItemViewModel
+        {
+            public string MissionId { get; set; }
+            public List<string> Engineers { get; set; }
+            public string RegionText { get; set; }
+            public List<MissionSiteItemViewModel> Sites { get; set; }
+            public string StatusText { get; set; }
+            public bool IsPendingStatus { get; set; }
+            public string StartDateText { get; set; }
+            public string EndDateText { get; set; }
+            public string MissionTag { get; set; }
+            public string ComplaintTag { get; set; }
+            public Visibility CanEditVisibility { get; set; }
         }
 
         private void InitializeYearCombo()
@@ -116,10 +141,9 @@ namespace ntra_missions
 
         private void InitializeMissionsStackPanel()
         {
-            missionsStackPanel.Orientation = System.Windows.Controls.Orientation.Vertical;
-            missionsStackPanel.Children.Clear();
-            
-            for(int i = 0; i < missions.Count; i++)
+            filteredMissions.Clear();
+
+            for (int i = 0; i < missions.Count; i++)
             {
                 if (searchCheckBox.IsChecked == true && searchTextBox.Text != "")
                 {
@@ -134,458 +158,54 @@ namespace ntra_missions
                     if (!contains)
                         continue;
                 }
-        
+
                 if (yearCheckBox.IsChecked == true && yearComboBox.SelectedIndex != -1)
                 {
                     if (missions[i].mission_Date.Year != int.Parse(yearComboBox.SelectedItem.ToString()) || missions[i].end_date.Year != int.Parse(yearComboBox.SelectedItem.ToString()))
                         continue;
                 }
-        
+
                 if (monthCheckBox.IsChecked == true && monthComboBox.SelectedIndex != -1)
                 {
                     if (missions[i].mission_Date.Month != int.Parse(monthComboBox.SelectedItem.ToString()) || missions[i].end_date.Month != int.Parse(monthComboBox.SelectedItem.ToString()))
                         continue;
                 }
-        
+
                 if (employeeCheckBox.IsChecked == true && employeeComboBox.SelectedIndex != -1)
                 {
                     if (!missions[i].engineers.Exists(x1 => x1.key == engineers[employeeComboBox.SelectedIndex].key))
                         continue;
                 }
-        
+
                 if (serviceProviderCheckBox.IsChecked == true && serviceProviderComboBox.SelectedIndex != -1)
                 {
                     if (missions[i].company_serial != serviceProviders[serviceProviderComboBox.SelectedIndex].key)
                         continue;
                 }
-        
-        
-                Grid missionGrid = new Grid();
-                missionGrid.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
-                missionGrid.VerticalAlignment = VerticalAlignment.Stretch;
-        
-                missionGrid.RowDefinitions.Add(new RowDefinition());
-                missionGrid.RowDefinitions.Add(new RowDefinition());
-                missionGrid.RowDefinitions.Add(new RowDefinition());
-                missionGrid.RowDefinitions.Add(new RowDefinition());
-                missionGrid.RowDefinitions.Add(new RowDefinition());
-        
-                missionGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(250)});
-                missionGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(400)});
-                missionGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(350)});
-                missionGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(200)});
-        
-                BrushConverter brushConverter = new BrushConverter();
-        
-                Border border = new Border() { BorderThickness = new Thickness(3)};
-                border.BorderBrush = (Brush)brushConverter.ConvertFrom("#000080");
-        
-                //WrapPanel logoWrapPanel = new WrapPanel();
-                //
-                //String imageSource = @"\Photos\" + missions[i].service_provider_id.ToString() + ".png";
-                //
-                //Image logo = new Image();
-                //logo.Source = new BitmapImage(new Uri(imageSource, UriKind.Relative));
-                //
-                //logo.Width = 80;
-                //logo.Height = 80;
-        
-                Label missionIdLabel = new Label();
-                missionIdLabel.Content = missions[i].mission_id;
-                missionIdLabel.Style = (Style)FindResource("stackPanelHeaderLabelStyleBlue");
-                missionIdLabel.Width = 500;
-        
-                //logoWrapPanel.Children.Add(logo);
-                //logoWrapPanel.Children.Add(missionIdLabel);
-        
-                missionGrid.Children.Add(missionIdLabel);
-                Grid.SetRow(missionIdLabel, 0);
-                Grid.SetColumnSpan(missionIdLabel, 3);
 
-                StackPanel engineersStackPanel = new StackPanel();
-                engineersStackPanel.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
-                engineersStackPanel.VerticalAlignment = VerticalAlignment.Stretch;
-
-                for (int j = 0; j < missions[i].engineers.Count; j++)
-                {
-                    WrapPanel wrapPanel = new WrapPanel();
-                    wrapPanel.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
-
-                    Label tempEngineerLabel = new Label();
-                    tempEngineerLabel.Content = "Eng. :";
-                    tempEngineerLabel.Style = (Style)FindResource("miniLabelStyleBlack");
-
-                    Label tempNameLabel = new Label();
-                    tempNameLabel.Style = (Style)FindResource("wideLabelStyle");
-                    tempNameLabel.Content = missions[i].engineers[j].value;
-
-                    wrapPanel.Children.Add(tempEngineerLabel);
-                    wrapPanel.Children.Add(tempNameLabel);
-
-                    engineersStackPanel.Children.Add(wrapPanel);
-                }
-
-                missionGrid.Children.Add(engineersStackPanel);
-                Grid.SetRow(engineersStackPanel, 1);
-                Grid.SetColumn(engineersStackPanel, 0);
-
-                WrapPanel regionWrapPanel = new WrapPanel();
-                regionWrapPanel.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
-
-                Label regionLabel = new Label();
-                regionLabel.Content = "Area:";
-                regionLabel.Style = (Style)FindResource("miniLabelStyleBlack");
-
-                Label regionLabelValue = new Label();
-                regionLabelValue.Style = (Style)FindResource("wideLabelStyle");
-                regionLabelValue.Content = missions[i].sites[0].region;
-
-                regionWrapPanel.Children.Add(regionLabel);
-                regionWrapPanel.Children.Add(regionLabelValue);
-
-                missionGrid.Children.Add(regionWrapPanel);
-                Grid.SetRow(regionWrapPanel, 1);
-                Grid.SetColumn(regionWrapPanel, 1);
-
-                ScrollViewer sitesScrollViewer = new ScrollViewer();
-                sitesScrollViewer.Height = 150;
-                //sitesScrollViewer.Margin = new Thickness(12);
-                sitesScrollViewer.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
-                sitesScrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
-                sitesScrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
-
-                Grid sitesGrid= new Grid();
-                sitesGrid.ShowGridLines = true;
-                sitesGrid.RowDefinitions.Add(new RowDefinition());
-                sitesGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(200)});
-                sitesGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(300)});
-                sitesGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(300)});
-                sitesGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(100)});
-
-                Label siteNumberLabelHeader = new Label();
-                siteNumberLabelHeader.Content = "Site Number";
-                siteNumberLabelHeader.Style = (Style)FindResource("stackPanelSecondaryHeaderLabelStyle");
-                siteNumberLabelHeader.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center; ;
-
-                Label reasonOfIntLabelHeader = new Label();
-                reasonOfIntLabelHeader.Content = "Reason of Int.";
-                reasonOfIntLabelHeader.Style = (Style)FindResource("stackPanelSecondaryHeaderLabelStyle");
-                reasonOfIntLabelHeader.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
-
-                Label commentLabelHeader = new Label();
-                commentLabelHeader.Content = "Comment";
-                commentLabelHeader.Style = (Style)FindResource("stackPanelSecondaryHeaderLabelStyle");
-                commentLabelHeader.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
-
-                sitesGrid.Children.Add(siteNumberLabelHeader);
-                sitesGrid.Children.Add(reasonOfIntLabelHeader);
-                sitesGrid.Children.Add(commentLabelHeader);
-                Grid.SetColumn(siteNumberLabelHeader, 0);
-                Grid.SetColumn(reasonOfIntLabelHeader, 1);
-                Grid.SetColumn(commentLabelHeader, 2);
-
-                for (int j = 0; j < missions[i].sites.Count; j++)
-                {
-                    TextBox tempSiteNumberLabel = new TextBox();
-                    tempSiteNumberLabel.Text = missions[i].sites[j].site_name;
-                    tempSiteNumberLabel.Style = (Style)FindResource("stackPanelTextboxStyle");
-                    
-                    TextBox tempReasonOfIntTextBlock = new TextBox();
-                    tempReasonOfIntTextBlock.Text = missions[i].sites[j].reason_of_interference;
-                    tempReasonOfIntTextBlock.Style = (Style)FindResource("stackPanelTextboxStyle");
-
-                    TextBox commentTextBlock = new TextBox();
-                    commentTextBlock.Text = missions[i].sites[j].comment;
-                    commentTextBlock.Style = (Style)FindResource("stackPanelTextboxStyle");
-
-                    Button showSiteButton = new Button();
-                    showSiteButton.Content = "View";
-                    showSiteButton.Style = (Style)FindResource("buttonStyle");
-                    showSiteButton.Width = 50;
-                    showSiteButton.Height = 30;
-                    showSiteButton.FontSize = 14;
-                    showSiteButton.Tag = missions[i].company_serial + "," + missions[i].complaint_serial + "," + missions[i].sites[j].site_serial;
-                    showSiteButton.Click += OnClickShowSite;
-
-                    sitesGrid.RowDefinitions.Add(new RowDefinition());
-
-                    sitesGrid.Children.Add(tempSiteNumberLabel);
-                    sitesGrid.Children.Add(tempReasonOfIntTextBlock);
-                    sitesGrid.Children.Add(commentTextBlock);
-                    sitesGrid.Children.Add(showSiteButton);
-                    
-                    Grid.SetRow(tempSiteNumberLabel, j + 1);
-                    Grid.SetColumn(tempSiteNumberLabel, 0);
-                    
-                    Grid.SetRow(tempReasonOfIntTextBlock, j + 1);
-                    Grid.SetColumn(tempReasonOfIntTextBlock, 1);
-
-                    Grid.SetRow(commentTextBlock, j + 1);
-                    Grid.SetColumn(commentTextBlock, 2);
-
-                    Grid.SetRow(showSiteButton, j + 1);
-                    Grid.SetColumn(showSiteButton, 3);
-
-                }
-
-                sitesScrollViewer.Content = sitesGrid;
-                missionGrid.Children.Add(sitesScrollViewer);
-                Grid.SetRow(sitesScrollViewer, 2);
-                Grid.SetColumn(sitesScrollViewer, 0);
-                Grid.SetColumnSpan(sitesScrollViewer, 2);
-
-
-                //Grid equipmentGrid = new Grid();
-                //equipmentGrid.System.Windows.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
-                //equipmentGrid.RowDefinitions.Add(new RowDefinition());
-                //
-                //ScrollViewer equipmentScrollViewer = new ScrollViewer();
-                //equipmentScrollViewer.System.Windows.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
-                //equipmentScrollViewer.Margin = new Thickness(12);
-                //equipmentScrollViewer.Height = 150;
-                //equipmentScrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
-                //
-                //equipmentScrollViewer.Content = equipmentGrid;
-                //
-                //Label equipmentHeaderLabel = new Label();
-                //equipmentHeaderLabel.Content = "Equipment";
-                //equipmentHeaderLabel.Style = (Style)FindResource("wideLabelStyle");
-                //equipmentHeaderLabel.System.Windows.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
-                //
-                //equipmentGrid.Children.Add(equipmentHeaderLabel);
-                //
-                //for (int j = 0; j < missions[i].equipment.Count; j++)
-                //{
-                //    Label tempEquipmentLabel = new Label();
-                //    tempEquipmentLabel.Content = missions[i].equipment[j];
-                //    tempEquipmentLabel.Style = (Style)FindResource("wideLabelStyleBlack");
-                //
-                //    equipmentGrid.RowDefinitions.Add(new RowDefinition());
-                //    equipmentGrid.Children.Add(tempEquipmentLabel);
-                //    Grid.SetRow(tempEquipmentLabel, j + 1);
-                //}
-
-
-                //missionGrid.Children.Add(equipmentScrollViewer);
-                //Grid.SetRow(equipmentScrollViewer, 2);
-                //Grid.SetColumn(equipmentScrollViewer, 0);
-
-                //WrapPanel repeatersCountWrapPanel = new WrapPanel();
-                //repeatersCountWrapPanel.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
-                //repeatersCountWrapPanel.VerticalAlignment = VerticalAlignment.Center;
-                //
-                //Label repeatersCountLabel = new Label();
-                //repeatersCountLabel.Content = "Repeaters: ";
-                //repeatersCountLabel.Style = (Style)FindResource("labelStyle");
-                //
-                //Label repeatersCountValueLabel = new Label();
-                ////repeatersCountValueLabel.Content = missions[i].repeaters.Count;
-                //repeatersCountValueLabel.Style = (Style)FindResource("labelStyleBlack");
-                //
-                //repeatersCountWrapPanel.Children.Add(repeatersCountLabel);
-                //repeatersCountWrapPanel.Children.Add(repeatersCountValueLabel);
-                //
-                //missionGrid.Children.Add(repeatersCountWrapPanel);
-                //Grid.SetRow(repeatersCountWrapPanel, 1);
-                //Grid.SetColumn(repeatersCountWrapPanel, 1);
-
-                Border statusBorder = new Border();
-                statusBorder.Style = (Style)FindResource("statusBorderStyle");
-                statusBorder.Width = 200;
-                if (missions[i].status_id == BASIC_STRUCTS.MISSION_PENDING_OPERATOR_ACTION_STATUS || missions[i].status_id == BASIC_STRUCTS.MISSION_PENDING_NTRA_ACTION_STATUS)
-                    statusBorder.Background = Brushes.Yellow;
-                else
-                    statusBorder.Background = Brushes.Green;
-
-                Label statusLabel = new Label();
-                statusLabel.Content = missions[i].status;
-                statusLabel.Style = (Style)FindResource("statusLabelStyle");
-                statusLabel.Width = 200;
-
-                statusBorder.Child = statusLabel;
-
-                missionGrid.Children.Add(statusBorder);
-                Grid.SetRow(statusBorder, 1);
-                Grid.SetColumn(statusBorder, 3);
-
-                StackPanel dateStackPanel = new StackPanel() { HorizontalAlignment = System.Windows.HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center};
-                WrapPanel dateWrapPanel = new WrapPanel();
-                dateWrapPanel.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
-                dateWrapPanel.VerticalAlignment = VerticalAlignment.Center;
-
-                Label dateLabel = new Label();
-                dateLabel.Style = (Style)FindResource("labelStyleBlack");
-                dateLabel.Content = "Start Date: ";
-
-                Label dateLabelValue = new Label();
-                dateLabelValue.Content = missions[i].mission_Date.Day + "/" + missions[i].mission_Date.Month + "/" + missions[i].mission_Date.Year;
-                dateLabelValue.Style = (Style)FindResource("labelStyle");
-
-                WrapPanel endDateWrapPanel = new WrapPanel();
-                endDateWrapPanel.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
-                endDateWrapPanel.VerticalAlignment = VerticalAlignment.Center;
-
-                Label endDateLabel = new Label();
-                endDateLabel.Style = (Style)FindResource("labelStyleBlack");
-                endDateLabel.Content = "End Date: ";
-
-                Label endDateLabelValue = new Label();
-                endDateLabelValue.Content = missions[i].end_date.Day + "/" + missions[i].end_date.Month + "/" + missions[i].end_date.Year;
-                endDateLabelValue.Style = (Style)FindResource("labelStyle");
-
-                dateWrapPanel.Children.Add(dateLabel);
-                dateWrapPanel.Children.Add(dateLabelValue);
-                endDateWrapPanel.Children.Add(endDateLabel);
-                endDateWrapPanel.Children.Add(endDateLabelValue);
-
-                dateStackPanel.Children.Add(dateWrapPanel);
-                dateStackPanel.Children.Add(endDateWrapPanel);
-
-                missionGrid.Children.Add(dateStackPanel);
-                Grid.SetRow(dateStackPanel, 2);
-                Grid.SetColumn(dateStackPanel, 3);
-        
-                Expander expander = new Expander();
-                expander.Tag = missions[i].company_serial + "," + missions[i].complaint_serial + "," + missions[i].mission_serial;
-                expander.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Left;
-                expander.VerticalAlignment = VerticalAlignment.Top;
-                expander.ExpandDirection = ExpandDirection.Down;
-                expander.Expanded += OnExpandExpander;
-                expander.Margin = new Thickness(0, 24, 0, 0);
-        
-                StackPanel expanderStackPanel = new StackPanel();
-        
-                Button viewButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
-                viewButton.Content = "View Mission";
-                viewButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
-                viewButton.Click += OnBtnClickView;
-
-                Button viewComplaintButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
-                viewComplaintButton.Content = "View Complaint";
-                viewComplaintButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
-                viewComplaintButton.Tag = missions[i].company_serial + "," + missions[i].complaint_serial;
-                viewComplaintButton.Click += OnClickViewComplaint;
-
-
-                Button editButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
-                editButton.Content = "Edit";
-                editButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
-                editButton.Click += OnClickEdit;
-
-                Button feedbackButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
-                feedbackButton.Content = "Add Feedback";
-                feedbackButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
-                feedbackButton.Click += OnClickFeedback;
-
-                Button attachmentButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
-                attachmentButton.Content = "Attach File";
-                attachmentButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
-                attachmentButton.Click += OnClickAttachFile;
-
-                Button repeaterButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
-                repeaterButton.Content = "Add Repeaters";
-                repeaterButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
-                repeaterButton.Click += OnClickAddRepeaters;
-
-                Button showRepeatersButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
-                showRepeatersButton.Content = "Show Repeaters";
-                showRepeatersButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
-                showRepeatersButton.Click += OnClickShowRepeaters;
-
-                Button wordExportButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
-                wordExportButton.Content = "Word Export";
-                wordExportButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
-                wordExportButton.Click += OnClickWordExport;
-
-
-                Button deleteButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
-                deleteButton.Content = "Delete";
-                deleteButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
-                deleteButton.Click += OnBtnClickDelete;
-        
-                expanderStackPanel.Children.Add(viewButton);
-                expanderStackPanel.Children.Add(viewComplaintButton);
-                if (missions[i].added_by_id == loggedInUser.GetEmployeeId())
-                    expanderStackPanel.Children.Add(editButton);
-                expanderStackPanel.Children.Add(feedbackButton);
-                //expanderStackPanel.Children.Add(showRepeatersButton);
-                if (missions[i].added_by_id == loggedInUser.GetEmployeeId())
-                    expanderStackPanel.Children.Add(attachmentButton);
-                expanderStackPanel.Children.Add(wordExportButton);
-                //expanderStackPanel.Children.Add(deleteButton);
-                
-                expander.Content = expanderStackPanel;
-        
-                missionGrid.Children.Add(expander);
-                Grid.SetColumn(expander, 3);
-
-                ScrollViewer scrollViewer = new ScrollViewer() { VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Height = 200, Margin = new Thickness(12), HorizontalAlignment = System.Windows.HorizontalAlignment.Left };
-                StackPanel fileStackPanel = new StackPanel() { Orientation = System.Windows.Controls.Orientation.Vertical };
-
-                scrollViewer.Content = fileStackPanel;
-
-                FileInfo[] filesPath;
-
-                if (commonFunctions.CheckDirectory(BASIC_STRUCTS.FOLDER_SHARE_PATH + @"Missions\" + missions[i].mission_id + @"\"))
-                {
-                    filesPath = commonFunctions.ListFilesInFolder(BASIC_STRUCTS.FOLDER_SHARE_PATH + @"Missions\" + missions[i].mission_id + @"\");
-
-                    for (int k = 0; k < filesPath.Length; k++)
-                    {
-                        //Border currentBorder = new Border() { BorderBrush = (Brush)brushConverter.ConvertFrom("#000080"), BorderThickness = new Thickness(3) };
-
-                        WrapPanel currentWrapPanel = new WrapPanel() { HorizontalAlignment = System.Windows.HorizontalAlignment.Left };
-
-                        //currentBorder.Child = currentWrapPanel;
-
-                        String imageSource = @"\Photos\file_icon.png";
-
-                        Image currentFileImage = new Image() { VerticalAlignment = VerticalAlignment.Center };
-                        currentFileImage.Height = 50;
-                        currentFileImage.Width = 50;
-                        currentFileImage.Source = new BitmapImage(new Uri(imageSource, UriKind.Relative));
-
-                        TextBlock currentFile = new TextBlock() { Style = (Style)FindResource("textblockStyleBlue"), Height = 50, VerticalAlignment = VerticalAlignment.Center, Padding = new Thickness(3) };
-                        currentFile.Cursor = Cursors.Hand;
-                        currentFile.ToolTip = "Click to open file";
-                        currentFile.PreviewMouseLeftButtonDown += OnClickOpenFile;
-
-                        currentFile.Text = System.IO.Path.GetFileName(filesPath[k].FullName);
-                        currentFile.Tag = filesPath[k].FullName;
-
-                        String imageSource1 = @"\Photos\red_cross_icon.png";
-
-                        Image currentRemoveImage = new Image() { VerticalAlignment = VerticalAlignment.Center };
-                        currentRemoveImage.Height = 40;
-                        currentRemoveImage.Width = 40;
-                        currentRemoveImage.Source = new BitmapImage(new Uri(imageSource1, UriKind.Relative));
-                        currentRemoveImage.ToolTip = "Click to delete file";
-                        currentRemoveImage.Tag = filesPath[k].FullName;
-                        currentRemoveImage.Cursor = Cursors.Hand;
-                        currentRemoveImage.MouseLeftButtonDown += OnClickRemoveFile;
-
-                        currentWrapPanel.Children.Add(currentFileImage);
-                        currentWrapPanel.Children.Add(currentFile);
-                        if (missions[i].added_by_id == loggedInUser.GetEmployeeId())
-                            currentWrapPanel.Children.Add(currentRemoveImage);
-
-                        fileStackPanel.Children.Add(currentWrapPanel);
-                    }
-
-                    if (filesPath.Length != 0)
-                    {
-                        missionGrid.Children.Add(scrollViewer);
-                        Grid.SetRowSpan(scrollViewer, 5);
-                        Grid.SetRow(scrollViewer, 0);
-                        Grid.SetColumn(scrollViewer, 2);
-                    }
-                }
-
-                border.Child = missionGrid;
-        
-                missionsStackPanel.Children.Add(border);
+                filteredMissions.Add(missions[i]);
             }
-        
+
+            missionsListView.ItemsSource = filteredMissions.Select(mission => new MissionListItemViewModel
+            {
+                MissionId = mission.mission_id,
+                Engineers = mission.engineers.Select(x => "Eng.: " + x.value).ToList(),
+                RegionText = mission.sites.Count > 0 ? "Area: " + mission.sites[0].region : "Area: -",
+                Sites = mission.sites.Select(site => new MissionSiteItemViewModel
+                {
+                    SiteName = site.site_name,
+                    Reason = site.reason_of_interference,
+                    Comment = site.comment,
+                    SiteTag = mission.company_serial + "," + mission.complaint_serial + "," + site.site_serial
+                }).ToList(),
+                StatusText = mission.status,
+                IsPendingStatus = mission.status_id == BASIC_STRUCTS.MISSION_PENDING_OPERATOR_ACTION_STATUS || mission.status_id == BASIC_STRUCTS.MISSION_PENDING_NTRA_ACTION_STATUS,
+                StartDateText = "Start Date: " + mission.mission_Date.Day + "/" + mission.mission_Date.Month + "/" + mission.mission_Date.Year,
+                EndDateText = "End Date: " + mission.end_date.Day + "/" + mission.end_date.Month + "/" + mission.end_date.Year,
+                MissionTag = mission.company_serial + "," + mission.complaint_serial + "," + mission.mission_serial,
+                ComplaintTag = mission.company_serial + "," + mission.complaint_serial,
+                CanEditVisibility = mission.added_by_id == loggedInUser.GetEmployeeId() ? Visibility.Visible : Visibility.Collapsed
+            }).ToList();
         }
 
         private void OnClickRemoveFile(object sender, MouseButtonEventArgs e)

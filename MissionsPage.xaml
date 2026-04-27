@@ -5,111 +5,274 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:ntra_missions"
       mc:Ignorable="d" 
-      Title="MissionsPage">
+      Title="MissionsPage"
+      Background="#EEF2FA">
 
-    <Grid>
+    <Grid Margin="16">
         <Grid.RowDefinitions>
-            <RowDefinition Height="150"/>
-            <RowDefinition Height="100"/>
+            <RowDefinition Height="136"/>
+            <RowDefinition Height="96"/>
             <RowDefinition/>
-            <RowDefinition Height="100"/>
+            <RowDefinition Height="102"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Background="#000080">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="250"/>
-                <ColumnDefinition Width="250"/>
-            </Grid.ColumnDefinitions>
-
-            <WrapPanel>
-                <Grid Name="mainMenuGrid" Background="LightGray" VerticalAlignment="Stretch" Width="70" IsHitTestVisible="True" MouseEnter="MouseEnterMainMenu" MouseLeave="MouseLeaveMainMenu" ToolTip="Main Menu" MouseLeftButtonDown="OnClickMainMenu" Cursor="Hand">
-                    <Image Name="menuItemImage" Source="Photos\tab_icon.png" Height="50" Width="50"/>
-                </Grid>
-
-                <MenuItem Name="tabMenuButton" Visibility="Collapsed">
-                    <MenuItem.ContextMenu>
-                        <ContextMenu Closed="OnClosedMenuContectMenu">
-                            <MenuItem Header="DashBoard" Name="dashboardMenuItem" Click="DashboardMenuSelection"/>
-                            <MenuItem Header="Employees" Name="EmployeeMenuItem" Click="employeeMenuSelection"/>
-                            <MenuItem Header="Companies" Name="CompanyMenuItem" Click="CompanyMenuSelection"/>
-                            <MenuItem Header="Company Equipment" Name="CompanyEquipmentMenuItem" Click="CompanyEquipmentMenuSelection"/>
-                            <MenuItem Header="Sites" Name="sitesMenuItem" Click="SitesMenuSelection"/>
-                            <MenuItem Header="EMF" Name="emfMenuItem" Click="emfMenuSelection"/>
-                            <MenuItem Header="Complaints" Name="ComplaintsMenuItem" Click="ComplaintsMenuSelection"/>
-                            <MenuItem Header="Monitoring Missions" Name="monitoringMenuItem" IsChecked="True" IsHitTestVisible="False"/>
-                            <MenuItem Header="Repeaters" Name="repeatersMenuItem" Click="RepeatersMenueSelection"/>
-                            <MenuItem Header="Inspection Missions" Name="inspectionMenuItem" Click="InspectionMenuSelection"/>
-                        </ContextMenu>
-                    </MenuItem.ContextMenu>
-                </MenuItem>
-                
-                <Image Source="Photos\NTRA_white1.png" VerticalAlignment="Center" Height="200"  HorizontalAlignment="Left"/>
-            </WrapPanel>
-
-            <Grid Name="userNameGrid" Grid.Column="2">
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-
-                <Label Grid.Row="0" Name="userNameLabel" Foreground="White" FontSize="20" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="Username:"/>
-                <Button Grid.Row="1" Name="logoutButton" Content="Sign out" Style="{StaticResource buttonStyle}" VerticalAlignment="Bottom" Background="LightGray" FontWeight="Bold" Foreground="#000080" Click="OnClickLogoutButton"/>
-            </Grid>
-
-            <Button Grid.Column="1" Name="changePasswordButton" Content="Change Password" VerticalAlignment="Bottom" FontWeight="Bold" Style="{StaticResource negativeButtonStyle}" Width="200" Click="OnClickChangePasswordButton"/>
-
-        </Grid>
-
-        <!--<ScrollViewer Grid.Row="1">
-        <WebBrowser  x:Name="wbMaps" Source="https://www.google.com/maps" GotTouchCapture="wbMaps_GotTouchCapture" Navigated="wbMaps_Navigated" Navigating="wbMaps_Navigating"/>
-        </ScrollViewer>-->
-
-        <Label Grid.Row="1" Style="{StaticResource headerLabelStyle}" Content="Monitoring Missions" HorizontalAlignment="Center" Foreground="#000080"/>
-
-
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="300"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-
-            <Grid Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="12">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="70"/>
-                    <RowDefinition Height="70"/>
-                    <RowDefinition Height="70"/>
-                    <RowDefinition Height="70"/>
-                    <RowDefinition Height="70"/>
-                </Grid.RowDefinitions>
+        <Border Grid.Row="0" Background="#000080" CornerRadius="18" BorderBrush="#1D2E8A" BorderThickness="1" Padding="16">
+            <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="150"/>
                     <ColumnDefinition/>
+                    <ColumnDefinition Width="230"/>
+                    <ColumnDefinition Width="300"/>
                 </Grid.ColumnDefinitions>
 
-                <CheckBox Grid.Row="0" Grid.Column="0" Name="searchCheckBox" Content="Search" Checked="OnCheckSearchCheckBox" Unchecked="OnUncheckSearchCheckBox" Style="{StaticResource checkBoxStyle}" ToolTip="Search site"/>
-                <CheckBox Grid.Row="1" Grid.Column="0" Name="yearCheckBox" Content="Year" Checked="OnCheckYearCheckBox" Unchecked="OnUncheckYearCheckBox" Style="{StaticResource checkBoxStyle}"/>
-                <CheckBox Grid.Row="2" Grid.Column="0" Name="monthCheckBox" Content="Month" Checked="OnCheckMonthCheckBox" Unchecked="OnUncheckMonthCheckBox" Style="{StaticResource checkBoxStyle}"/>
-                <CheckBox Grid.Row="3" Grid.Column="0" Name="employeeCheckBox" Content="Engineer" Checked="OnCheckEmployeeCheckBox" Unchecked="OnUncheckEmployeeCheckBox" Style="{StaticResource checkBoxStyle}"/>
-                <CheckBox Grid.Row="4" Grid.Column="0" Name="serviceProviderCheckBox" Content="Service &#10;provider" Checked="OnCheckServiceProviderCheckBox" Unchecked="OnUncheckServiceProviderCheckBox" Style="{StaticResource checkBoxStyle}"/>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Border Style="{StaticResource MenuButtonSurfaceStyle}">
+                        <Grid Name="mainMenuGrid"
+                              Cursor="Hand"
+                              ToolTip="Main Menu"
+                              MouseEnter="MouseEnterMainMenu"
+                              MouseLeave="MouseLeaveMainMenu"
+                              MouseLeftButtonDown="OnClickMainMenu">
+                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <Rectangle Width="24" Height="3" RadiusX="2" RadiusY="2" Fill="#000080" Margin="0,2"/>
+                                <Rectangle Width="24" Height="3" RadiusX="2" RadiusY="2" Fill="#000080" Margin="0,2"/>
+                                <Rectangle Width="24" Height="3" RadiusX="2" RadiusY="2" Fill="#000080" Margin="0,2"/>
+                            </StackPanel>
+                            <Image Name="menuItemImage" Source="Photos\tab_icon.png" Height="1" Width="1" Opacity="0"/>
+                        </Grid>
+                    </Border>
 
+                    <MenuItem Name="tabMenuButton" Visibility="Collapsed">
+                        <MenuItem.ContextMenu>
+                            <ContextMenu Closed="OnClosedMenuContectMenu">
+                                <MenuItem Header="DashBoard" Name="dashboardMenuItem" Click="DashboardMenuSelection"/>
+                                <MenuItem Header="Employees" Name="EmployeeMenuItem" Click="employeeMenuSelection"/>
+                                <MenuItem Header="Companies" Name="CompanyMenuItem" Click="CompanyMenuSelection"/>
+                                <MenuItem Header="Company Equipment" Name="CompanyEquipmentMenuItem" Click="CompanyEquipmentMenuSelection"/>
+                                <MenuItem Header="Sites" Name="sitesMenuItem" Click="SitesMenuSelection"/>
+                                <MenuItem Header="EMF" Name="emfMenuItem" Click="emfMenuSelection"/>
+                                <MenuItem Header="Complaints" Name="ComplaintsMenuItem" Click="ComplaintsMenuSelection"/>
+                                <MenuItem Header="Monitoring Missions" Name="monitoringMenuItem" IsChecked="True" IsHitTestVisible="False"/>
+                                <MenuItem Header="Repeaters" Name="repeatersMenuItem" Click="RepeatersMenueSelection"/>
+                                <MenuItem Header="Inspection Missions" Name="inspectionMenuItem" Click="InspectionMenuSelection"/>
+                            </ContextMenu>
+                        </MenuItem.ContextMenu>
+                    </MenuItem>
 
-                <TextBox Grid.Row="0" Grid.Column="1" Name="searchTextBox" TextChanged="OnTextChangedSearchTextBox" Style="{StaticResource miniTextboxStyle}" IsEnabled='False' ToolTip="Search site"/>
-                <ComboBox Grid.Row="1" Grid.Column="1" Name="yearComboBox" SelectionChanged="OnSelChangedYearCombo" Style="{StaticResource miniComboBoxStyle}" IsEnabled='False'/>
-                <ComboBox Grid.Row="2" Grid.Column="1" Name="monthComboBox" SelectionChanged="OnSelChangedMonthCombo" Style="{StaticResource miniComboBoxStyle}" IsEnabled='False'/>
-                <ComboBox Grid.Row="3" Grid.Column="1" Name="employeeComboBox" SelectionChanged="OnSelChangedEmployeeCombo" Style="{StaticResource miniComboBoxStyle}" IsEnabled='False'/>
-                <ComboBox Grid.Row="4" Grid.Column="1" Name="serviceProviderComboBox" SelectionChanged="OnSelChangedServiceProviderCombo" Style="{StaticResource miniComboBoxStyle}" IsEnabled='False'/>
+                    <StackPanel VerticalAlignment="Center">
+                        <Image Source="Photos\NTRA_white1.png" Height="72"/>
+                        <TextBlock Text="Spectrum Monitoring Workspace"
+                                   Margin="4,2,0,0"
+                                   Foreground="#DBE3FF"
+                                   FontSize="12"
+                                   FontWeight="SemiBold"/>
+                    </StackPanel>
+                </StackPanel>
 
+                <Button Grid.Column="1"
+                        Name="changePasswordButton"
+                        Content="Change Password"
+                        Style="{StaticResource HeaderActionButtonStyle}"
+                        Width="196"
+                        VerticalAlignment="Center"
+                        Click="OnClickChangePasswordButton"/>
+
+                <Border Grid.Column="2" Background="#1D2C89" CornerRadius="12" Padding="12,12">
+                    <Grid Name="userNameGrid">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <Label Grid.Row="0" Name="userNameLabel" Foreground="White" FontSize="18" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="Username:"/>
+                        <Button Grid.Row="1"
+                                Name="logoutButton"
+                                Content="Sign out"
+                                Style="{StaticResource HeaderActionButtonStyle}"
+                                Width="140"
+                                Height="34"
+                                Margin="0,6,0,0"
+                                HorizontalAlignment="Center"
+                                Background="#F8FAFF"
+                                Click="OnClickLogoutButton"/>
+                    </Grid>
+                </Border>
             </Grid>
+        </Border>
 
-            <ScrollViewer Grid.Column="1" MinHeight="400" >
-                <StackPanel Name="missionsStackPanel" Background="White"/>
-            </ScrollViewer>
+        <Border Grid.Row="1" Style="{StaticResource CardBorderStyle}" Margin="0,14,0,0" Padding="18,10">
+            <DockPanel LastChildFill="False" VerticalAlignment="Center">
+                <StackPanel DockPanel.Dock="Left">
+                    <TextBlock Text="Monitoring Missions" FontSize="30" FontWeight="Bold" Foreground="#000080"/>
+                    <TextBlock Text="Filter, review, and manage missions with improved performance"
+                               FontSize="13"
+                               Foreground="#4A5779"/>
+                </StackPanel>
 
+                <Border DockPanel.Dock="Right" Style="{StaticResource SmallBadgeStyle}" VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Live data + same business logic"
+                                   Foreground="#274183"
+                                   FontWeight="SemiBold"/>
+                    </StackPanel>
+                </Border>
+            </DockPanel>
+        </Border>
+
+        <Grid Grid.Row="2" Margin="0,14,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="360"/>
+                <ColumnDefinition Width="14"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Style="{StaticResource CardBorderStyle}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <TextBlock Text="Filters" FontSize="18" FontWeight="Bold" Foreground="#000080"/>
+                        <TextBlock Text="Choose criteria" Margin="8,5,0,0" Foreground="#6A7696" FontSize="12"/>
+                    </StackPanel>
+
+                    <Grid Grid.Row="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="64"/>
+                            <RowDefinition Height="64"/>
+                            <RowDefinition Height="64"/>
+                            <RowDefinition Height="64"/>
+                            <RowDefinition Height="64"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+
+                        <CheckBox Grid.Row="0" Grid.Column="0" Name="searchCheckBox" Content="Search" Checked="OnCheckSearchCheckBox" Unchecked="OnUncheckSearchCheckBox" Style="{StaticResource FilterItemLabelStyle}" ToolTip="Search site"/>
+                        <CheckBox Grid.Row="1" Grid.Column="0" Name="yearCheckBox" Content="Year" Checked="OnCheckYearCheckBox" Unchecked="OnUncheckYearCheckBox" Style="{StaticResource FilterItemLabelStyle}"/>
+                        <CheckBox Grid.Row="2" Grid.Column="0" Name="monthCheckBox" Content="Month" Checked="OnCheckMonthCheckBox" Unchecked="OnUncheckMonthCheckBox" Style="{StaticResource FilterItemLabelStyle}"/>
+                        <CheckBox Grid.Row="3" Grid.Column="0" Name="employeeCheckBox" Content="Engineer" Checked="OnCheckEmployeeCheckBox" Unchecked="OnUncheckEmployeeCheckBox" Style="{StaticResource FilterItemLabelStyle}"/>
+                        <CheckBox Grid.Row="4" Grid.Column="0" Name="serviceProviderCheckBox" Content="Service &#10;provider" Checked="OnCheckServiceProviderCheckBox" Unchecked="OnUncheckServiceProviderCheckBox" Style="{StaticResource FilterItemLabelStyle}"/>
+
+                        <TextBox Grid.Row="0" Grid.Column="1" Name="searchTextBox" TextChanged="OnTextChangedSearchTextBox" Style="{StaticResource FilterTextBoxStyle}" IsEnabled="False" Margin="0,10,0,10" ToolTip="Search site"/>
+                        <ComboBox Grid.Row="1" Grid.Column="1" Name="yearComboBox" SelectionChanged="OnSelChangedYearCombo" Style="{StaticResource FilterComboBoxStyle}" IsEnabled="False" Margin="0,10,0,10"/>
+                        <ComboBox Grid.Row="2" Grid.Column="1" Name="monthComboBox" SelectionChanged="OnSelChangedMonthCombo" Style="{StaticResource FilterComboBoxStyle}" IsEnabled="False" Margin="0,10,0,10"/>
+                        <ComboBox Grid.Row="3" Grid.Column="1" Name="employeeComboBox" SelectionChanged="OnSelChangedEmployeeCombo" Style="{StaticResource FilterComboBoxStyle}" IsEnabled="False" Margin="0,10,0,10"/>
+                        <ComboBox Grid.Row="4" Grid.Column="1" Name="serviceProviderComboBox" SelectionChanged="OnSelChangedServiceProviderCombo" Style="{StaticResource FilterComboBoxStyle}" IsEnabled="False" Margin="0,10,0,10"/>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="2" Style="{StaticResource CardBorderStyle}">
+                <ListView Name="missionsListView"
+                          Background="White"
+                          BorderThickness="0"
+                          VirtualizingPanel.IsVirtualizing="True"
+                          VirtualizingPanel.VirtualizationMode="Recycling"
+                          ScrollViewer.CanContentScroll="True">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="Margin" Value="0,8,0,0"/>
+                            <Setter Property="Padding" Value="0"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderThickness="1" BorderBrush="#CFD8EF" Background="#FBFCFF" CornerRadius="12" Padding="12">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="230"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding MissionId}" FontSize="18" FontWeight="Bold" Foreground="#000080"/>
+
+                                    <StackPanel Grid.Row="1" Grid.Column="0">
+                                        <ItemsControl ItemsSource="{Binding Engineers}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding}" Foreground="#1D2A4E" FontWeight="SemiBold" Margin="0,1"/>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+
+                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding RegionText}" Foreground="#1D2A4E" FontWeight="SemiBold"/>
+
+                                    <ItemsControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" ItemsSource="{Binding Sites}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border BorderThickness="1" BorderBrush="#E2E7F5" CornerRadius="8" Padding="6" Margin="0,4,0,0" Background="White">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="220"/>
+                                                            <ColumnDefinition Width="250"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="70"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Grid.Column="0" Text="{Binding SiteName}" Foreground="#1D2A4E"/>
+                                                        <TextBlock Grid.Column="1" Text="{Binding Reason}" Foreground="#435172"/>
+                                                        <TextBlock Grid.Column="2" Text="{Binding Comment}" Foreground="#435172" TextWrapping="Wrap"/>
+                                                        <Button Grid.Column="3" Content="View" Style="{StaticResource expanderButtonStyle}" Height="26" Width="56" FontSize="12" Tag="{Binding SiteTag}" Click="OnClickShowSite"/>
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+
+                                    <Border Grid.Row="1" Grid.Column="2" Width="190" Height="40" HorizontalAlignment="Center">
+                                        <Border.Style>
+                                            <Style TargetType="Border" BasedOn="{StaticResource statusBorderStyle}">
+                                                <Setter Property="Background" Value="Green"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsPendingStatus}" Value="True">
+                                                        <Setter Property="Background" Value="Yellow"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <Label Content="{Binding StatusText}" Style="{StaticResource statusLabelStyle}" Width="190" Foreground="Black"/>
+                                    </Border>
+
+                                    <StackPanel Grid.Row="2" Grid.Column="2" HorizontalAlignment="Center">
+                                        <TextBlock Text="{Binding StartDateText}" Foreground="#1D2A4E" FontWeight="SemiBold" Margin="0,2"/>
+                                        <TextBlock Text="{Binding EndDateText}" Foreground="#1D2A4E" FontWeight="SemiBold" Margin="0,2"/>
+                                    </StackPanel>
+
+                                    <Expander Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,10,0,0" Expanded="OnExpandExpander" Tag="{Binding MissionTag}">
+                                        <Expander.Content>
+                                            <StackPanel>
+                                                <Button Style="{StaticResource expanderButtonStyle}" Content="View Mission" HorizontalContentAlignment="Center" Click="OnBtnClickView"/>
+                                                <Button Style="{StaticResource expanderButtonStyle}" Content="View Complaint" HorizontalContentAlignment="Center" Tag="{Binding ComplaintTag}" Click="OnClickViewComplaint"/>
+                                                <Button Style="{StaticResource expanderButtonStyle}" Content="Edit" HorizontalContentAlignment="Center" Click="OnClickEdit" Visibility="{Binding CanEditVisibility}"/>
+                                                <Button Style="{StaticResource expanderButtonStyle}" Content="Add Feedback" HorizontalContentAlignment="Center" Click="OnClickFeedback"/>
+                                                <Button Style="{StaticResource expanderButtonStyle}" Content="Attach File" HorizontalContentAlignment="Center" Click="OnClickAttachFile" Visibility="{Binding CanEditVisibility}"/>
+                                                <Button Style="{StaticResource expanderButtonStyle}" Content="Word Export" HorizontalContentAlignment="Center" Click="OnClickWordExport"/>
+                                            </StackPanel>
+                                        </Expander.Content>
+                                    </Expander>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Border>
         </Grid>
 
-        <Button Grid.Row="3" Style="{StaticResource buttonStyle}" Content="Add" Click="OnBtnClickAdd"/>
-
-
+        <Border Grid.Row="3" Style="{StaticResource CardBorderStyle}" Margin="0,14,0,0" Padding="12">
+            <Grid>
+                <Button Style="{StaticResource FooterActionButtonStyle}" Content="Add" Click="OnBtnClickAdd" Margin="8,6" Width="180" HorizontalAlignment="Center"/>
+            </Grid>
+        </Border>
     </Grid>
 </Page>

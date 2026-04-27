@@ -252,7 +252,12 @@
             <Setter Property="Margin" Value="0,0,14,0"/>
         </Style>
 
-        <Style x:Key="FilterItemLabelStyle" TargetType="CheckBox" BasedOn="{DynamicResource checkBoxStyle}">
+        <Style x:Key="FilterItemLabelStyle" TargetType="CheckBox">
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Width" Value="150"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="FontSize" Value="15"/>
             <Setter Property="Foreground" Value="#000080"/>
@@ -553,12 +558,29 @@
         </Style>
 
         <Style x:Key="FilterComboBoxStyle" TargetType="ComboBox" BasedOn="{StaticResource miniComboBoxStyle}">
-            <Setter Property="Width" Value="120"/>
-            <Setter Property="Height" Value="34"/>
-            <Setter Property="Padding" Value="6,2"/>
+            <Setter Property="Width" Value="130"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Padding" Value="8,2"/>
             <Setter Property="Background" Value="#F8FAFF"/>
-            <Setter Property="BorderBrush" Value="#A9B8E8"/>
-            <Setter Property="BorderThickness" Value="1.5"/>
+            <Setter Property="BorderBrush" Value="#9FB0E5"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#1D2A4E"/>
+        </Style>
+
+        <Style x:Key="FilterTextBoxStyle" TargetType="TextBox" BasedOn="{StaticResource miniTextboxStyle}">
+            <Setter Property="Width" Value="130"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Padding" Value="10,2"/>
+            <Setter Property="Background" Value="#F8FAFF"/>
+            <Setter Property="BorderBrush" Value="#9FB0E5"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#1D2A4E"/>
         </Style>
 
         <Style x:Key="datePickerStyle" TargetType="DatePicker">

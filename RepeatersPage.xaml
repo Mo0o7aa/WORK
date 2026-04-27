@@ -174,8 +174,8 @@
                             <CheckBox Grid.Row="3" Grid.Column="0" Name="areaCheckBox" Content="Area" Checked="OnCheckAreaCheckBox" Unchecked="OnUnCheckAreaCheckBox" Style="{StaticResource FilterItemLabelStyle}" Cursor="Hand"/>
                             <CheckBox Grid.Row="4" Grid.Column="0" Name="statusCheckBox" Content="Status" Checked="OnCheckStatusCheckBox" Unchecked="OnUncheckStatusCheckBox" Style="{StaticResource FilterItemLabelStyle}" Cursor="Hand"/>
 
-                            <TextBox Grid.Row="0" Grid.Column="1" Name="latTextBox" TextChanged="OnTextChangedLatTextBox" Style="{StaticResource miniTextboxStyle}" IsEnabled="False" Margin="0,10,0,10"/>
-                            <TextBox Grid.Row="1" Grid.Column="1" Name="longTextBox" TextChanged="OnTextChangedLongTextBox" Style="{StaticResource miniTextboxStyle}" IsEnabled="False" Margin="0,10,0,10"/>
+                            <TextBox Grid.Row="0" Grid.Column="1" Name="latTextBox" TextChanged="OnTextChangedLatTextBox" Style="{StaticResource FilterTextBoxStyle}" IsEnabled="False" Margin="0,10,0,10"/>
+                            <TextBox Grid.Row="1" Grid.Column="1" Name="longTextBox" TextChanged="OnTextChangedLongTextBox" Style="{StaticResource FilterTextBoxStyle}" IsEnabled="False" Margin="0,10,0,10"/>
                             <ComboBox Grid.Row="2" Grid.Column="1" Name="cityComboBox" SelectionChanged="OnSelChangedCityCombo" Style="{StaticResource FilterComboBoxStyle}" IsEnabled="False" Margin="0,10,0,10"/>
                             <ComboBox Grid.Row="3" Grid.Column="1" Name="areaComboBox" SelectionChanged="OnSelChangedAreaCombo" Style="{StaticResource FilterComboBoxStyle}" IsEnabled="False" Margin="0,10,0,10"/>
                             <ComboBox Grid.Row="4" Grid.Column="1" Name="statusComboBox" SelectionChanged="OnSelChangedStatusCombo" Style="{StaticResource FilterComboBoxStyle}" IsEnabled="False" Margin="0,10,0,10"/>
