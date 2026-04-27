@@ -552,6 +552,15 @@
             <Setter Property="Foreground" Value="#000080"/>
         </Style>
 
+        <Style x:Key="FilterComboBoxStyle" TargetType="ComboBox" BasedOn="{StaticResource miniComboBoxStyle}">
+            <Setter Property="Width" Value="120"/>
+            <Setter Property="Height" Value="34"/>
+            <Setter Property="Padding" Value="6,2"/>
+            <Setter Property="Background" Value="#F8FAFF"/>
+            <Setter Property="BorderBrush" Value="#A9B8E8"/>
+            <Setter Property="BorderThickness" Value="1.5"/>
+        </Style>
+
         <Style x:Key="datePickerStyle" TargetType="DatePicker">
             <Setter Property="HorizontalAlignment" Value="Left"/>
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
