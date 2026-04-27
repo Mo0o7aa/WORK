@@ -72,7 +72,6 @@ namespace ntra_missions
             InitializeRepeatersGrid();
         }
 
-
         private bool InitializeEmployeeCombo()
         {
             //if (!commonQueries.GetEngineers(ref employees))
@@ -117,6 +116,7 @@ namespace ntra_missions
                 {
                     bool contains = false;
                     string search = latTextBox.Text;
+
 
                     contains = repeaters[i].latitude.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0;
 
@@ -256,6 +256,7 @@ namespace ntra_missions
                 repeatersGrid.Children.Add(coordinatedWrapPanel);
                 Grid.SetRow(coordinatedWrapPanel, 1);
                 Grid.SetColumn(coordinatedWrapPanel, 0);
+
 
 
 
@@ -661,6 +662,9 @@ namespace ntra_missions
 
         private void OnBtnClickExport(object sender, RoutedEventArgs e)
         {
+            if (repeatersStackPanel == null)
+                return;
+
             List<BASIC_STRUCTS.REPEATER_STRUCT> selectedRepeaters = new List<BASIC_STRUCTS.REPEATER_STRUCT>();
 
             for (int i = 0; i < repeatersStackPanel.Children.Count; i++)
@@ -776,6 +780,9 @@ namespace ntra_missions
 
         private void OnClickListView(object sender, MouseButtonEventArgs e)
         {
+            if (listViewScrollViewer == null || tableViewScrollViewer == null)
+                return;
+
             listViewScrollViewer.Visibility = Visibility.Visible;
             tableViewScrollViewer.Visibility = Visibility.Collapsed;
 
@@ -793,6 +800,9 @@ namespace ntra_missions
 
         private void OnClickTableView(object sender, MouseButtonEventArgs e)
         {
+            if (listViewScrollViewer == null || tableViewScrollViewer == null)
+                return;
+
             listViewScrollViewer.Visibility = Visibility.Collapsed;
             tableViewScrollViewer.Visibility = Visibility.Visible;
 
