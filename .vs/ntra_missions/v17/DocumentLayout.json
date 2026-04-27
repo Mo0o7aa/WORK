@@ -1,0 +1,36 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\Enhanced Interferece Software\\WORK\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{7F9B863A-20B9-4D0B-A7D8-F60C1E055A12}|ntra_missions.csproj|d:\\enhanced interferece software\\work\\repeaterspage.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{7F9B863A-20B9-4D0B-A7D8-F60C1E055A12}|ntra_missions.csproj|solutionrelative:repeaterspage.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "RepeatersPage.xaml",
+              "DocumentMoniker": "D:\\Enhanced Interferece Software\\WORK\\RepeatersPage.xaml",
+              "RelativeDocumentMoniker": "RepeatersPage.xaml",
+              "ToolTip": "D:\\Enhanced Interferece Software\\WORK\\RepeatersPage.xaml",
+              "RelativeToolTip": "RepeatersPage.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-04-23T09:47:35.35Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
