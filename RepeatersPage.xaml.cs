@@ -37,6 +37,15 @@ namespace ntra_missions
         private List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT> cities;
         private List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT> areas;
 
+        private void OnNavigatedFrom()
+        {
+            repeaters?.Clear();
+            repeatersStatus?.Clear();
+            employees?.Clear();
+            cities?.Clear();
+            areas?.Clear();
+            //missionsListView.ItemsSource = null;
+        }
         public RepeatersPage(ref Employee mLoggedInUser)
         {
             loggedInUser = mLoggedInUser;
@@ -69,7 +78,7 @@ namespace ntra_missions
             InitializeCityCombo();
 
             InitializeRepeatersStackPanel();
-            InitializeRepeatersGrid();
+            //InitializeRepeatersGrid();
         }
 
 
@@ -574,27 +583,27 @@ namespace ntra_missions
         private void OnTextChangedLatTextBox(object sender, TextChangedEventArgs e)
         {
             InitializeRepeatersStackPanel();
-            InitializeRepeatersGrid();
+            //InitializeRepeatersGrid();
         }
 
         private void OnTextChangedLongTextBox(object sender, TextChangedEventArgs e)
         {
             InitializeRepeatersStackPanel();
-            InitializeRepeatersGrid();
+            //InitializeRepeatersGrid();
         }
 
         private void OnSelChangedCityCombo(object sender, SelectionChangedEventArgs e)
         {
             
             InitializeRepeatersStackPanel();
-            InitializeRepeatersGrid();
+            //InitializeRepeatersGrid();
         }
 
         private void OnSelChangedAreaCombo(object sender, SelectionChangedEventArgs e)
         {
 
             InitializeRepeatersStackPanel();
-            InitializeRepeatersGrid();
+            //InitializeRepeatersGrid();
         }
 
         private void OnSelChangedStatusCombo(object sender, SelectionChangedEventArgs e)
@@ -604,7 +613,7 @@ namespace ntra_missions
             
 
             InitializeRepeatersStackPanel();
-            InitializeRepeatersGrid();
+            //InitializeRepeatersGrid();
         }
 
 

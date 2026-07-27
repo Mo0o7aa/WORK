@@ -46,7 +46,17 @@ namespace ntra_missions
 
 
         //private String sqlConnectionString = @"Server=GIZA-ASAMEH\SQLEXPRESS,1433;Initial Catalog=NTRA;User=sa;Password=NTRA@1234!;";
-        private String sqlConnectionString = @"Server=10.165.202.23,1433;Initial Catalog=NTRA;User=sa;Password=NTRA@1234!;";
+
+        //this is the most updated string that works fine !!!!!!!
+        //private String sqlConnectionString = @"Server=10.165.202.23,1433;Initial Catalog=NTRA;User=sa;Password=NTRA@1234!;";
+
+        private String sqlConnectionString = @"Server=10.165.202.23,1433;
+    Initial Catalog=NTRA;
+    User=sa;Password=NTRA@1234!;
+    Min Pool Size=3;
+    Max Pool Size=20;
+    Connect Timeout=30;
+    Application Name=NTRA_App;";
 
         //private String sqlConnectionString = @"Server = tcp:169.254.67.19,1433;Database=NTRA;Trusted_Connection=True;User=sa;Password=ntra1234";
 

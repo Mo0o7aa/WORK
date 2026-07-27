@@ -42,7 +42,15 @@ namespace ntra_missions
         private Expander previousExpander;
 
         CommonFunctions commonFunctions;
-        
+
+        private void OnNavigatedFrom()
+        {
+            missions?.Clear();
+            //filteredMissions?.Clear();
+            engineers?.Clear();
+            serviceProviders?.Clear();
+            //missionsListView.ItemsSource = null;
+        }
         public MissionsPage(ref Employee mLoggedInUser)
         {
             commonQueries = new CommonQueries();
