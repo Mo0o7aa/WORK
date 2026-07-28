@@ -13,10 +13,12 @@
             <RowDefinition Height="75"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Background="#000080">
-            <Image Source="Photos\NTRA_white1.png" VerticalAlignment="Center" Height="70"  HorizontalAlignment="Left" Margin="16,0,0,0"/>
-            <Label Name="headerLabel" Content="Company" Style="{StaticResource headerLabelStyle}" HorizontalAlignment="Center"/>
-        </Grid>
+        <Border Grid.Row="0" Background="{StaticResource BrandBrush}">
+            <Grid Margin="16,0">
+                <Image Source="Photos\NTRA_white1.png" VerticalAlignment="Center" Height="60" HorizontalAlignment="Left"/>
+                <Label Name="headerLabel" Content="Company" Style="{StaticResource headerLabelStyle}" HorizontalAlignment="Center" Margin="0"/>
+            </Grid>
+        </Border>
 
         <ScrollViewer Grid.Row="1" Margin="48">
             <Grid Name="mainGrid">
@@ -41,7 +43,8 @@
                     <ComboBox Name="workfieldComboBox" Style="{StaticResource comboBoxStyle}" SelectionChanged="OnSelChangedWorkFieldCombo"/>
                 </WrapPanel>
 
-                <Grid Grid.Row="1" Grid.ColumnSpan="2" Margin="24" Background="White">
+                <Border Grid.Row="1" Grid.ColumnSpan="2" Margin="24" Style="{StaticResource CardBorder}" Padding="0">
+                <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition/>
@@ -52,7 +55,7 @@
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
 
-                    <Label Grid.Row="0" Grid.ColumnSpan="2" Content="Company Freq. Bands" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Background="#000080" FontSize="20"  Style="{StaticResource headerLabelStyle}" Margin="0"/>
+                    <Label Grid.Row="0" Grid.ColumnSpan="2" Content="Company Freq. Bands" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Background="{StaticResource BrandBrush}" FontSize="18"  Style="{StaticResource headerLabelStyle}" Margin="0"/>
 
                     <CheckBox Grid.Row="1" Grid.Column="0" Name="bandsCheckBox" Style="{StaticResource headerCheckBoxStyle}" Content="Start and Stop Freq." Checked="OnCheckCompanyBandsCheckbox" Unchecked="OnUncheckCompanyBandsCheckbox"/>
 
@@ -85,6 +88,7 @@
                         </StackPanel>
                     </ScrollViewer>
                 </Grid>
+                </Border>
 
                 <Grid Grid.Row="2" Grid.Column="0">
                     <Grid.ColumnDefinitions>
@@ -167,14 +171,14 @@
             </Grid>
         </ScrollViewer>
 
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-
-            <Button Grid.Column="0" Name="addFrequencyButton" Content="Add Freq."  Style="{StaticResource buttonStyle}" FontWeight="DemiBold" Click='OnButtonClickAddFrequency'/>
-            <Button Grid.Column="1" Name="finishButton" Content="Save Changes"  Style="{StaticResource buttonStyle}" FontWeight="DemiBold" Click='OnButtonClickSaveChanges'/>
-        </Grid>
+        <Border Grid.Row="2" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource CardBorderBrush}"
+                BorderThickness="0,1,0,0" Padding="16,12">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Name="addFrequencyButton" Content="Add Freq." Style="{StaticResource SecondaryButton}"
+                        Margin="6,0" Click="OnButtonClickAddFrequency"/>
+                <Button Name="finishButton" Content="Save Changes" Style="{StaticResource PrimaryButton}"
+                        Margin="6,0" IsDefault="True" Click="OnButtonClickSaveChanges"/>
+            </StackPanel>
+        </Border>
     </Grid>
 </Window>

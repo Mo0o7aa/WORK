@@ -804,6 +804,49 @@ namespace ntra_missions
             return true;
         }
 
+        // Auto-updates the status of EVERY mission on this complaint based on
+        // the current sector states: a mission is CLOSED when all sectors of
+        // all the sites it worked on are cleared; a mission that was closed but
+        // has a sector interfered again reverts to pending. Mirrors the
+        // complaint-status logic and is run after feedback is saved.
+        public bool UpdateMissionStatuses()
+        {
+            // revert wrongly-closed missions that regained an interfered sector
+            String revertQuery =
+                "update m set status = " + BASIC_STRUCTS.MISSION_PENDING_OPERATOR_ACTION_STATUS + " " +
+                "from NTRA.dbo.interference_missions m " +
+                "where m.company_serial = " + companySerial + " and m.complaint_serial = " + serial + " " +
+                "and m.status = " + BASIC_STRUCTS.MISSION_CLOSED_STATUS + " " +
+                "and exists (select 1 from NTRA.dbo.mission_sites ms " +
+                "  join NTRA.dbo.complaint_site_sectors css " +
+                "    on css.company_serial = ms.company_serial and css.complaint_serial = ms.complaint_serial and css.site_serial = ms.site_serial " +
+                "  where ms.company_serial = m.company_serial and ms.complaint_serial = m.complaint_serial and ms.mission_serial = m.serial " +
+                "    and css.status = " + BASIC_STRUCTS.INTERFERED_SECTOR_STATUS + ");";
+
+            if (!sql.InsertRows(revertQuery))
+                return false;
+
+            // close missions whose worked-on sites all have every sector cleared
+            String closeQuery =
+                "update m set status = " + BASIC_STRUCTS.MISSION_CLOSED_STATUS + " " +
+                "from NTRA.dbo.interference_missions m " +
+                "where m.company_serial = " + companySerial + " and m.complaint_serial = " + serial + " " +
+                "and exists (select 1 from NTRA.dbo.mission_sites ms " +
+                "  join NTRA.dbo.complaint_site_sectors css " +
+                "    on css.company_serial = ms.company_serial and css.complaint_serial = ms.complaint_serial and css.site_serial = ms.site_serial " +
+                "  where ms.company_serial = m.company_serial and ms.complaint_serial = m.complaint_serial and ms.mission_serial = m.serial) " +
+                "and not exists (select 1 from NTRA.dbo.mission_sites ms2 " +
+                "  join NTRA.dbo.complaint_site_sectors css2 " +
+                "    on css2.company_serial = ms2.company_serial and css2.complaint_serial = ms2.complaint_serial and css2.site_serial = ms2.site_serial " +
+                "  where ms2.company_serial = m.company_serial and ms2.complaint_serial = m.complaint_serial and ms2.mission_serial = m.serial " +
+                "    and css2.status = " + BASIC_STRUCTS.INTERFERED_SECTOR_STATUS + ");";
+
+            if (!sql.InsertRows(closeQuery))
+                return false;
+
+            return true;
+        }
+
         public int GetSerial()
         {
             return serial;

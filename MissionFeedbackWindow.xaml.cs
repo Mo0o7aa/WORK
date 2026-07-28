@@ -172,6 +172,11 @@ namespace ntra_missions
             if (!mission.complaint.UpdateComplaintStatus())
                 return;
 
+            // auto-close this mission and any earlier mission on the same
+            // complaint whose sites are now fully cleared
+            if (!mission.complaint.UpdateMissionStatuses())
+                return;
+
             this.Close();
         }
     }

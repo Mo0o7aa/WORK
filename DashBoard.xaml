@@ -19,204 +19,36 @@
 
         <!-- Filter bar -->
         <Border Grid.Row="1" Style="{StaticResource CardBorder}" Margin="24,16,24,0" Padding="20,14">
-            <StackPanel Orientation="Horizontal">
-                <StackPanel Margin="0,0,32,0">
-                    <TextBlock Text="Start Date" Style="{StaticResource FieldLabelText}" Margin="0,0,0,4"/>
-                    <DatePicker Name="startDatePicker" Style="{StaticResource datePickerStyle}" SelectedDateChanged="OnSelChangedStartDatePicker"/>
-                </StackPanel>
-                <StackPanel Margin="0,0,32,0">
-                    <TextBlock Text="End Date" Style="{StaticResource FieldLabelText}" Margin="0,0,0,4"/>
-                    <DatePicker Name="endDatePicker" Style="{StaticResource datePickerStyle}" SelectedDateChanged="OnSelChangedEndDatePicker"/>
-                </StackPanel>
-                <StackPanel>
-                    <TextBlock Text="Category" Style="{StaticResource FieldLabelText}" Margin="0,0,0,4"/>
-                    <ComboBox Name="categoryCombo" Style="{StaticResource comboBoxStyle}" SelectionChanged="onselChangedCategoryCombo"/>
-                </StackPanel>
-            </StackPanel>
-        </Border>
-
-        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Margin="24,16,24,16">
             <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Number of Sites -->
-                <Border Style="{StaticResource CardBorder}" Margin="0,0,8,16">
-                    <StackPanel>
-                        <TextBlock Text="Number of Sites" Style="{StaticResource CardTitleText}" Margin="0,0,0,10"/>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="220"/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/><ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock Text="Company" Style="{StaticResource FieldLabelText}"/>
-                                <TextBlock Grid.Column="1" Text="No. of Sites" Style="{StaticResource FieldLabelText}"/>
-                                <TextBlock Grid.Row="1" Text="Vodafone" Style="{StaticResource ValueText}"/>
-                                <TextBlock Grid.Row="1" Grid.Column="1" Name="vodafoneSitesText" Style="{StaticResource ValueTextBrand}"/>
-                                <TextBlock Grid.Row="2" Text="Etisalat" Style="{StaticResource ValueText}"/>
-                                <TextBlock Grid.Row="2" Grid.Column="1" Name="etisalatSitesText" Style="{StaticResource ValueTextBrand}"/>
-                                <TextBlock Grid.Row="3" Text="Orange" Style="{StaticResource ValueText}"/>
-                                <TextBlock Grid.Row="3" Grid.Column="1" Name="orangeSitesText" Style="{StaticResource ValueTextBrand}"/>
-                                <TextBlock Grid.Row="4" Text="WE" Style="{StaticResource ValueText}"/>
-                                <TextBlock Grid.Row="4" Grid.Column="1" Name="weSitesText" Style="{StaticResource ValueTextBrand}"/>
-                            </Grid>
-
-                            <lvc:PieChart Grid.Column="1" Name="numberOfSitesPieChart" LegendLocation="Right" Height="200" Margin="12"/>
-                        </Grid>
-                    </StackPanel>
-                </Border>
-
-                <!-- Number of Complaints -->
-                <Border Grid.Column="1" Style="{StaticResource CardBorder}" Margin="8,0,0,16">
-                    <StackPanel>
-                        <TextBlock Text="Number of Complaints" Style="{StaticResource CardTitleText}" Margin="0,0,0,10"/>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="220"/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/><ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock Text="Company" Style="{StaticResource FieldLabelText}"/>
-                                <TextBlock Grid.Column="1" Text="Complaints" Style="{StaticResource FieldLabelText}"/>
-                                <TextBlock Grid.Row="1" Text="Vodafone" Style="{StaticResource ValueText}"/>
-                                <TextBlock Grid.Row="1" Grid.Column="1" Name="vodafoneComplaintsText" Style="{StaticResource ValueTextBrand}"/>
-                                <TextBlock Grid.Row="2" Text="Etisalat" Style="{StaticResource ValueText}"/>
-                                <TextBlock Grid.Row="2" Grid.Column="1" Name="etisalatComplaintsText" Style="{StaticResource ValueTextBrand}"/>
-                                <TextBlock Grid.Row="3" Text="Orange" Style="{StaticResource ValueText}"/>
-                                <TextBlock Grid.Row="3" Grid.Column="1" Name="orangeComplaintsText" Style="{StaticResource ValueTextBrand}"/>
-                                <TextBlock Grid.Row="4" Text="WE" Style="{StaticResource ValueText}"/>
-                                <TextBlock Grid.Row="4" Grid.Column="1" Name="weComplaintsText" Style="{StaticResource ValueTextBrand}"/>
-                            </Grid>
-
-                            <lvc:PieChart Grid.Column="1" Name="numberOfComplaintsPieChart" LegendLocation="Right" Height="200" Margin="12"/>
-                        </Grid>
-                    </StackPanel>
-                </Border>
-
-                <!-- Vodafone Complaint Status -->
-                <Border Grid.Row="1" Style="{StaticResource CardBorder}" Margin="0,0,8,16">
-                    <StackPanel>
-                        <TextBlock Text="Vodafone Complaint Status" Style="{StaticResource CardTitleText}" Margin="0,0,0,10"/>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="220"/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/><ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock Text="Status" Style="{StaticResource FieldLabelText}"/>
-                                <TextBlock Grid.Column="1" Text="Complaints" Style="{StaticResource FieldLabelText}"/>
-                                <TextBlock Grid.Row="1" Text="Open" Style="{StaticResource ValueText}"/>
-                                <TextBlock Grid.Row="1" Grid.Column="1" Name="vodafoneOpenText" Style="{StaticResource ValueTextBrand}"/>
-                                <TextBlock Grid.Row="2" Text="Pending" Style="{StaticResource ValueText}"/>
-                                <TextBlock Grid.Row="2" Grid.Column="1" Name="vodafonePendingText" Style="{StaticResource ValueTextBrand}"/>
-                                <TextBlock Grid.Row="3" Text="Closed" Style="{StaticResource ValueText}"/>
-                                <TextBlock Grid.Row="3" Grid.Column="1" Name="vodafoneClosedText" Style="{StaticResource ValueTextBrand}"/>
-                            </Grid>
-
-                            <lvc:PieChart Grid.Column="1" Name="vodafoneComplaintsPieChart" LegendLocation="Right" Height="200" Margin="12"/>
-                        </Grid>
-                    </StackPanel>
-                </Border>
-
-                <!-- Etisalat Complaint Status -->
-                <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource CardBorder}" Margin="8,0,0,16">
-                    <StackPanel>
-                        <TextBlock Text="Etisalat Complaint Status" Style="{StaticResource CardTitleText}" Margin="0,0,0,10"/>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="220"/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/><ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock Text="Status" Style="{StaticResource FieldLabelText}"/>
-                                <TextBlock Grid.Column="1" Text="Complaints" Style="{StaticResource FieldLabelText}"/>
-                                <TextBlock Grid.Row="1" Text="Open" Style="{StaticResource ValueText}"/>
-                                <TextBlock Grid.Row="1" Grid.Column="1" Name="etisalatOpenText" Style="{StaticResource ValueTextBrand}"/>
-                                <TextBlock Grid.Row="2" Text="Pending" Style="{StaticResource ValueText}"/>
-                                <TextBlock Grid.Row="2" Grid.Column="1" Name="etisalatPendingText" Style="{StaticResource ValueTextBrand}"/>
-                                <TextBlock Grid.Row="3" Text="Closed" Style="{StaticResource ValueText}"/>
-                                <TextBlock Grid.Row="3" Grid.Column="1" Name="etisalatClosedText" Style="{StaticResource ValueTextBrand}"/>
-                            </Grid>
-
-                            <lvc:PieChart Grid.Column="1" Name="etislataComplaintsPieChart" LegendLocation="Right" Height="200" Margin="12"/>
-                        </Grid>
-                    </StackPanel>
-                </Border>
-
-                <!-- Orange Complaint Status -->
-                <Border Grid.Row="2" Style="{StaticResource CardBorder}" Margin="0,0,8,16">
-                    <StackPanel>
-                        <TextBlock Text="Orange Complaint Status" Style="{StaticResource CardTitleText}" Margin="0,0,0,10"/>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="220"/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/><ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock Text="Status" Style="{StaticResource FieldLabelText}"/>
-                                <TextBlock Grid.Column="1" Text="Complaints" Style="{StaticResource FieldLabelText}"/>
-                                <TextBlock Grid.Row="1" Text="Open" Style="{StaticResource ValueText}"/>
-                                <TextBlock Grid.Row="1" Grid.Column="1" Name="orangeOpenText" Style="{StaticResource ValueTextBrand}"/>
-                                <TextBlock Grid.Row="2" Text="Pending" Style="{StaticResource ValueText}"/>
-                                <TextBlock Grid.Row="2" Grid.Column="1" Name="orangePendingText" Style="{StaticResource ValueTextBrand}"/>
-                                <TextBlock Grid.Row="3" Text="Closed" Style="{StaticResource ValueText}"/>
-                                <TextBlock Grid.Row="3" Grid.Column="1" Name="orangeClosedText" Style="{StaticResource ValueTextBrand}"/>
-                            </Grid>
-
-                            <lvc:PieChart Grid.Column="1" Name="orangeComplaintsPieChart" LegendLocation="Right" Height="200" Margin="12"/>
-                        </Grid>
-                    </StackPanel>
-                </Border>
-
+                <StackPanel Margin="0,0,28,0">
+                    <TextBlock Text="Category" Style="{StaticResource FieldLabelText}" Margin="0,0,0,4"/>
+                    <ComboBox Name="categoryCombo" Style="{StaticResource comboBoxStyle}" SelectionChanged="OnFilterChanged"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Margin="0,0,28,0">
+                    <TextBlock Text="Start Date" Style="{StaticResource FieldLabelText}" Margin="0,0,0,4"/>
+                    <DatePicker Name="startDatePicker" Style="{StaticResource datePickerStyle}" SelectedDateChanged="OnFilterChanged"/>
+                </StackPanel>
+                <StackPanel Grid.Column="2">
+                    <TextBlock Text="End Date" Style="{StaticResource FieldLabelText}" Margin="0,0,0,4"/>
+                    <DatePicker Name="endDatePicker" Style="{StaticResource datePickerStyle}" SelectedDateChanged="OnFilterChanged"/>
+                </StackPanel>
+                <TextBlock Grid.Column="3" Name="filterHintText" Style="{StaticResource FieldLabelText}"
+                           VerticalAlignment="Bottom" HorizontalAlignment="Right" TextWrapping="Wrap"/>
             </Grid>
+        </Border>
+
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Margin="24,16,24,16">
+            <StackPanel>
+                <WrapPanel Name="kpiPanel" Margin="0,0,0,4"/>
+                <WrapPanel Name="chartsPanel"/>
+            </StackPanel>
         </ScrollViewer>
     </Grid>
 </Page>

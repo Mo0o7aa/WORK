@@ -14,10 +14,12 @@
             <RowDefinition Height="75"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Background="#000080">
-            <Image Source="Photos\NTRA_white1.png" VerticalAlignment="Center" Height="70"  HorizontalAlignment="Left" Margin="16,0,0,0"/>
-            <Label Name="headerLabel" Content="Mission" Style="{StaticResource headerLabelStyle}" HorizontalAlignment="Center"/>
-        </Grid>
+        <Border Grid.Row="0" Background="{StaticResource BrandBrush}">
+            <Grid Margin="16,0">
+                <Image Source="Photos\NTRA_white1.png" VerticalAlignment="Center" Height="60" HorizontalAlignment="Left"/>
+                <Label Name="headerLabel" Content="Mission" Style="{StaticResource headerLabelStyle}" HorizontalAlignment="Center" Margin="0"/>
+            </Grid>
+        </Border>
 
         <WrapPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
             <Label Style="{StaticResource mediumLabelStyleBlack}" Content="Mission Type: "/>
@@ -254,18 +256,15 @@
             </Grid>
         </ScrollViewer>
 
-        <Grid Grid.Row="3">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-
-            <Button Grid.Column="0" Name="addMeasurementLocationButton" Content="Add Location" Width="200" Style="{StaticResource buttonStyle}" FontWeight="DemiBold" Click='OnButtonClickAddLocation' IsEnabled="False"/>
-            <Button Grid.Column="2" Name="finishButton" Content="Save Changes" Width="200" Style="{StaticResource buttonStyle}" FontWeight="DemiBold" Click='OnButtonClickSaveChanges'/>
-
-
-        </Grid>
+        <Border Grid.Row="3" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource CardBorderBrush}"
+                BorderThickness="0,1,0,0" Padding="16,12">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Name="addMeasurementLocationButton" Content="Add Location" Style="{StaticResource SecondaryButton}"
+                        Margin="6,0" Click="OnButtonClickAddLocation" IsEnabled="False"/>
+                <Button Name="finishButton" Content="Save Changes" Style="{StaticResource PrimaryButton}"
+                        Margin="6,0" IsDefault="True" Click="OnButtonClickSaveChanges"/>
+            </StackPanel>
+        </Border>
         
     </Grid>
 </Window>

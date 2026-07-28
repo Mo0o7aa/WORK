@@ -170,6 +170,7 @@
     </Compile>
     <Compile Include="Missions.cs" />
     <Compile Include="GenerateKMZ.cs" />
+    <Compile Include="ComplaintReportExport.cs" />
     <Compile Include="GoogleMapsToExcel.cs" />
     <Compile Include="MapLinkWindow.xaml.cs">
       <DependentUpon>MapLinkWindow.xaml</DependentUpon>

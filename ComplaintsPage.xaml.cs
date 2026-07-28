@@ -269,6 +269,19 @@ namespace ntra_missions
             generateKmz.ExportComplaint(complaint);
         }
 
+        private void OnClickWordReport(object sender, RoutedEventArgs e)
+        {
+            ComplaintRow row = (ComplaintRow)((Button)sender).Tag;
+
+            Complaints complaint = new Complaints();
+
+            if (!complaint.InitializeComplaint(row.CompanySerial, row.ComplaintSerial))
+                return;
+
+            ComplaintReportExport reportExport = new ComplaintReportExport();
+            reportExport.ExportComplaintReport(complaint);
+        }
+
         private void OnClickAttachFile(object sender, RoutedEventArgs e)
         {
             OpenFileDialog fileDialog = new OpenFileDialog();
