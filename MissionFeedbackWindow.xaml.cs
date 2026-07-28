@@ -1,16 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace ntra_missions
 {
@@ -20,24 +12,25 @@ namespace ntra_missions
     public partial class MissionFeedbackWindow : Window
     {
         Employee loggedInUser;
-        SQLServer sqlDatabase;
-        CommonQueries commonQueries;
-
-        List<BASIC_STRUCTS.SECTOR_STRUCT> clearedSectors;
-        List<BASIC_STRUCTS.SECTOR_STRUCT> impactedSectors;
-
         Missions mission;
+
+        // one checkbox per sector; the save reads their state directly so there
+        // are no parallel lists to keep in sync
+        private readonly List<CheckBox> sectorCheckBoxes;
+
+        // what each checkbox needs to update its sector in the DB
+        private class SectorRef
+        {
+            public int SiteSerial;
+            public string SectorNumber;
+        }
 
         public MissionFeedbackWindow(ref Employee mLoggedInUser, ref Missions mMission)
         {
             loggedInUser = mLoggedInUser;
             mission = mMission;
 
-            sqlDatabase = new SQLServer();
-            commonQueries = new CommonQueries();
-
-            clearedSectors = new List<BASIC_STRUCTS.SECTOR_STRUCT>();
-            impactedSectors = new List<BASIC_STRUCTS.SECTOR_STRUCT>();
+            sectorCheckBoxes = new List<CheckBox>();
 
             InitializeComponent();
 
@@ -47,13 +40,14 @@ namespace ntra_missions
         public void InitializeSitesGrid()
         {
             sitesStackPanel.Children.Clear();
+            sectorCheckBoxes.Clear();
 
             for (int i = 0; i < mission.GetSites().Count; i++)
             {
                 int siteSerial = mission.GetSites()[i].site_serial;
 
-                // the sectors for this site come from the complaint (they carry
-                // the sector_serial the DB update filters on)
+                // sectors come from the complaint (they carry sector_number and
+                // the current status used to pre-tick the boxes)
                 BASIC_STRUCTS.SITE_STRUCT complaintSite =
                     mission.complaint.GetComplaintsSites().Find(x1 => x1.site_serial == siteSerial);
 
@@ -112,14 +106,16 @@ namespace ntra_missions
                         currentSectorCheckBox.Margin = new Thickness(0, 6, 20, 6);
                         currentSectorCheckBox.Cursor = Cursors.Hand;
                         currentSectorCheckBox.Content = "Sector " + sector.sector_number;
-                        // Tag carries the sector_serial (what the DB update filters on)
-                        currentSectorCheckBox.Tag = siteSerial + "," + sector.sector_serial;
-                        currentSectorCheckBox.Checked += OnCheckCurrentSectorCheckBox;
-                        currentSectorCheckBox.Unchecked += OnUnCheckCurrentSectorCheckBox;
+                        currentSectorCheckBox.Tag = new SectorRef
+                        {
+                            SiteSerial = siteSerial,
+                            SectorNumber = sector.sector_number
+                        };
 
                         if (sector.sector_status_id == BASIC_STRUCTS.CLEARED_SECTOR_STATUS)
                             currentSectorCheckBox.IsChecked = true;
 
+                        sectorCheckBoxes.Add(currentSectorCheckBox);
                         sectorsInnerPanel.Children.Add(currentSectorCheckBox);
                     }
                 }
@@ -133,51 +129,22 @@ namespace ntra_missions
             }
         }
 
-        private void OnCheckCurrentSectorCheckBox(object sender, RoutedEventArgs e)
-        {
-            CheckBox currentCheckBox = (CheckBox)sender;
-
-            BASIC_STRUCTS.SECTOR_STRUCT currentSector = new BASIC_STRUCTS.SECTOR_STRUCT();
-
-            currentSector.complaint_serial = mission.complaint.GetSerial();
-            currentSector.site_serial = int.Parse(currentCheckBox.Tag.ToString().Split(',')[0]);
-            currentSector.sector_serial = int.Parse(currentCheckBox.Tag.ToString().Split(',')[1]);
-
-            clearedSectors.Add(currentSector);
-
-            impactedSectors.Remove(currentSector);
-        }
-
-        private void OnUnCheckCurrentSectorCheckBox(object sender, RoutedEventArgs e)
-        {
-            CheckBox currentCheckBox = (CheckBox)sender;
-
-            BASIC_STRUCTS.SECTOR_STRUCT currentSector = new BASIC_STRUCTS.SECTOR_STRUCT();
-
-            currentSector.complaint_serial = mission.complaint.GetSerial();
-            currentSector.site_serial = int.Parse(currentCheckBox.Tag.ToString().Split(',')[0]);
-            currentSector.sector_serial = int.Parse(currentCheckBox.Tag.ToString().Split(',')[1]);
-
-            impactedSectors.Add(currentSector);
-
-            clearedSectors.Remove(currentSector);
-        }
-
         private void OnButtonClickSaveChanges(object sender, RoutedEventArgs e)
         {
-            for(int i = 0; i < clearedSectors.Count; i++)
+            // write every sector's status straight from its checkbox state
+            for (int i = 0; i < sectorCheckBoxes.Count; i++)
             {
-                if (!mission.complaint.UpdateSectorStatus(clearedSectors[i].site_serial, clearedSectors[i].sector_serial, BASIC_STRUCTS.CLEARED_SECTOR_STATUS))
+                SectorRef reference = (SectorRef)sectorCheckBoxes[i].Tag;
+                int status = sectorCheckBoxes[i].IsChecked == true
+                    ? BASIC_STRUCTS.CLEARED_SECTOR_STATUS
+                    : BASIC_STRUCTS.INTERFERED_SECTOR_STATUS;
+
+                if (!mission.complaint.UpdateSectorStatusByNumber(reference.SiteSerial, reference.SectorNumber, status))
                     return;
             }
 
-            for (int i = 0; i < impactedSectors.Count; i++)
-            {
-                if (!mission.complaint.UpdateSectorStatus(impactedSectors[i].site_serial, impactedSectors[i].sector_serial, BASIC_STRUCTS.INTERFERED_SECTOR_STATUS))
-                    return;
-            }
-
-            for(int i = 0; i < mission.GetSites().Count; i++)
+            // roll the change up to site, complaint and mission statuses
+            for (int i = 0; i < mission.GetSites().Count; i++)
             {
                 if (!mission.complaint.UpdateSiteStatus(mission.GetSites()[i].site_serial))
                     return;
@@ -186,8 +153,6 @@ namespace ntra_missions
             if (!mission.complaint.UpdateComplaintStatus())
                 return;
 
-            // auto-close this mission and any earlier mission on the same
-            // complaint whose sites are now fully cleared
             if (!mission.complaint.UpdateMissionStatuses())
                 return;
 

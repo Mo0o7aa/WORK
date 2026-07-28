@@ -637,6 +637,31 @@ namespace ntra_missions
             return true;
         }
 
+        // Updates a sector's status by its (site, sector_number). sector_number
+        // is the reliably-loaded, user-visible identifier — unlike sector_serial
+        // which is read from the bands table and is 0 for band-less sectors.
+        public bool UpdateSectorStatusByNumber(int mSiteSerial, String mSectorNumber, int mSectorStatus)
+        {
+            String safeNumber = (mSectorNumber ?? "").Replace("'", "''");
+
+            String sqlQuery = "update NTRA.dbo.complaint_site_sectors set status = ";
+            sqlQuery += mSectorStatus;
+            sqlQuery += " where company_serial = ";
+            sqlQuery += GetCompanySerial();
+            sqlQuery += " and complaint_serial = ";
+            sqlQuery += GetSerial();
+            sqlQuery += " and site_serial = ";
+            sqlQuery += mSiteSerial;
+            sqlQuery += " and sector_number = N'";
+            sqlQuery += safeNumber;
+            sqlQuery += "'";
+
+            if (!sql.InsertRows(sqlQuery))
+                return false;
+
+            return true;
+        }
+
         public bool UpdateSiteStatus(int mSiteSerial)
         {
             String sqlQuery = string.Empty;
