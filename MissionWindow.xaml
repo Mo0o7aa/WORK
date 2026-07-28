@@ -21,12 +21,16 @@
             </Grid>
         </Border>
 
-        <WrapPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Label Style="{StaticResource mediumLabelStyleBlack}" Content="Mission Type: "/>
-            <ComboBox Name="missionTypeCombo" Style="{StaticResource comboBoxStyle}" SelectionChanged="OnSelChangedMissionTypeCombo"/>
-        </WrapPanel>
+        <Border Grid.Row="1" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource CardBorderBrush}"
+                BorderThickness="0,0,0,1">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock Text="Mission Type" Style="{StaticResource FieldLabelText}" Margin="0,0,12,0"/>
+                <ComboBox Name="missionTypeCombo" Style="{StaticResource comboBoxStyle}" SelectionChanged="OnSelChangedMissionTypeCombo"/>
+            </StackPanel>
+        </Border>
 
-        <ScrollViewer Grid.Row="2" Margin="24" Name="emfScrollViewer" Visibility="Collapsed">
+        <ScrollViewer Grid.Row="2" Margin="24,16" Name="emfScrollViewer" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
+            <Border Style="{StaticResource CardBorder}" Padding="24">
             <StackPanel Name="mainStackPanelEMF">
 
                 <Grid>
@@ -41,7 +45,7 @@
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
 
-                    <Label Grid.Row="0" Grid.ColumnSpan="3" Content="Measurement Location" Style="{StaticResource headerLabelStyle}" Background="#000080" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="0" />
+                    <TextBlock Grid.Row="0" Grid.ColumnSpan="3" Text="Measurement Location" Style="{StaticResource CardTitleText}" Margin="0,0,0,10" />
 
                     <WrapPanel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">
                         <Label Style="{StaticResource labelStyleBlack}" Content="City: "/>
@@ -92,9 +96,11 @@
                     </Grid>
                 </StackPanel>
             </StackPanel>
+            </Border>
         </ScrollViewer>
 
-        <ScrollViewer Grid.Row="2" Margin="24" Name="interferenceScrollViewer" Visibility="Visible">
+        <ScrollViewer Grid.Row="2" Margin="24,16" Name="interferenceScrollViewer" Visibility="Visible" VerticalScrollBarVisibility="Auto">
+            <Border Style="{StaticResource CardBorder}" Padding="24">
             <Grid Name="mainGrid">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -252,8 +258,9 @@
                         </StackPanel>
                     </Grid>
                 </Border>
-                
+
             </Grid>
+            </Border>
         </ScrollViewer>
 
         <Border Grid.Row="3" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource CardBorderBrush}"
