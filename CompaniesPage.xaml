@@ -1,134 +1,196 @@
-﻿<Page x:Class="ntra_missions.CompaniesPage"
+<Page x:Class="ntra_missions.CompaniesPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:ntra_missions"
-      mc:Ignorable="d" 
+      mc:Ignorable="d"
       Title="CompaniesPage">
 
-    <Grid>
+    <Grid Background="{StaticResource AppBackgroundBrush}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="150"/>
-            <RowDefinition Height="100"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition/>
-            <RowDefinition Height="100"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Background="#000080">
+        <local:PageHeader x:Name="pageHeader" Title="Companies" CurrentTag="Companies"/>
+
+        <Grid Grid.Row="1" Margin="16,16,16,8">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="250"/>
-                <ColumnDefinition Width="250"/>
-            </Grid.ColumnDefinitions>
-
-            <WrapPanel>
-                <Grid Name="mainMenuGrid" Background="LightGray" VerticalAlignment="Stretch" Width="70" IsHitTestVisible="True" MouseEnter="MouseEnterMainMenu" MouseLeave="MouseLeaveMainMenu" ToolTip="Main Menu" MouseLeftButtonDown="OnClickMainMenu" Cursor="Hand">
-                    <Image Name="menuItemImage" Source="Photos\tab_icon.png" Height="50" Width="50"/>
-                </Grid>
-
-                <MenuItem Name="tabMenuButton" Visibility="Collapsed">
-                    <MenuItem.ContextMenu>
-                        <ContextMenu Closed="OnClosedMenuContectMenu">
-                            <MenuItem Header="DashBoard" Name="dashboardMenuItem" Click="DashboardMenuSelection"/>
-                            <MenuItem Header="Employees" Name="EmployeeMenuItem"  Click="employeeMenuSelection"/>
-                            <MenuItem Header="Companies" Name="CompanyMenuItem" IsChecked="True" IsHitTestVisible="False"/>
-                            <MenuItem Header="Company Equipment" Name="CompanyEquipmentMenuItem" Click="CompanyEquipmentMenuSelection"/>
-                            <MenuItem Header="Sites" Name="sitesMenuItem" Click="SitesMenuSelection"/>
-                            <MenuItem Header="EMF" Name="emfMenuItem" Click="emfMenuSelection"/>
-                            <MenuItem Header="Complaints" Name="ComplaintsMenuItem" Click="ComplaintsMenuSelection"/>
-                            <MenuItem Header="Monitoring Missions" Name="monitoringMenuItem" Click="MonitoringMenuSelection"/>
-                            <MenuItem Header="Repeaters" Name="repeatersMenuItem" Click="RepeatersMenueSelection"/>
-                            <MenuItem Header="Inspection Missions" Name="inspectionMenuItem" Click="InspectionMenuSelection"/>
-                        </ContextMenu>
-                    </MenuItem.ContextMenu>
-                </MenuItem>
-
-                <Image Source="Photos\NTRA_white1.png" VerticalAlignment="Center" Height="200"  HorizontalAlignment="Left"/>
-            </WrapPanel>
-
-            <Grid Name="userNameGrid" Grid.Column="2">
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-
-                <Label Grid.Row="0" Name="userNameLabel" Foreground="White" FontSize="20" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="Username:"/>
-                <Button Grid.Row="1" Name="logoutButton" Content="Sign out" Style="{StaticResource buttonStyle}" VerticalAlignment="Bottom" Background="LightGray" FontWeight="Bold" Foreground="#000080" Click="OnClickLogoutButton"/>
-            </Grid>
-
-            <Button Grid.Column="1" Name="changePasswordButton" Content="Change Password" VerticalAlignment="Bottom" FontWeight="Bold" Style="{StaticResource negativeButtonStyle}" Width="200" Click="OnClickChangePasswordButton"/>
-
-        </Grid>
-
-        <!--<ScrollViewer Grid.Row="1">
-        <WebBrowser  x:Name="wbMaps" Source="https://www.google.com/maps" GotTouchCapture="wbMaps_GotTouchCapture" Navigated="wbMaps_Navigated" Navigating="wbMaps_Navigating"/>
-        </ScrollViewer>-->
-
-        <Label Grid.Row="1" Style="{StaticResource headerLabelStyle}" Content="Companies" HorizontalAlignment="Center" Foreground="#000080"/>
-
-
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="400"/>
+                <ColumnDefinition Width="300"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
-            <ScrollViewer Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="24">
-                <Grid >
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="70"/>
-                        <RowDefinition Height="70"/>
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="150"/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
+            <!-- Filters -->
+            <Border Style="{StaticResource CardBorder}" VerticalAlignment="Top" Margin="0,44,16,0">
+                <StackPanel>
+                    <TextBlock Text="Filters" Style="{StaticResource CardTitleText}" Margin="0,0,0,12"/>
 
-                    <CheckBox Grid.Row="0" Grid.Column="0" Name="searchCheckBox" Content="Search &#10;Name" Checked="OnCheckSearchCheckBox" Unchecked="OnUncheckSearchCheckBox" Style="{StaticResource checkBoxStyle}"/>
-                    <CheckBox Grid.Row="1" Grid.Column="0" Name="fieldOfWorkCheckBox" Content="Field of &#10;work" Checked="OnCheckFieldCheckBox" Unchecked="OnUncheckFieldCheckBox" Style="{StaticResource checkBoxStyle}"/>
-                    <CheckBox Grid.Row="2" Grid.Column="0" Name="bandsCheckBox" Content="Frequency:" Checked="OnCheckBandsCheckBox" Unchecked="OnUncheckBandsCheckBox" Style="{StaticResource checkBoxStyle}"/>
+                    <CheckBox Name="searchCheckBox" Content="Search name" Style="{StaticResource checkBoxStyle}" Width="Auto"
+                              Checked="OnCheckSearchCheckBox" Unchecked="OnUncheckSearchCheckBox"/>
+                    <TextBox Name="searchTextBox" Style="{StaticResource ModernTextBoxBase}" Margin="0,6,0,14" IsEnabled="False"
+                             TextChanged="OnTextChangedSearchTextBox"/>
 
+                    <CheckBox Name="fieldOfWorkCheckBox" Content="Field of work" Style="{StaticResource checkBoxStyle}" Width="Auto"
+                              Checked="OnCheckFieldCheckBox" Unchecked="OnUncheckFieldCheckBox"/>
+                    <ComboBox Name="fieldComboBox" Style="{StaticResource miniComboBoxStyle}" Width="Auto" HorizontalAlignment="Stretch"
+                              Margin="0,6,0,14" IsEnabled="False" SelectionChanged="OnSelChangedFieldCombo"/>
 
-                    <TextBox Grid.Row="0" Grid.Column="1" Name="searchTextBox" TextChanged="OnTextChangedSearchTextBox" Style="{StaticResource miniTextboxStyle}" IsEnabled='False'/>
-                    <ComboBox Grid.Row="1" Grid.Column="1" Name="fieldComboBox" SelectionChanged="OnSelChangedFieldCombo" Style="{StaticResource miniComboBoxStyle}" IsEnabled='False'/>
-                    
-                    <StackPanel Grid.Row="2" Grid.Column="1">
-                        <TextBox Margin="12" Name="bandTextBox" Style="{StaticResource miniTextboxStyle}" TextChanged="OnTextChangedBandTextBox" IsEnabled="False" PreviewTextInput="NumberValidationTextBox"/>
-                        <ComboBox Margin="12"  Name="bandsComboBox" SelectionChanged="OnSelChangedBandsCombo" Style="{StaticResource miniComboBoxStyle}" IsEnabled='False'/>
-                    </StackPanel>
+                    <CheckBox Name="bandsCheckBox" Content="Frequency" Style="{StaticResource checkBoxStyle}" Width="Auto"
+                              Checked="OnCheckBandsCheckBox" Unchecked="OnUncheckBandsCheckBox"/>
+                    <TextBox Name="bandTextBox" Style="{StaticResource ModernTextBoxBase}" Margin="0,6,0,6" IsEnabled="False"
+                             TextChanged="OnTextChangedBandTextBox" PreviewTextInput="NumberValidationTextBox"/>
+                    <ComboBox Name="bandsComboBox" Style="{StaticResource miniComboBoxStyle}" Width="Auto" HorizontalAlignment="Stretch"
+                              IsEnabled="False" SelectionChanged="OnSelChangedBandsCombo"/>
+                </StackPanel>
+            </Border>
 
-                </Grid>
-            </ScrollViewer>
-
-            <Grid Grid.Column="1" Margin="12">
+            <!-- Content -->
+            <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="44"/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
 
-                <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left">
-                    <Border Name="listViewBorder" CornerRadius="0,30,0,0" BorderThickness="3" BorderBrush="#000080" Background="White" Width="150" MouseLeftButtonDown="OnClickListView">
-                        <Label Style="{StaticResource mediumLabelStyle}" Content="List View" Foreground="#000080" HorizontalAlignment="Left" FontWeight="Bold"/>
-                    </Border>
-                    <Border Name="tableViewBorder" CornerRadius="0,30,0,0" BorderThickness="3" BorderBrush="#000080" Background="#000080" Width="150" MouseLeftButtonDown="OnClickTableView">
-                        <Label Style="{StaticResource mediumLabelStyle}" Content="Table View" Foreground="White" HorizontalAlignment="Left" FontWeight="Bold"/>
-                    </Border>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <RadioButton Name="listViewToggle" Style="{StaticResource TogglePill}" Content="List View" IsChecked="True"
+                                 Checked="OnCheckedListView"/>
+                    <RadioButton Name="tableViewToggle" Style="{StaticResource TogglePill}" Content="Table View"
+                                 Checked="OnCheckedTableView"/>
                 </StackPanel>
 
-                <ScrollViewer Grid.Row="1" Name="listViewScrollViewer" VerticalContentAlignment="Stretch" >
-                    <StackPanel Name="companiesStackPanel" Background="White"/>
-                </ScrollViewer>
-                <ScrollViewer Grid.Row="1" Name="tableViewScrollViewer"  Visibility="Collapsed" HorizontalScrollBarVisibility="Auto">
-                    <Grid Name="companiesGrid" Background="White" ShowGridLines="True"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <TextBlock Text="Companies: " Style="{StaticResource FieldLabelText}"/>
+                    <TextBlock Name="countText" Style="{StaticResource ValueTextBrand}"/>
+                </StackPanel>
 
-                </ScrollViewer>
+                <!-- List view -->
+                <ListBox Grid.Row="1" Name="companiesList" Style="{StaticResource CardList}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource RowCardBorder}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Name}" Style="{StaticResource CardTitleText}"/>
+
+                                        <StackPanel Orientation="Horizontal" Margin="0,6,0,8">
+                                            <TextBlock Text="Work field:  " Style="{StaticResource FieldLabelText}"/>
+                                            <TextBlock Text="{Binding WorkField}" Style="{StaticResource ValueTextBrand}"/>
+                                        </StackPanel>
+
+                                        <ItemsControl ItemsSource="{Binding Contacts}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid Margin="0,2">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="240"/>
+                                                            <ColumnDefinition Width="180"/>
+                                                            <ColumnDefinition/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock Text="Name:  " Style="{StaticResource FieldLabelText}"/>
+                                                            <TextBlock Text="{Binding Name}" Style="{StaticResource ValueText}"/>
+                                                        </StackPanel>
+                                                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                                            <TextBlock Text="Number:  " Style="{StaticResource FieldLabelText}"/>
+                                                            <TextBlock Text="{Binding Phone}" Style="{StaticResource ValueText}"/>
+                                                        </StackPanel>
+                                                        <StackPanel Grid.Column="2" Orientation="Horizontal">
+                                                            <TextBlock Text="Email:  " Style="{StaticResource FieldLabelText}"/>
+                                                            <TextBlock Text="{Binding Email}" Style="{StaticResource ValueText}"/>
+                                                        </StackPanel>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top">
+                                        <Button Style="{StaticResource RowButton}" Content="View" Tag="{Binding Serial}"
+                                                Click="OnClickViewCompany"/>
+                                        <Button Style="{StaticResource RowButtonFilled}" Content="Edit" Tag="{Binding Serial}"
+                                                Click="OnClickEditCompany"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <!-- Table view -->
+                <DataGrid Grid.Row="1" Name="companiesDataGrid" Style="{StaticResource ModernDataGrid}" Visibility="Collapsed">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Company Name" Binding="{Binding Name}" Width="180"/>
+                        <DataGridTextColumn Header="Workfield" Binding="{Binding WorkField}" Width="160"/>
+                        <DataGridTemplateColumn Header="Contacts" Width="480">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ItemsControl ItemsSource="{Binding Contacts}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid Margin="0,2">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="140"/>
+                                                        <ColumnDefinition Width="120"/>
+                                                        <ColumnDefinition Width="200"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Text="{Binding Name}" Style="{StaticResource ValueText}"/>
+                                                    <TextBlock Grid.Column="1" Text="{Binding Phone}" Style="{StaticResource ValueText}"/>
+                                                    <TextBlock Grid.Column="2" Text="{Binding Email}" Style="{StaticResource ValueText}"/>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Frequencies" Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <Grid Margin="0,2">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="160"/>
+                                                <ColumnDefinition Width="160"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="{Binding FreqHeader1}" Style="{StaticResource FieldLabelText}"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding FreqHeader2}" Style="{StaticResource FieldLabelText}"/>
+                                        </Grid>
+                                        <ItemsControl ItemsSource="{Binding Frequencies}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid Margin="0,1">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="160"/>
+                                                            <ColumnDefinition Width="160"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Text="{Binding First}" Style="{StaticResource ValueText}"/>
+                                                        <TextBlock Grid.Column="1" Text="{Binding Second}" Style="{StaticResource ValueText}"/>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
             </Grid>
         </Grid>
 
-        <Button Grid.Row="3" Style="{StaticResource buttonStyle}" Content="Add" Click="OnBtnClickAdd"/>
-        <Button Grid.Row="3" Style="{StaticResource buttonStyle}" HorizontalAlignment="Right" Content="Add Table" Click="OnBtnClickAdd"/>
+        <!-- Actions -->
+        <Border Grid.Row="2" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource CardBorderBrush}"
+                BorderThickness="0,1,0,0" Padding="16,10">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Style="{StaticResource PrimaryButton}" Content="Add Company" Click="OnBtnClickAdd" Margin="6,0"/>
+            </StackPanel>
+        </Border>
     </Grid>
 </Page>
-    

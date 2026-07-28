@@ -1,28 +1,20 @@
-﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Button = System.Windows.Controls.Button;
-using Cursors = System.Windows.Input.Cursors;
-using Label = System.Windows.Controls.Label;
 using MessageBox = System.Windows.Forms.MessageBox;
-using MouseEventArgs = System.Windows.Input.MouseEventArgs;
+using MessageBoxButtons = System.Windows.Forms.MessageBoxButtons;
+using MessageBoxIcon = System.Windows.Forms.MessageBoxIcon;
 using OpenFileDialog = System.Windows.Forms.OpenFileDialog;
+using DialogResult = System.Windows.Forms.DialogResult;
 
 namespace ntra_missions
 {
@@ -32,29 +24,31 @@ namespace ntra_missions
     public partial class ComplaintsPage : Page
     {
         private Employee loggedInUser;
-        private CommonQueries commonQueries;
+        private readonly CommonQueries commonQueries;
+        private readonly CommonFunctions commonFunctions;
+
         private List<BASIC_STRUCTS.COMPLAINT_STRUCT> complaints;
         private List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT> companies;
         private List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT> complaintStatus;
 
-        private CommonFunctions commonFunctions;
-
-        private Expander currentExpander;
-        private Expander previousExpander;
+        private readonly ObservableCollection<ComplaintRow> complaintRows;
+        private ICollectionView complaintsView;
 
         public ComplaintsPage(ref Employee mLoggedInUser)
         {
             loggedInUser = mLoggedInUser;
 
             commonQueries = new CommonQueries();
+            commonFunctions = new CommonFunctions();
 
             complaints = new List<BASIC_STRUCTS.COMPLAINT_STRUCT>();
             companies = new List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT>();
             complaintStatus = new List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT>();
-
-            commonFunctions = new CommonFunctions();
+            complaintRows = new ObservableCollection<ComplaintRow>();
 
             InitializeComponent();
+
+            pageHeader.Attach(loggedInUser);
 
             if (!commonQueries.GetComplaints(ref complaints))
                 return;
@@ -62,406 +56,177 @@ namespace ntra_missions
             if (!commonQueries.GetCompanies(ref companies))
                 return;
 
-            userNameLabel.Content = "Username: " + loggedInUser.GetEmployeeUserName();
+            complaintsView = CollectionViewSource.GetDefaultView(complaintRows);
+            complaintsView.Filter = FilterComplaint;
+            complaintsList.ItemsSource = complaintsView;
 
             InitializeFilterComboBoxes();
 
-            InitializeCompaintsStackPanel();
+            RebuildRows();
         }
 
         private void InitializeFilterComboBoxes()
         {
-            for(int i = BASIC_STRUCTS.START_YEAR; i <= DateTime.Now.Year; i++)
-            {
+            for (int i = BASIC_STRUCTS.START_YEAR; i <= DateTime.Now.Year; i++)
                 yearComboBox.Items.Add(i);
-            }
 
             yearCheckBox.IsChecked = true;
 
             monthComboBox.Items.Clear();
-
             for (int i = 1; i < 13; i++)
-            {
                 monthComboBox.Items.Add(i);
-            }
 
             companyComboBox.Items.Clear();
-
             for (int i = 0; i < companies.Count; i++)
-            {
                 companyComboBox.Items.Add(companies[i].value);
-            }
 
             if (!commonQueries.GetComplaintStatus(ref complaintStatus))
                 return;
 
             statusComboBox.Items.Clear();
-
-            for(int i = 0; i < complaintStatus.Count; i++)
-            {
+            for (int i = 0; i < complaintStatus.Count; i++)
                 statusComboBox.Items.Add(complaintStatus[i].value);
-            }
         }
 
-        private void InitializeCompaintsStackPanel()
+        private void RebuildRows()
         {
-            BrushConverter brushConverter = new BrushConverter();
+            complaintRows.Clear();
 
-            complaintsStackPanel.Children.Clear();
+            for (int i = 0; i < complaints.Count; i++)
+                complaintRows.Add(new ComplaintRow(complaints[i], loggedInUser.GetEmployeeId()));
 
-            for(int i = 0; i < complaints.Count; i++)
+            UpdateCount();
+            LoadAttachmentsAsync();
+        }
+
+        // The attachments live on a network share — enumerate them off the UI
+        // thread so the page shows instantly even when the share is slow.
+        private void LoadAttachmentsAsync()
+        {
+            List<ComplaintRow> rows = new List<ComplaintRow>(complaintRows);
+
+            Task.Run(() =>
             {
-                if (searchCheckBox.IsChecked == true && searchTextBox.Text != "")
+                foreach (ComplaintRow row in rows)
                 {
-                    //string search = searchTextBox.Text;
-                    //bool contains = false;
-                    //contains = complaints[i].complaint_id.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0;
-                    //
-                    //
-                    //if (!contains)
-                    //    continue;
-
-                    bool contains = false;
-                    string search = searchTextBox.Text;
-                    for (int j = 0; j < complaints[i].sites.Count; j++)
+                    try
                     {
-                        contains = complaints[i].sites[j].site_number.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0;
+                        string folder = BASIC_STRUCTS.FOLDER_SHARE_PATH + @"Complaints\" + row.ComplaintId + @"\";
 
-                        if (contains)
-                            break;
+                        if (!commonFunctions.CheckDirectory(folder))
+                            continue;
+
+                        FileInfo[] files = commonFunctions.ListFilesInFolder(folder);
+                        ComplaintRow targetRow = row;
+
+                        Dispatcher.BeginInvoke(new Action(() =>
+                        {
+                            targetRow.Attachments.Clear();
+                            foreach (FileInfo file in files)
+                            {
+                                targetRow.Attachments.Add(new FileRow
+                                {
+                                    FileName = file.Name,
+                                    FullPath = file.FullName,
+                                    CanDelete = targetRow.CanEdit
+                                });
+                            }
+                        }));
                     }
-                    if (!contains)
-                        continue;
-                }
-
-                if (yearCheckBox.IsChecked == true && yearComboBox.SelectedIndex != -1)
-                {
-                    if (complaints[i].complaint_date.Year != int.Parse(yearComboBox.SelectedItem.ToString()))
-                        continue;
-                }
-
-                if (monthCheckBox.IsChecked == true && monthComboBox.SelectedIndex != -1)
-                {
-                    if (complaints[i].complaint_date.Month != int.Parse(monthComboBox.SelectedItem.ToString()))
-                        continue;
-                }
-
-                if (companyCheckBox.IsChecked == true && companyComboBox.SelectedIndex != -1)
-                {
-                    if (complaints[i].company_serial != companies[companyComboBox.SelectedIndex].key)
-                        continue;
-                }
-
-                if (statusCheckBox.IsChecked == true && statusComboBox.SelectedIndex != -1)
-                {
-                    if (complaints[i].complaint_status_id != complaintStatus[statusComboBox.SelectedIndex].key)
-                        continue;
-                }
-
-                Border border = new Border() { BorderThickness = new Thickness(3) };
-                border.BorderBrush = (Brush)brushConverter.ConvertFrom("#000080");
-
-                Grid grid = new Grid();
-                grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(80)});
-                grid.RowDefinitions.Add(new RowDefinition());
-                grid.RowDefinitions.Add(new RowDefinition());
-                grid.RowDefinitions.Add(new RowDefinition());
-                grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(250)});
-                grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(250)});
-                grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(400)});
-                grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(200)});
-
-                Label complaintHeaderLabel = new Label();
-                complaintHeaderLabel.Style = (Style)FindResource("stackPanelHeaderLabelStyleBlue");
-                complaintHeaderLabel.Content = complaints[i].complaint_id;
-                complaintHeaderLabel.Margin = new Thickness(10);
-
-                grid.Children.Add(complaintHeaderLabel);
-                Grid.SetColumnSpan(complaintHeaderLabel, 3);
-                Grid.SetRow(complaintHeaderLabel, 0);
-
-                WrapPanel companyNameWrapPanel = new WrapPanel();
-
-                Label companyNameLabel = new Label();
-                companyNameLabel.Style = (Style)FindResource("mediumLabelStyleBlack");
-                companyNameLabel.Content = "Company: ";
-
-                Label companyNameLabelValue = new Label();
-                companyNameLabelValue.Style = (Style)FindResource("stackPanelLabelStyle");
-                companyNameLabelValue.Content = complaints[i].company_name;
-
-                companyNameWrapPanel.Children.Add(companyNameLabel);
-                companyNameWrapPanel.Children.Add(companyNameLabelValue);
-
-                grid.Children.Add(companyNameWrapPanel);
-                Grid.SetColumn(companyNameWrapPanel, 0);
-                Grid.SetRow(companyNameWrapPanel, 1);
-
-                WrapPanel cityWrapPanel = new WrapPanel();
-                
-                Label cityLabel = new Label();
-                cityLabel.Style = (Style)FindResource("mediumLabelStyleBlack");
-                cityLabel.Content = "Added by: ";
-                
-                Label cityLabelValue = new Label();
-                cityLabelValue.Style = (Style)FindResource("stackPanelLabelStyle");
-                cityLabelValue.Content = complaints[i].added_by;
-                
-                cityWrapPanel.Children.Add(cityLabel);
-                cityWrapPanel.Children.Add(cityLabelValue);
-                
-                grid.Children.Add(cityWrapPanel);
-                Grid.SetColumn(cityWrapPanel, 0);
-                Grid.SetRow(cityWrapPanel, 2);
-
-                WrapPanel ticketNumberWrapPanel = new WrapPanel();
-
-                Label ticketNumberLabel = new Label();
-                ticketNumberLabel.Style = (Style)FindResource("mediumLabelStyleBlack");
-                ticketNumberLabel.Content = "Ticket: ";
-
-                Label ticketNumberLabelValue = new Label();
-                ticketNumberLabelValue.Style = (Style)FindResource("stackPanelLabelStyle");
-                ticketNumberLabelValue.Content = complaints[i].ticket_number;
-
-                ticketNumberWrapPanel.Children.Add(ticketNumberLabel);
-                ticketNumberWrapPanel.Children.Add(ticketNumberLabelValue);
-
-                grid.Children.Add(ticketNumberWrapPanel);
-                Grid.SetRow(ticketNumberWrapPanel, 1);
-                Grid.SetColumn(ticketNumberWrapPanel, 1);
-
-                WrapPanel regionWrapPanel = new WrapPanel();
-
-                Label regionLabel = new Label();
-                regionLabel.Style = (Style)FindResource("mediumLabelStyleBlack");
-                regionLabel.Content = "Area: ";
-
-                Label regionLabelValue = new Label();
-                regionLabelValue.Style = (Style)FindResource("stackPanelLabelStyle");
-                regionLabelValue.Content = complaints[i].sites[0].region;
-
-                regionWrapPanel.Children.Add(regionLabel);
-                regionWrapPanel.Children.Add(regionLabelValue);
-
-                grid.Children.Add(regionWrapPanel);
-                Grid.SetRow(regionWrapPanel, 3);
-                Grid.SetColumn(regionWrapPanel, 1);
-
-                //WrapPanel regionWrapPanel = new WrapPanel();
-                //
-                //Label regionLabel = new Label();
-                //regionLabel.Style = (Style)FindResource("mediumLabelStyleBlack");
-                //regionLabel.Content = "Region: ";
-                //
-                //Label regionLabelValue = new Label();
-                //regionLabelValue.Style = (Style)FindResource("stackPanelLabelStyle");
-                //regionLabelValue.Content = complaints[i].region;
-                //
-                //regionWrapPanel.Children.Add(regionLabel);
-                //regionWrapPanel.Children.Add(regionLabelValue);
-                //
-                //grid.Children.Add(regionWrapPanel);
-                //Grid.SetColumn(regionWrapPanel, 0);
-                //Grid.SetRow(regionWrapPanel, 3);
-
-                WrapPanel siteWrapPanel = new WrapPanel();
-
-                Label siteLabel = new Label();
-                siteLabel.Style = (Style)FindResource("mediumLabelStyleBlack");
-                siteLabel.Content = "No of Sites: ";
-
-                Label siteLabelValue = new Label();
-                siteLabelValue.Style = (Style)FindResource("stackPanelLabelStyle");
-                siteLabelValue.Content = complaints[i].sites.Count();
-
-                siteWrapPanel.Children.Add(siteLabel);
-                siteWrapPanel.Children.Add(siteLabelValue);
-
-                grid.Children.Add(siteWrapPanel);
-                Grid.SetRow(siteWrapPanel, 2);
-                Grid.SetColumn(siteWrapPanel, 1);
-
-                Border statusBorder = new Border();
-                statusBorder.Style = (Style)FindResource("statusBorderStyle");
-                if (complaints[i].complaint_status_id == BASIC_STRUCTS.OPEN_COMPLAINT_STATUS)
-                    statusBorder.Background = Brushes.Red;
-                else if (complaints[i].complaint_status_id == BASIC_STRUCTS.PENDING_COMPLAINT_STATUS)
-                    statusBorder.Background = Brushes.Yellow;
-                else
-                    statusBorder.Background = Brushes.Green;
-
-                Label statusLabel = new Label();
-                statusLabel.Style = (Style)FindResource("statusLabelStyle");
-                statusLabel.Content = complaints[i].complaint_status;
-
-                statusBorder.Child = statusLabel;
-                grid.Children.Add(statusBorder);
-                Grid.SetRowSpan(statusBorder, 4);
-                Grid.SetColumn(statusBorder, 3);
-
-                Expander expander = new Expander();
-                expander.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Left;
-                expander.VerticalAlignment = VerticalAlignment.Top;
-                expander.ExpandDirection = ExpandDirection.Down;
-                expander.Expanded += OnExpandExpander;
-                expander.Margin = new Thickness(0, 24, 0, 0);
-                expander.Tag = i;
-
-                StackPanel expanderstackPanel = new StackPanel();
-
-                Button viewButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
-                viewButton.Content = "View";
-                viewButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
-                viewButton.Click += OnClickViewComplaint;
-
-                Button editButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
-                editButton.Content = "Edit";
-                editButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
-                editButton.Click += OnClickEditComplaint;
-
-                Button AddMissionButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
-                AddMissionButton.Content = "Add Mission";
-                AddMissionButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
-                AddMissionButton.Click += OnClickAddMissionButton;
-
-                Button excelButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
-                excelButton.Content = "Export Excel";
-                excelButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
-                excelButton.Click += OnClickExportExcel;
-
-                Button mapButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
-                mapButton.Content = "Export KML";
-                mapButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
-                mapButton.Click += OnClickExportMap;
-
-
-                Button attachmentButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
-                attachmentButton.Content = "Attach File";
-                attachmentButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
-                attachmentButton.Click += OnClickAttachFile;
-
-                Button deleteButton = new Button() { Style = (Style)FindResource("expanderButtonStyle") };
-                deleteButton.Content = "Delete";
-                deleteButton.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
-                deleteButton.Click += OnClickDeleteComplaint;
-
-
-                expanderstackPanel.Children.Add(viewButton);
-
-                if (complaints[i].added_by_id == loggedInUser.GetEmployeeId())
-                    expanderstackPanel.Children.Add(editButton);
-
-                expanderstackPanel.Children.Add(AddMissionButton);
-
-                if (complaints[i].added_by_id == loggedInUser.GetEmployeeId())
-                    expanderstackPanel.Children.Add(attachmentButton);
-
-                expanderstackPanel.Children.Add(excelButton);
-                expanderstackPanel.Children.Add(mapButton);
-
-                expander.Content = expanderstackPanel;
-
-                grid.Children.Add(expander);
-                Grid.SetRow(expander, 0);
-                Grid.SetRowSpan(expander, 2);
-                Grid.SetColumn(expander, 3);
-
-                ScrollViewer scrollViewer = new ScrollViewer() { VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Height = 200, Margin = new Thickness(12), HorizontalAlignment = System.Windows.HorizontalAlignment.Left};
-                StackPanel fileStackPanel = new StackPanel() { Orientation = System.Windows.Controls.Orientation.Vertical};
-
-                scrollViewer.Content = fileStackPanel;
-
-                FileInfo[] filesPath;
-
-                if (commonFunctions.CheckDirectory(BASIC_STRUCTS.FOLDER_SHARE_PATH + @"Complaints\" + complaints[i].complaint_id + @"\"))
-                {
-                    filesPath = commonFunctions.ListFilesInFolder(BASIC_STRUCTS.FOLDER_SHARE_PATH + @"Complaints\" + complaints[i].complaint_id + @"\");
-
-                    for (int k = 0; k < filesPath.Length; k++)
+                    catch
                     {
-                        //Border currentBorder = new Border() { BorderBrush = (Brush)brushConverter.ConvertFrom("#000080"), BorderThickness = new Thickness(3) };
-                        
-                        WrapPanel currentWrapPanel = new WrapPanel() { HorizontalAlignment = System.Windows.HorizontalAlignment.Left };
-
-                        //currentBorder.Child = currentWrapPanel;
-
-                        String imageSource = @"\Photos\file_icon.png";
-
-                        Image currentFileImage = new Image() { VerticalAlignment = VerticalAlignment.Center};
-                        currentFileImage.Height = 50;
-                        currentFileImage.Width = 50;
-                        currentFileImage.Source = new BitmapImage(new Uri(imageSource, UriKind.Relative));
-
-                        TextBlock currentFile = new TextBlock() { Style = (Style)FindResource("textblockStyleBlue") , Height = 50, VerticalAlignment = VerticalAlignment.Center, Padding = new Thickness(3)};
-                        currentFile.Cursor = Cursors.Hand;
-                        currentFile.ToolTip = "Click to open file";
-                        currentFile.PreviewMouseLeftButtonDown += OnClickOpenFile;
-
-                        currentFile.Text = System.IO.Path.GetFileName(filesPath[k].FullName);
-                        currentFile.Tag = filesPath[k].FullName;
-
-                        String imageSource1 = @"\Photos\red_cross_icon.png";
-
-                        
-                            Image currentRemoveImage = new Image() { VerticalAlignment = VerticalAlignment.Center };
-                            currentRemoveImage.Height = 40;
-                            currentRemoveImage.Width = 40;
-                            currentRemoveImage.Source = new BitmapImage(new Uri(imageSource1, UriKind.Relative));
-                            currentRemoveImage.ToolTip = "Click to delete file";
-                            currentRemoveImage.Tag = filesPath[k].FullName;
-                            currentRemoveImage.Cursor = Cursors.Hand;
-                            currentRemoveImage.MouseLeftButtonDown += OnClickRemoveFile;
-
-                        currentWrapPanel.Children.Add(currentFileImage);
-                        currentWrapPanel.Children.Add(currentFile);
-                        if (complaints[i].added_by_id == loggedInUser.GetEmployeeId())
-                            currentWrapPanel.Children.Add(currentRemoveImage);
-
-                        fileStackPanel.Children.Add(currentWrapPanel);
-                    }
-
-                    if (filesPath.Length != 0)
-                    {
-                        grid.Children.Add(scrollViewer);
-                        Grid.SetRowSpan(scrollViewer, 4);
-                        Grid.SetRow(scrollViewer, 0);
-                        Grid.SetColumn(scrollViewer, 2);
+                        // share unreachable — show the complaint without attachments
                     }
                 }
-
-                WrapPanel dateWrapPanel = new WrapPanel();
-
-                Label dateLabel = new Label();
-                dateLabel.Style = (Style)FindResource("mediumLabelStyleBlack");
-                dateLabel.Content = "Date: ";
-
-                Label dateLabelValue = new Label();
-                dateLabelValue.Style = (Style)FindResource("stackPanelLabelStyle");
-                dateLabelValue.Content = complaints[i].complaint_date;
-
-                dateWrapPanel.Children.Add(dateLabel);
-                dateWrapPanel.Children.Add(dateLabelValue);
-
-                grid.Children.Add(dateWrapPanel);
-                Grid.SetRow(dateWrapPanel, 3);
-                Grid.SetColumn(dateWrapPanel, 0);
-
-                border.Child = grid;
-
-                complaintsStackPanel.Children.Add(border);
-            }
+            });
         }
 
-        
-
-        private void OnClickRemoveFile(object sender, MouseButtonEventArgs e)
+        private bool FilterComplaint(object item)
         {
-            Image currentImage = (Image)sender;
+            ComplaintRow row = item as ComplaintRow;
+            if (row == null)
+                return false;
 
-            File.Delete(currentImage.Tag.ToString());
+            if (searchCheckBox.IsChecked == true && searchTextBox.Text != "")
+            {
+                bool contains = false;
+                string search = searchTextBox.Text;
 
-            InitializeCompaintsStackPanel();
+                foreach (string siteNumber in row.SiteNumbers)
+                {
+                    if (siteNumber.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        contains = true;
+                        break;
+                    }
+                }
+
+                if (!contains)
+                    return false;
+            }
+
+            if (yearCheckBox.IsChecked == true && yearComboBox.SelectedIndex != -1)
+            {
+                if (row.Date.Year != int.Parse(yearComboBox.SelectedItem.ToString()))
+                    return false;
+            }
+
+            if (monthCheckBox.IsChecked == true && monthComboBox.SelectedIndex != -1)
+            {
+                if (row.Date.Month != int.Parse(monthComboBox.SelectedItem.ToString()))
+                    return false;
+            }
+
+            if (companyCheckBox.IsChecked == true && companyComboBox.SelectedIndex != -1)
+            {
+                if (row.CompanySerial != companies[companyComboBox.SelectedIndex].key)
+                    return false;
+            }
+
+            if (statusCheckBox.IsChecked == true && statusComboBox.SelectedIndex != -1)
+            {
+                if (row.StatusId != complaintStatus[statusComboBox.SelectedIndex].key)
+                    return false;
+            }
+
+            return true;
+        }
+
+        private void RefreshView()
+        {
+            if (complaintsView == null)
+                return;
+
+            complaintsView.Refresh();
+            UpdateCount();
+        }
+
+        private void UpdateCount()
+        {
+            if (complaintsView == null)
+                return;
+
+            int count = 0;
+            foreach (object item in complaintsView)
+                count++;
+
+            countText.Text = count.ToString();
+        }
+
+        private void OnClickRemoveFile(object sender, RoutedEventArgs e)
+        {
+            FileRow file = (FileRow)((Button)sender).Tag;
+
+            File.Delete(file.FullPath);
+
+            foreach (ComplaintRow row in complaintRows)
+            {
+                if (row.Attachments.Contains(file))
+                {
+                    row.Attachments.Remove(file);
+                    break;
+                }
+            }
         }
 
         private void OnClickOpenFile(object sender, MouseButtonEventArgs e)
@@ -469,7 +234,7 @@ namespace ntra_missions
             TextBlock currentTextBlock = (TextBlock)sender;
             try
             {
-                if (currentTextBlock.Tag != "")
+                if (currentTextBlock.Tag != null && currentTextBlock.Tag.ToString() != "")
                     Process.Start(currentTextBlock.Tag.ToString());
             }
             catch
@@ -480,13 +245,11 @@ namespace ntra_missions
 
         private void OnClickExportExcel(object sender, RoutedEventArgs e)
         {
-            Button currentButton = (Button)sender;
-            StackPanel currentStackPanel = (StackPanel)currentButton.Parent;
-            Expander expander = (Expander)currentStackPanel.Parent;
+            ComplaintRow row = (ComplaintRow)((Button)sender).Tag;
 
             Complaints complaint = new Complaints();
 
-            if (!complaint.InitializeComplaint(complaints[int.Parse(expander.Tag.ToString())].company_serial, complaints[int.Parse(expander.Tag.ToString())].complaint_serial))
+            if (!complaint.InitializeComplaint(row.CompanySerial, row.ComplaintSerial))
                 return;
 
             ExcelExport excelExport = new ExcelExport();
@@ -495,7 +258,15 @@ namespace ntra_missions
 
         private void OnClickExportMap(object sender, RoutedEventArgs e)
         {
-            //throw new NotImplementedException();
+            ComplaintRow row = (ComplaintRow)((Button)sender).Tag;
+
+            Complaints complaint = new Complaints();
+
+            if (!complaint.InitializeComplaint(row.CompanySerial, row.ComplaintSerial))
+                return;
+
+            GenerateKMZ generateKmz = new GenerateKMZ();
+            generateKmz.ExportComplaint(complaint);
         }
 
         private void OnClickAttachFile(object sender, RoutedEventArgs e)
@@ -505,13 +276,11 @@ namespace ntra_missions
 
             if (fileDialog.ShowDialog() == DialogResult.OK)
             {
-                Button currentButton = (Button)sender;
-                StackPanel currentStackPanel = (StackPanel)currentButton.Parent;
-                Expander expander = (Expander)currentStackPanel.Parent;
+                ComplaintRow row = (ComplaintRow)((Button)sender).Tag;
 
                 Complaints complaint = new Complaints();
 
-                if (!complaint.InitializeComplaint(complaints[int.Parse(expander.Tag.ToString())].company_serial, complaints[int.Parse(expander.Tag.ToString())].complaint_serial))
+                if (!complaint.InitializeComplaint(row.CompanySerial, row.ComplaintSerial))
                     return;
 
                 bool failed = false;
@@ -524,7 +293,7 @@ namespace ntra_missions
                     try
                     {
                         commonFunctions.CreateDirectory(BASIC_STRUCTS.FOLDER_SHARE_PATH + @"Complaints\" + complaint.GetComplaintId());
-                        File.Copy(fileDialog.FileName, BASIC_STRUCTS.FOLDER_SHARE_PATH + @"Complaints\" + complaint.GetComplaintId() + @"\" + fileName);
+                        File.Copy(filePath, BASIC_STRUCTS.FOLDER_SHARE_PATH + @"Complaints\" + complaint.GetComplaintId() + @"\" + fileName);
                     }
                     catch
                     {
@@ -533,24 +302,22 @@ namespace ntra_missions
                     }
                 }
 
-                if(failed == false)
+                if (failed == false)
                     MessageBox.Show("Upload complete!", "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                InitializeCompaintsStackPanel();
+                LoadAttachmentsAsync();
             }
         }
 
         private void OnClickAddMissionButton(object sender, RoutedEventArgs e)
         {
-            Button currentButton = (Button)sender;
-            StackPanel currentStackPanel = (StackPanel)currentButton.Parent;
-            Expander expander = (Expander)currentStackPanel.Parent;
+            ComplaintRow row = (ComplaintRow)((Button)sender).Tag;
 
             int viewAddCondition = BASIC_STRUCTS.MISSION_ADD_CONDITION;
 
             Missions mission = new Missions();
 
-            if (!mission.complaint.InitializeComplaint(complaints[int.Parse(expander.Tag.ToString())].company_serial, complaints[int.Parse(expander.Tag.ToString())].complaint_serial))
+            if (!mission.complaint.InitializeComplaint(row.CompanySerial, row.ComplaintSerial))
                 return;
 
             MissionWindow missionWindow = new MissionWindow(ref loggedInUser, ref mission, ref viewAddCondition);
@@ -558,20 +325,13 @@ namespace ntra_missions
             missionWindow.Show();
         }
 
-        private void OnClickDeleteComplaint(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void OnClickEditComplaint(object sender, RoutedEventArgs e)
         {
-            Button currentButton = (Button)sender;
-            StackPanel currentStackPanel = (StackPanel)currentButton.Parent;
-            Expander expander = (Expander)currentStackPanel.Parent;
+            ComplaintRow row = (ComplaintRow)((Button)sender).Tag;
 
             Complaints complaint = new Complaints();
 
-            if (!complaint.InitializeComplaint(complaints[int.Parse(expander.Tag.ToString())].company_serial, complaints[int.Parse(expander.Tag.ToString())].complaint_serial))
+            if (!complaint.InitializeComplaint(row.CompanySerial, row.ComplaintSerial))
                 return;
 
             int viewAddCondition = BASIC_STRUCTS.COMPLAINT_EDIT_CONDITION;
@@ -583,13 +343,11 @@ namespace ntra_missions
 
         private void OnClickViewComplaint(object sender, RoutedEventArgs e)
         {
-            Button currentButton = (Button)sender;
-            StackPanel currentStackPanel = (StackPanel)currentButton.Parent;
-            Expander expander = (Expander)currentStackPanel.Parent;
+            ComplaintRow row = (ComplaintRow)((Button)sender).Tag;
 
             Complaints complaint = new Complaints();
 
-            if (!complaint.InitializeComplaint(complaints[int.Parse(expander.Tag.ToString())].company_serial, complaints[int.Parse(expander.Tag.ToString())].complaint_serial))
+            if (!complaint.InitializeComplaint(row.CompanySerial, row.ComplaintSerial))
                 return;
 
             int viewAddCondition = BASIC_STRUCTS.COMPLAINT_VIEW_CONDITION;
@@ -597,131 +355,6 @@ namespace ntra_missions
             ComplaintsWindow complaintsWindow = new ComplaintsWindow(ref loggedInUser, ref complaint, ref viewAddCondition);
             complaintsWindow.Closed += OnClosedComplaintsWindow;
             complaintsWindow.Show();
-        }
-
-        private void OnExpandExpander(object sender, RoutedEventArgs e)
-        {
-            previousExpander = currentExpander;
-            currentExpander = (Expander)sender;
-
-            if (previousExpander != null && previousExpander != currentExpander)
-                previousExpander.IsExpanded = false;
-        }
-
-        private void MouseEnterMainMenu(object sender, MouseEventArgs e)
-        {
-            mainMenuGrid.Background = SystemColors.ActiveBorderBrush;
-        }
-
-        private void MouseLeaveMainMenu(object sender, MouseEventArgs e)
-        {
-            mainMenuGrid.Background = Brushes.LightGray;
-        }
-        private void OnClickMainMenu(object sender, MouseButtonEventArgs e)
-        {
-            if (tabMenuButton.ContextMenu.IsOpen == false)
-                tabMenuButton.ContextMenu.IsOpen = true;
-            else
-                tabMenuButton.ContextMenu.IsOpen = false;
-        }
-
-        private void OnClosedMenuContectMenu(object sender, RoutedEventArgs e)
-        {
-            mainMenuGrid.Focusable = false;
-        }
-        private void DashboardMenuSelection(object sender, RoutedEventArgs e)
-        {
-            DashBoard dashBoard = new DashBoard(ref loggedInUser);
-            NavigationService.Navigate(dashBoard);
-        }
-
-        private void employeeMenuSelection(object sender, RoutedEventArgs e)
-        {
-            EmployeesPage employeesPage = new EmployeesPage(ref loggedInUser);
-            NavigationService.Navigate(employeesPage);
-        }
-
-        private void CompanyMenuSelection(object sender, RoutedEventArgs e)
-        {
-            CompaniesPage companiesPage = new CompaniesPage(ref loggedInUser);
-            NavigationService.Navigate(companiesPage);
-        }
-
-        private void CompanyEquipmentMenuSelection(object sender, RoutedEventArgs e)
-        {
-            CompanyEquipmentPage companyEquipmentPage = new CompanyEquipmentPage(ref loggedInUser);
-            NavigationService.Navigate(companyEquipmentPage);
-        }
-        private void SitesMenuSelection(object sender, RoutedEventArgs e)
-        {
-            SitesPage sitesPage = new SitesPage(ref loggedInUser);
-            NavigationService.Navigate(sitesPage);
-        }
-
-        private void emfMenuSelection(object sender, RoutedEventArgs e)
-        {
-            EMFPage emfPage = new EMFPage(ref loggedInUser);
-            NavigationService.Navigate(emfPage);
-        }
-        private void MonitoringMenuSelection(object sender, RoutedEventArgs e)
-        {
-            MissionsPage missionsPage = new MissionsPage(ref loggedInUser);
-            NavigationService.Navigate(missionsPage);
-        }
-
-        private void InspectionMenuSelection(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void OnClickChangePasswordButton(object sender, RoutedEventArgs e)
-        {
-            ChangePasswordWindow changePasswordWindow = new ChangePasswordWindow(ref loggedInUser);
-            changePasswordWindow.Show();
-        }
-
-        private void OnClickLogoutButton(object sender, RoutedEventArgs e)
-        {
-            SignInWindow signInWindow = new SignInWindow();
-            signInWindow.Show();
-
-            NavigationWindow parentWindow = (NavigationWindow)this.Parent;
-            parentWindow.Close();
-        }
-
-        private void OnClickListView(object sender, MouseButtonEventArgs e)
-        {
-            BrushConverter brushConverter = new BrushConverter();
-
-            listViewScrollViewer.Visibility = Visibility.Visible;
-            tableViewScrollViewer.Visibility = Visibility.Collapsed;
-
-            tableViewBorder.Background = (Brush)brushConverter.ConvertFrom("#000080");
-            listViewBorder.Background = Brushes.White;
-
-            Label listViewLabel = (Label)listViewBorder.Child;
-            Label tableViewLabel = (Label)tableViewBorder.Child;
-
-            listViewLabel.Foreground = (Brush)brushConverter.ConvertFrom("#000080");
-            tableViewLabel.Foreground = Brushes.White;
-            
-        }
-
-        private void OnClickTableView(object sender, MouseButtonEventArgs e)
-        {
-            BrushConverter brushConverter = new BrushConverter();
-
-            listViewScrollViewer.Visibility = Visibility.Collapsed;
-            tableViewScrollViewer.Visibility = Visibility.Visible;
-
-            tableViewBorder.Background = Brushes.White;
-            listViewBorder.Background = (Brush)brushConverter.ConvertFrom("#000080");
-
-            Label listViewLabel = (Label)listViewBorder.Child;
-            Label tableViewLabel = (Label)tableViewBorder.Child;
-
-            listViewLabel.Foreground = Brushes.White;
-            tableViewLabel.Foreground = (Brush)brushConverter.ConvertFrom("#000080");
         }
 
         private void OnBtnClickAdd(object sender, RoutedEventArgs e)
@@ -740,7 +373,7 @@ namespace ntra_missions
             if (!commonQueries.GetComplaints(ref complaints))
                 return;
 
-            InitializeCompaintsStackPanel();
+            RebuildRows();
         }
 
         private void OnCheckSearchCheckBox(object sender, RoutedEventArgs e)
@@ -777,6 +410,7 @@ namespace ntra_missions
             monthComboBox.SelectedIndex = -1;
             monthComboBox.IsEnabled = false;
         }
+
         private void OnCheckCompanyCheckBox(object sender, RoutedEventArgs e)
         {
             companyComboBox.IsEnabled = true;
@@ -787,27 +421,6 @@ namespace ntra_missions
         {
             companyComboBox.SelectedIndex = -1;
             companyComboBox.IsEnabled = false;
-        }
-
-        private void OnTextChangedSearchTextBox(object sender, TextChangedEventArgs e)
-        {
-            InitializeCompaintsStackPanel();
-        }
-
-        private void OnSelChangedYearCombo(object sender, SelectionChangedEventArgs e)
-        {
-            InitializeCompaintsStackPanel();
-        }
-
-        private void OnSelChangedMonthCombo(object sender, SelectionChangedEventArgs e)
-        {
-            InitializeCompaintsStackPanel();
-        }
-
-
-        private void OnSelChangedCompanyCombo(object sender, SelectionChangedEventArgs e)
-        {
-            InitializeCompaintsStackPanel();
         }
 
         private void OnCheckStatusCheckBox(object sender, RoutedEventArgs e)
@@ -822,9 +435,29 @@ namespace ntra_missions
             statusComboBox.IsEnabled = false;
         }
 
+        private void OnTextChangedSearchTextBox(object sender, TextChangedEventArgs e)
+        {
+            RefreshView();
+        }
+
+        private void OnSelChangedYearCombo(object sender, SelectionChangedEventArgs e)
+        {
+            RefreshView();
+        }
+
+        private void OnSelChangedMonthCombo(object sender, SelectionChangedEventArgs e)
+        {
+            RefreshView();
+        }
+
+        private void OnSelChangedCompanyCombo(object sender, SelectionChangedEventArgs e)
+        {
+            RefreshView();
+        }
+
         private void OnSelChangedStatusCombo(object sender, SelectionChangedEventArgs e)
         {
-            InitializeCompaintsStackPanel();
+            RefreshView();
         }
 
         private void OnBtnClickImport(object sender, RoutedEventArgs e)
@@ -833,10 +466,8 @@ namespace ntra_missions
 
             if (fileDialog.ShowDialog() == DialogResult.OK)
             {
-
                 String filePath = fileDialog.FileNames[0];
                 String fileName = System.IO.Path.GetFileName(filePath);
-
 
                 ExcelExport excelExport = new ExcelExport();
                 excelExport.ImportComplaint(fileName, filePath, ref loggedInUser);
@@ -844,19 +475,13 @@ namespace ntra_missions
                 if (!commonQueries.GetComplaints(ref complaints))
                     return;
 
-                InitializeCompaintsStackPanel();
+                RebuildRows();
             }
         }
 
         private void OnBtnClickformat(object sender, RoutedEventArgs e)
         {
             Process.Start("\\\\GIZA-ASAMEH\\Giza Software\\Excel formats\\complaint format.xlsx");
-        }
-
-        private void RepeatersMenueSelection(object sender, RoutedEventArgs e)
-        {
-            RepeatersPage repeatersPage = new RepeatersPage(ref loggedInUser);
-            NavigationService.Navigate(repeatersPage);
         }
     }
 }

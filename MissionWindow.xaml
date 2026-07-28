@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ntra_missions"
         mc:Ignorable="d"
-        Title="MissionWindow" MinHeight="800" Height="800" MinWidth="1200" Width="1200" Background="LightGray" WindowState="Maximized">
+        Title="MissionWindow" MinHeight="800" Height="800" MinWidth="1200" Width="1200" Background="#F2F4F9" WindowState="Maximized">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="100"/>
@@ -15,7 +15,7 @@
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0" Background="#000080">
-            <Image Source="Photos\NTRA_white1.png" VerticalAlignment="Center" Height="200"  HorizontalAlignment="Left"/>
+            <Image Source="Photos\NTRA_white1.png" VerticalAlignment="Center" Height="70"  HorizontalAlignment="Left" Margin="16,0,0,0"/>
             <Label Name="headerLabel" Content="Mission" Style="{StaticResource headerLabelStyle}" HorizontalAlignment="Center"/>
         </Grid>
 
@@ -195,7 +195,7 @@
                     <TextBox Name="commentTextBox" Style="{StaticResource largeTextboxStyle}"/>
                 </WrapPanel>
 
-                <Border Grid.Row="3" BorderThickness="3" Margin="12" Grid.ColumnSpan="3" Background="White">
+                <Border Grid.Row="3" BorderThickness="1" BorderBrush="#DDE2EE" CornerRadius="12" Margin="12" Grid.ColumnSpan="3" Background="White">
                     <Grid Name="complaintGrid" Margin="0,12,0,0">
                         <Grid.RowDefinitions>
                             <RowDefinition/>

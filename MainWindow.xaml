@@ -5,5 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ntra_missions"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="1200" WindowState="Maximized" Background="LightGray" >
+        Title="Spectrum Monitoring CRM" Height="600" Width="1200" WindowState="Maximized"
+        ShowsNavigationUI="False" Background="#F2F4F9" >
 </NavigationWindow>

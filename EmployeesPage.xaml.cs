@@ -1,19 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ntra_missions
 {
@@ -38,7 +28,6 @@ namespace ntra_missions
             loggedInUser = mLoggedInUser;
             selectedEmployee = new Employee();
 
-
             commonQueries = new CommonQueries();
 
             departments = new List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT>();
@@ -48,11 +37,11 @@ namespace ntra_missions
 
             InitializeComponent();
 
+            pageHeader.Attach(loggedInUser);
+
             InitializeDepartmentsCombo();
             InitializeTitlesCombo();
             InitializePositionsCombo();
-
-            userNameLabel.Content = "Username: " + loggedInUser.GetEmployeeUserName();
 
             if (!commonQueries.GetEngineers(ref employees))
                 return;
@@ -64,31 +53,27 @@ namespace ntra_missions
             {
                 employeeSelectionStackPanel.Visibility = Visibility.Visible;
                 mainLabel.Content = "Manager Profile";
+                pageHeader.Title = "Manager Profile";
             }
-
-
         }
 
         private void InitializeEmployeeCombo()
         {
             employeeCombo.Items.Clear();
 
-            for(int i = 0; i < employees.Count; i++)
-            {
+            for (int i = 0; i < employees.Count; i++)
                 employeeCombo.Items.Add(employees[i].username);
-            }
 
             employeeCombo.SelectedIndex = employees.FindIndex(x1 => x1.employee_id == loggedInUser.GetEmployeeId());
         }
+
         private bool InitializeDepartmentsCombo()
         {
             if (!commonQueries.GetDepartments(ref departments))
                 return false;
 
-            for(int i = 0; i < departments.Count; i++)
-            {
+            for (int i = 0; i < departments.Count; i++)
                 employeeDepartmentComboBox.Items.Add(departments[i].value);
-            }
 
             return true;
         }
@@ -99,9 +84,7 @@ namespace ntra_missions
                 return false;
 
             for (int i = 0; i < titles.Count; i++)
-            {
                 employeeTitleComboBox.Items.Add(titles[i].value);
-            }
 
             return true;
         }
@@ -112,9 +95,7 @@ namespace ntra_missions
                 return false;
 
             for (int i = 0; i < positions.Count; i++)
-            {
                 employeePositionComboBox.Items.Add(positions[i].value);
-            }
 
             return true;
         }
@@ -127,105 +108,36 @@ namespace ntra_missions
             employeePositionComboBox.SelectedIndex = positions.FindIndex(x1 => x1.key == selectedEmployee.GetEmployeePositionId());
             employeeEmailTextBox.Text = selectedEmployee.GetEmployeeEmail();
 
+            // first phone lives in the fixed textbox; extra phones get their own boxes
+            while (telephoneWrapPanel.Children.Count > 1)
+                telephoneWrapPanel.Children.RemoveAt(telephoneWrapPanel.Children.Count - 1);
+
             employeePhoneTextBox.Text = selectedEmployee.GetEmployeePhones()[0];
 
             if (selectedEmployee.GetEmployeePhones().Count > 1)
             {
                 for (int i = 1; i < selectedEmployee.GetEmployeePhones().Count; i++)
-                {
-                    TextBox textBox = new TextBox();
-                    textBox.Style = (Style)FindResource("textboxStyle");
-                    textBox.Margin = new Thickness(12, 0, 0, 0);
-                    textBox.Text = selectedEmployee.GetEmployeePhones()[i];
-
-                    telephoneWrapPanel.Children.Add(textBox);
-                }
+                    AddPhoneTextBox(selectedEmployee.GetEmployeePhones()[i], true);
             }
         }
 
-        private void MouseEnterMainMenu(object sender, MouseEventArgs e)
+        private void AddPhoneTextBox(string text, bool isReadOnly)
         {
-            mainMenuGrid.Background = SystemColors.ActiveBorderBrush;
-        }
+            TextBox textBox = new TextBox();
+            textBox.Style = (Style)FindResource("textboxStyle");
+            textBox.Width = 250;
+            textBox.HorizontalAlignment = HorizontalAlignment.Left;
+            textBox.Margin = new Thickness(12, 0, 0, 0);
+            textBox.Text = text;
+            textBox.IsReadOnly = isReadOnly;
+            textBox.PreviewTextInput += NumberValidationTextBox;
 
-        private void MouseLeaveMainMenu(object sender, MouseEventArgs e)
-        {
-            mainMenuGrid.Background = Brushes.LightGray;
-        }
-        private void OnClickMainMenu(object sender, MouseButtonEventArgs e)
-        {
-            if (tabMenuButton.ContextMenu.IsOpen == false)
-                tabMenuButton.ContextMenu.IsOpen = true;
-            else
-                tabMenuButton.ContextMenu.IsOpen = false;
-        }
-
-        private void DashboardMenuSelection(object sender, RoutedEventArgs e)
-        {
-            DashBoard dashBoard = new DashBoard(ref loggedInUser);
-            NavigationService.Navigate(dashBoard);
-        }
-
-        private void CompanyMenuSelection(object sender, RoutedEventArgs e)
-        {
-            CompaniesPage companiesPage = new CompaniesPage(ref loggedInUser);
-            NavigationService.Navigate(companiesPage);
-        }
-
-
-        private void CompanyEquipmentMenuSelection(object sender, RoutedEventArgs e)
-        {
-            CompanyEquipmentPage companyEquipmentPage = new CompanyEquipmentPage(ref loggedInUser);
-            NavigationService.Navigate(companyEquipmentPage);
-        }
-
-        private void SitesMenuSelection(object sender, RoutedEventArgs e)
-        {
-            SitesPage sitesPage = new SitesPage(ref loggedInUser);
-            NavigationService.Navigate(sitesPage);
-        }
-
-        private void emfMenuSelection(object sender, RoutedEventArgs e)
-        {
-            EMFPage emfPage = new EMFPage(ref loggedInUser);
-            NavigationService.Navigate(emfPage);
-        }
-
-        private void ComplaintsMenuSelection(object sender, RoutedEventArgs e)
-        {
-            ComplaintsPage complaintsPage = new ComplaintsPage(ref loggedInUser);
-            NavigationService.Navigate(complaintsPage);
-        }
-
-        private void InspectionMenuSelection(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void MonitoringMissionsMenuSelection(object sender, RoutedEventArgs e)
-        {
-            MissionsPage missionsPage = new MissionsPage(ref loggedInUser);
-            NavigationService.Navigate(missionsPage);
-        }
-
-        private void OnClickChangePasswordButton(object sender, RoutedEventArgs e)
-        {
-            ChangePasswordWindow changePasswordWindow = new ChangePasswordWindow(ref loggedInUser);
-            changePasswordWindow.Show();
-        }
-
-        private void OnClickLogoutButton(object sender, RoutedEventArgs e)
-        {
-            SignInWindow signInWindow = new SignInWindow();
-            signInWindow.Show();
-
-            NavigationWindow parentWindow = (NavigationWindow)this.Parent;
-            parentWindow.Close();
+            telephoneWrapPanel.Children.Add(textBox);
         }
 
         private void OnBtnClickEdit(object sender, RoutedEventArgs e)
         {
-            if(edit == false)
+            if (edit == false)
             {
                 addTelephoneButton.IsEnabled = true;
                 removeTelephoneButton.IsEnabled = true;
@@ -239,7 +151,7 @@ namespace ntra_missions
                 employeePositionComboBox.IsEnabled = true;
                 employeeEmailTextBox.IsReadOnly = false;
 
-                for(int i = 1; i < telephoneWrapPanel.Children.Count; i++)
+                for (int i = 0; i < telephoneWrapPanel.Children.Count; i++)
                 {
                     TextBox currentTextBox = (TextBox)telephoneWrapPanel.Children[i];
                     currentTextBox.IsReadOnly = false;
@@ -251,8 +163,6 @@ namespace ntra_missions
                 removeTelephoneButton.IsEnabled = false;
                 edit = false;
                 editButton.Content = "Edit Info";
-
-                ////update info here
 
                 selectedEmployee.SetEmployeeName(employeeNameTextBox.Text);
 
@@ -269,7 +179,7 @@ namespace ntra_missions
 
                 List<String> tempPhones = new List<string>();
 
-                for(int i = 1; i < telephoneWrapPanel.Children.Count; i++)
+                for (int i = 0; i < telephoneWrapPanel.Children.Count; i++)
                 {
                     TextBox currentTextBox = (TextBox)telephoneWrapPanel.Children[i];
                     tempPhones.Add(currentTextBox.Text);
@@ -286,13 +196,13 @@ namespace ntra_missions
                 if (!selectedEmployee.InsertIntoEmployeeTelephones())
                     return;
 
-                if(selectedEmployee.GetEmployeeId() == loggedInUser.GetEmployeeId())
+                if (selectedEmployee.GetEmployeeId() == loggedInUser.GetEmployeeId())
                 {
-                    if(!loggedInUser.InitializeEmployeeInfo(selectedEmployee.GetEmployeeId()))
+                    if (!loggedInUser.InitializeEmployeeInfo(selectedEmployee.GetEmployeeId()))
                     {
                         MessageBox.Show("Server connection failed! Check your internet connection.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
-                    }    
+                    }
                 }
 
                 employeeNameTextBox.IsReadOnly = true;
@@ -301,7 +211,7 @@ namespace ntra_missions
                 employeePositionComboBox.IsEnabled = false;
                 employeeEmailTextBox.IsReadOnly = true;
 
-                for (int i = 1; i < telephoneWrapPanel.Children.Count; i++)
+                for (int i = 0; i < telephoneWrapPanel.Children.Count; i++)
                 {
                     TextBox currentTextBox = (TextBox)telephoneWrapPanel.Children[i];
                     currentTextBox.IsReadOnly = true;
@@ -311,19 +221,9 @@ namespace ntra_missions
 
         private void OnBtnClickAddTelephone(object sender, RoutedEventArgs e)
         {
-            if (telephoneWrapPanel.Children.Count <= 3)
+            if (telephoneWrapPanel.Children.Count <= 2)
             {
-                BrushConverter brushConverter = new BrushConverter();
-
-                TextBox textBox = new TextBox();
-                textBox.Style = (Style)FindResource("textboxStyle");
-                textBox.Width = 250;
-                textBox.Margin = new Thickness(12, 0, 0, 0);
-                textBox.FontWeight = FontWeights.Bold;
-                textBox.Foreground = (Brush)brushConverter.ConvertFrom("#000080");
-                textBox.PreviewTextInput += NumberValidationTextBox;
-
-                telephoneWrapPanel.Children.Add(textBox);
+                AddPhoneTextBox("", false);
             }
             else
             {
@@ -333,7 +233,7 @@ namespace ntra_missions
 
         private void OnBtnClickRemoveTelephone(object sender, RoutedEventArgs e)
         {
-            if(telephoneWrapPanel.Children.Count == 2)
+            if (telephoneWrapPanel.Children.Count == 1)
             {
                 MessageBox.Show("Min number of telephones per user reached!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
@@ -349,11 +249,9 @@ namespace ntra_missions
             e.Handled = regex.IsMatch(e.Text);
         }
 
-        
-
         private void OnSelChangedEmployeeComboBox(object sender, SelectionChangedEventArgs e)
         {
-            if(employeeCombo.SelectedIndex != -1 && edit == false)
+            if (employeeCombo.SelectedIndex != -1 && edit == false)
             {
                 if (selectedEmployee.GetEmployeeId() != employees[employeeCombo.SelectedIndex].employee_id)
                 {
@@ -361,7 +259,6 @@ namespace ntra_missions
                     {
                         MessageBox.Show("Server connection failed! Please check your internet connection.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         employeeCombo.SelectedIndex = employees.FindIndex(x1 => x1.employee_id == loggedInUser.GetEmployeeId());
-
                     }
                     SetPersonalInfo();
                 }
@@ -374,12 +271,6 @@ namespace ntra_missions
                     employeeCombo.SelectedIndex = employees.FindIndex(x1 => x1.employee_id == selectedEmployee.GetEmployeeId());
                 }
             }
-        }
-
-        private void RepeatersMenueSelection(object sender, RoutedEventArgs e)
-        {
-            RepeatersPage repeatersPage = new RepeatersPage(ref loggedInUser);
-            NavigationService.Navigate(repeatersPage);
         }
     }
 }

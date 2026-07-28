@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ntra_missions"
         mc:Ignorable="d"
-        Title="Sign In Window" MinHeight="550" MinWidth="600" WindowState="Normal" Background="LightGray">
+        Title="Sign In" MinHeight="550" MinWidth="600" WindowState="Normal"
+        ShowsNavigationUI="False" Background="#F2F4F9">
     
 </NavigationWindow>

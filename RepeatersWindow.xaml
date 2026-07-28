@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ntra_missions"
         mc:Ignorable="d"
-        Title="Repeaters Window" Height="600" Width="800" Background="LightGray">
+        Title="Repeaters Window" Height="600" Width="800" Background="#F2F4F9">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="100"/>
@@ -14,7 +14,7 @@
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0" Background="{StaticResource navyblue}">
-            <Image Source="Photos\NTRA_white1.png" VerticalAlignment="Center" Height="200"  HorizontalAlignment="Left"/>
+            <Image Source="Photos\NTRA_white1.png" VerticalAlignment="Center" Height="70"  HorizontalAlignment="Left" Margin="16,0,0,0"/>
             <Label Name="headerLabel" Content="Repeaters" Style="{StaticResource headerLabelStyle}" HorizontalAlignment="Center"/>
         </Grid>
 

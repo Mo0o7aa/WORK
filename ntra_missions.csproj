@@ -92,6 +92,7 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Management" />
     <Reference Include="System.Numerics" />
@@ -168,6 +169,15 @@
       <DependentUpon>MissionFeedbackWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Missions.cs" />
+    <Compile Include="GenerateKMZ.cs" />
+    <Compile Include="GoogleMapsToExcel.cs" />
+    <Compile Include="MapLinkWindow.xaml.cs">
+      <DependentUpon>MapLinkWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="RowModels.cs" />
+    <Compile Include="PageHeader.xaml.cs">
+      <DependentUpon>PageHeader.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MissionsPage.xaml.cs">
       <DependentUpon>MissionsPage.xaml</DependentUpon>
     </Compile>
@@ -275,6 +285,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MissionsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="PageHeader.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MapLinkWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

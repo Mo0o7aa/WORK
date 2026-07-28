@@ -14,7 +14,7 @@
         </Grid.RowDefinitions>
         
         <Grid Grid.Row="0" Background="#000080">
-            <Image Source="Photos\NTRA_white1.png" VerticalAlignment="Center" Height="200"  HorizontalAlignment="Left"/>
+            <Image Source="Photos\NTRA_white1.png" VerticalAlignment="Center" Height="70"  HorizontalAlignment="Left" Margin="16,0,0,0"/>
             <Label Name="headerLabel" Content="Mission Feedback" Style="{StaticResource headerLabelStyle}" HorizontalAlignment="Center"/>
         </Grid>
 

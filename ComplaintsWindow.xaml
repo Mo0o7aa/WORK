@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ntra_missions"
         mc:Ignorable="d"
-        Title="Complaints Window" Height="800" Width="800" ResizeMode="NoResize" Background="LightGray" WindowStartupLocation="CenterScreen">
+        Title="Complaints Window" Height="800" Width="800" ResizeMode="NoResize" Background="#F2F4F9" WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="100"/>
@@ -14,7 +14,7 @@
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0" Background="#000080">
-            <Image Source="Photos\NTRA_white1.png" VerticalAlignment="Center" Height="200"  HorizontalAlignment="Left"/>
+            <Image Source="Photos\NTRA_white1.png" VerticalAlignment="Center" Height="70"  HorizontalAlignment="Left" Margin="16,0,0,0"/>
             <Label Name="headerLabel" Content="Complaint" Style="{StaticResource headerLabelStyle}" HorizontalAlignment="Center"/>
         </Grid>
 
@@ -54,7 +54,7 @@
                 </WrapPanel>
 
 
-                <Border Name="filtersBorder" Grid.Row="0" Grid.ColumnSpan="2" BorderThickness="3" BorderBrush="#000080" CornerRadius="20" Margin="12">
+                <Border Name="filtersBorder" Grid.Row="0" Grid.ColumnSpan="2" BorderThickness="1" BorderBrush="#DDE2EE" CornerRadius="12" Margin="12" Background="White">
                     <StackPanel Name="filtersStackPanel" >
 
                         <WrapPanel Name="searchWrapPanel" Grid.Row="2" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -112,7 +112,7 @@
                         <RowDefinition />
                     </Grid.RowDefinitions>
                     
-                    <Border BorderThickness="3" BorderBrush="#000080" CornerRadius="20" Margin="12" Name="firstSiteBorder" VerticalAlignment="Top">
+                    <Border BorderThickness="1" BorderBrush="#DDE2EE" CornerRadius="12" Margin="12" Name="firstSiteBorder" VerticalAlignment="Top" Background="White">
                         <Grid Name="firstSiteGrid">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>

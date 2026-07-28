@@ -67,26 +67,17 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="ntra_missions.exe" size="3230208">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="ntra_missions.exe" size="3237888">
       <assemblyIdentity name="ntra_missions" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>PiEGnrSsWVQ9xDrll0bAH3fd08odo31MD7Fn0j6qHHE=</dsig:DigestValue>
+        <dsig:DigestValue>kY0mq56YoJo9d8w6bwLzxKn5zZREGGm+iDhsIDnJ5W0=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
-  <file name="ntra_missions.exe.config" size="2681">
-    <hash>
-      <dsig:Transforms>
-        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
-      </dsig:Transforms>
-      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>xFJOOjtV9Ym4TY0RPykN6+hQkpCw0YFcvLyCEt3LzKA=</dsig:DigestValue>
-    </hash>
-  </file>
   <file name="NTRA1.ico" size="493445">
     <hash>
       <dsig:Transforms>
@@ -94,6 +85,15 @@
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
       <dsig:DigestValue>j3ibvTF/1UFnNKjQFwvk9gjVL9+kh+hsUnQ9E8o+Zq0=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="ntra_missions.exe.config" size="2681">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>xFJOOjtV9Ym4TY0RPykN6+hQkpCw0YFcvLyCEt3LzKA=</dsig:DigestValue>
     </hash>
   </file>
 </asmv1:assembly>

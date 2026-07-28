@@ -1,0 +1,40 @@
+<Window x:Class="ntra_missions.MapLinkWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ntra_missions"
+        mc:Ignorable="d"
+        Title="Google Map to Excel" Width="640" SizeToContent="Height" ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen" Background="#F2F4F9">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="70"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Border Background="{StaticResource BrandBrush}">
+            <Grid Margin="16,0">
+                <Image Source="Photos\NTRA_white1.png" VerticalAlignment="Center" Height="50" HorizontalAlignment="Left"/>
+                <TextBlock Text="Google Map → Excel" Foreground="White" FontFamily="{StaticResource AppFont}"
+                           FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="1" Style="{StaticResource CardBorder}" Margin="20,16" Padding="20">
+            <StackPanel>
+                <TextBlock Style="{StaticResource FieldLabelText}" TextWrapping="Wrap"
+                           Text="Paste the share link of your Google Maps saved list (Share -> create link) or a My Maps map. All its points will be exported to Excel with name, latitude, longitude and description."/>
+
+                <TextBlock Text="Map share link" Style="{StaticResource FieldLabelText}" Margin="0,14,0,4"/>
+                <TextBox Name="linkTextBox" Style="{StaticResource ModernTextBoxBase}"/>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,18,0,0">
+                    <Button Name="convertButton" Style="{StaticResource PrimaryButton}" Content="Convert to Excel"
+                            Click="OnClickConvert" Margin="6,0"/>
+                    <Button Style="{StaticResource SecondaryButton}" Content="Close" Click="OnClickClose" Margin="6,0"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

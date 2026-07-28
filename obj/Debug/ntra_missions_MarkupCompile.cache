@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-D:\NTRA\WORK\obj\Debug\
+D:\Interference NTRA\WORK\obj\Debug\
 ntra_missions
 none
 false
 DEBUG;TRACE
-D:\NTRA\WORK\App.xaml
-24-840530955
+D:\Interference NTRA\WORK\App.xaml
+262051013648
 
-43-98103886
-26105615348
-ChangePasswordWindow.xaml;CompaniesPage.xaml;CompanyEquipmentPage.xaml;CompanyEquipmentWindow.xaml;CompanyWindow.xaml;ComplaintsHistoryWindow.xaml;ComplaintsPage.xaml;ComplaintsWindow.xaml;DashBoard.xaml;EMFPage.xaml;EMFPlanWindow.xaml;EMFWindow.xaml;EmployeesPage.xaml;MainWindow.xaml;MissionFeedbackWindow.xaml;MissionsPage.xaml;MissionWindow.xaml;RepeatersPage.xaml;RepeatersWindow.xaml;SignInPage.xaml;SignInWindow.xaml;SignUpPage.xaml;SitesPage.xaml;SiteWindow.xaml;
+48-1884268315
+271938628453
+ChangePasswordWindow.xaml;CompaniesPage.xaml;CompanyEquipmentPage.xaml;CompanyEquipmentWindow.xaml;CompanyWindow.xaml;ComplaintsHistoryWindow.xaml;ComplaintsPage.xaml;ComplaintsWindow.xaml;DashBoard.xaml;EMFPage.xaml;EMFPlanWindow.xaml;EMFWindow.xaml;EmployeesPage.xaml;MainWindow.xaml;MissionFeedbackWindow.xaml;MissionsPage.xaml;PageHeader.xaml;MapLinkWindow.xaml;MissionWindow.xaml;RepeatersPage.xaml;RepeatersWindow.xaml;SignInPage.xaml;SignInWindow.xaml;SignUpPage.xaml;SitesPage.xaml;SiteWindow.xaml;
 
 False
 
