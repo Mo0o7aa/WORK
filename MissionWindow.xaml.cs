@@ -89,6 +89,7 @@ namespace ntra_missions
                 SetUIValues();
                 finishButton.IsEnabled = false;
                 headerLabel.Content = "View Mission";
+                addAllSitesButton.IsEnabled = false;
             }
 
             if (missionCondition == BASIC_STRUCTS.MISSION_EDIT_CONDITION)
@@ -98,13 +99,19 @@ namespace ntra_missions
                 companyComboBox.IsEnabled = false;
                 ticketComboBox.IsEnabled = false;
                 engineer1ComboBox.IsEnabled = false;
+                addAllSitesButton.IsEnabled = mission.complaint.GetComplaintsSites() != null
+                                           && mission.complaint.GetComplaintsSites().Count > 0;
             }
 
             if(missionCondition == BASIC_STRUCTS.MISSION_ADD_CONDITION)
             {
+                headerLabel.Content = "Add Mission";
+
                 missionStartDatePicker.SelectedDate = DateTime.Today;
                 missionEndDatePicker.SelectedDate = DateTime.Today;
                 engineer1ComboBox.SelectedIndex = engineers.FindIndex(x1 => x1.key == loggedInUser.GetEmployeeId());
+
+                ApplyAddDefaults();
 
                 if(mission.complaint.GetSerial() > 0)
                 {
@@ -116,6 +123,286 @@ namespace ntra_missions
                 }
             }
 
+        }
+
+        // Defaults pre-selected when a new mission is opened, so the operator only
+        // changes what differs from the usual run. Matched by name (spaces and case
+        // ignored) rather than by id, so editing the lookup rows can't silently
+        // point these at the wrong record.
+        private const string DEFAULT_VEHICLE = "land cruiser 13";
+        private const string DEFAULT_REASON_OF_INTERFERENCE = "External";
+        private const string DEFAULT_HANDHELD = "PR100";
+
+        private static string NormalizeName(String mName)
+        {
+            return mName == null ? "" : mName.Replace(" ", "").ToLowerInvariant();
+        }
+
+        private static int FindIndexByName(List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT> mList, String mName)
+        {
+            String target = NormalizeName(mName);
+
+            return mList.FindIndex(x1 => NormalizeName(x1.value).Contains(target));
+        }
+
+        private void ApplyAddDefaults()
+        {
+            // equipment row 1 -> Handheld / PR100
+            // (selecting the type fills the name combo through OnSelChangedTypeCombo)
+            typeComboBox.SelectedIndex = 0;
+
+            int handheldIndex = FindIndexByName(handheld, DEFAULT_HANDHELD);
+            if (handheldIndex != -1)
+                handheldComboBox.SelectedIndex = handheldIndex;
+
+            int vehicleIndex = FindIndexByName(vehichles, DEFAULT_VEHICLE);
+            if (vehicleIndex != -1)
+                vehicleComboBox.SelectedIndex = vehicleIndex;
+
+            int reasonIndex = FindIndexByName(reasonsOfInterference, DEFAULT_REASON_OF_INTERFERENCE);
+            if (reasonIndex != -1)
+                reasonOfInterfereneCombo.SelectedIndex = reasonIndex;
+        }
+
+        // The last child of sitesStacKPanel is always the "+" image, so every
+        // helper below stops at Children.Count - 1.
+        private ComboBox GetSiteComboOfRow(Grid mSiteGrid)
+        {
+            WrapPanel currentSiteWrapPanel = (WrapPanel)mSiteGrid.Children[0];
+
+            return (ComboBox)currentSiteWrapPanel.Children[1];
+        }
+
+        // first site of the complaint that no other row already uses
+        private int FindFirstUnusedSiteIndex(ComboBox mExcludedCombo)
+        {
+            List<String> usedSites = new List<String>();
+
+            for (int i = 0; i < sitesStacKPanel.Children.Count - 1; i++)
+            {
+                Grid currentSiteGrid = sitesStacKPanel.Children[i] as Grid;
+                if (currentSiteGrid == null)
+                    continue;
+
+                ComboBox currentSiteCombo = GetSiteComboOfRow(currentSiteGrid);
+
+                if (currentSiteCombo == mExcludedCombo)
+                    continue;
+
+                if (currentSiteCombo.SelectedItem != null)
+                    usedSites.Add(currentSiteCombo.SelectedItem.ToString());
+            }
+
+            List<BASIC_STRUCTS.SITE_STRUCT> complaintSites = mission.complaint.GetComplaintsSites();
+
+            for (int i = 0; i < complaintSites.Count; i++)
+            {
+                if (!usedSites.Contains(complaintSites[i].site_number))
+                    return i;
+            }
+
+            return -1;
+        }
+
+        private ComboBox FindEmptySiteCombo()
+        {
+            for (int i = 0; i < sitesStacKPanel.Children.Count - 1; i++)
+            {
+                Grid currentSiteGrid = sitesStacKPanel.Children[i] as Grid;
+                if (currentSiteGrid == null)
+                    continue;
+
+                ComboBox currentSiteCombo = GetSiteComboOfRow(currentSiteGrid);
+
+                if (currentSiteCombo.SelectedIndex == -1)
+                    return currentSiteCombo;
+            }
+
+            return null;
+        }
+
+        private void ApplySiteRowDefaults(Grid mSiteGrid)
+        {
+            WrapPanel currentReasonWrapPanel = (WrapPanel)mSiteGrid.Children[1];
+            ComboBox currentReasonCombo = (ComboBox)currentReasonWrapPanel.Children[1];
+
+            if (currentReasonCombo.SelectedIndex == -1)
+            {
+                int reasonIndex = FindIndexByName(reasonsOfInterference, DEFAULT_REASON_OF_INTERFERENCE);
+                if (reasonIndex != -1)
+                    currentReasonCombo.SelectedIndex = reasonIndex;
+            }
+
+            ComboBox currentSiteCombo = GetSiteComboOfRow(mSiteGrid);
+
+            if (currentSiteCombo.SelectedIndex == -1)
+            {
+                int siteIndex = FindFirstUnusedSiteIndex(currentSiteCombo);
+                if (siteIndex != -1)
+                    currentSiteCombo.SelectedIndex = siteIndex;
+            }
+        }
+
+        /// <summary>
+        /// Builds one "Site / Reason / Comment" row.
+        /// The child order is a contract: the save code and the ticket-change
+        /// handler read Children[0..2] and take each WrapPanel's Children[1]
+        /// as the input control.
+        /// </summary>
+        private Grid BuildSiteRow(bool mWithRemoveButton)
+        {
+            Grid newSiteGrid = new Grid();
+            newSiteGrid.Margin = new Thickness(0, 4, 0, 4);
+
+            newSiteGrid.ColumnDefinitions.Add(new ColumnDefinition());
+            newSiteGrid.ColumnDefinitions.Add(new ColumnDefinition());
+            newSiteGrid.ColumnDefinitions.Add(new ColumnDefinition());
+            newSiteGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(50) });
+
+            //////////////SITE//////////////////
+            WrapPanel currentSiteWrapPanel = new WrapPanel();
+            currentSiteWrapPanel.Orientation = Orientation.Vertical;
+            currentSiteWrapPanel.VerticalAlignment = VerticalAlignment.Center;
+            currentSiteWrapPanel.Margin = new Thickness(0, 0, 10, 0);
+
+            Label currentSiteLabel = new Label();
+            currentSiteLabel.Style = (Style)FindResource("labelStyleBlack");
+            currentSiteLabel.Content = "Site";
+            currentSiteLabel.Padding = new Thickness(0, 0, 0, 4);
+
+            ComboBox currentSiteComboBox = new ComboBox();
+            currentSiteComboBox.Style = (Style)FindResource("comboBoxStyle");
+            currentSiteComboBox.Width = double.NaN;
+            currentSiteComboBox.MinWidth = 200;
+            currentSiteComboBox.HorizontalAlignment = HorizontalAlignment.Left;
+            currentSiteComboBox.IsEditable = true;
+            currentSiteComboBox.IsTextSearchEnabled = true;
+            currentSiteComboBox.IsTextSearchCaseSensitive = false;
+
+            for (int i = 0; i < mission.complaint.GetComplaintsSites().Count; i++)
+                currentSiteComboBox.Items.Add(mission.complaint.GetComplaintsSites()[i].site_number);
+
+            currentSiteWrapPanel.Children.Add(currentSiteLabel);
+            currentSiteWrapPanel.Children.Add(currentSiteComboBox);
+
+            //////////////REASON OF INTERFERENCE//////////////////
+            WrapPanel currentInteferenceWrapPanel = new WrapPanel();
+            currentInteferenceWrapPanel.Orientation = Orientation.Vertical;
+            currentInteferenceWrapPanel.VerticalAlignment = VerticalAlignment.Center;
+            currentInteferenceWrapPanel.Margin = new Thickness(10, 0, 10, 0);
+
+            Label currentInteferenceLabel = new Label();
+            currentInteferenceLabel.Style = (Style)FindResource("labelStyleBlack");
+            currentInteferenceLabel.Content = reasonOfIntLabel.Content;
+            currentInteferenceLabel.Padding = new Thickness(0, 0, 0, 4);
+
+            ComboBox currentInteferenceComboBox = new ComboBox();
+            currentInteferenceComboBox.Style = (Style)FindResource("comboBoxStyle");
+            currentInteferenceComboBox.Width = double.NaN;
+            currentInteferenceComboBox.MinWidth = 200;
+            currentInteferenceComboBox.HorizontalAlignment = HorizontalAlignment.Left;
+            FillReasonsOfInterferenceCombo(ref currentInteferenceComboBox);
+
+            currentInteferenceWrapPanel.Children.Add(currentInteferenceLabel);
+            currentInteferenceWrapPanel.Children.Add(currentInteferenceComboBox);
+
+            //////////////COMMENT//////////////////
+            WrapPanel currentCommentsWrapPanel = new WrapPanel();
+            currentCommentsWrapPanel.Orientation = Orientation.Vertical;
+            currentCommentsWrapPanel.VerticalAlignment = VerticalAlignment.Center;
+            currentCommentsWrapPanel.Margin = new Thickness(10, 0, 0, 0);
+
+            Label currentCommentsLabel = new Label();
+            currentCommentsLabel.Style = (Style)FindResource("mediumLabelStyleBlack");
+            currentCommentsLabel.Content = "Comment";
+            currentCommentsLabel.Padding = new Thickness(0, 0, 0, 4);
+
+            TextBox currentCommentsTextBox = new TextBox();
+            currentCommentsTextBox.Style = (Style)FindResource("largeTextboxStyle");
+            currentCommentsTextBox.Width = double.NaN;
+            currentCommentsTextBox.MinWidth = 220;
+            currentCommentsTextBox.Height = 60;
+            currentCommentsTextBox.HorizontalAlignment = HorizontalAlignment.Left;
+
+            currentCommentsWrapPanel.Children.Add(currentCommentsLabel);
+            currentCommentsWrapPanel.Children.Add(currentCommentsTextBox);
+
+            newSiteGrid.Children.Add(currentSiteWrapPanel);
+            Grid.SetColumn(currentSiteWrapPanel, 0);
+
+            newSiteGrid.Children.Add(currentInteferenceWrapPanel);
+            Grid.SetColumn(currentInteferenceWrapPanel, 1);
+
+            newSiteGrid.Children.Add(currentCommentsWrapPanel);
+            Grid.SetColumn(currentCommentsWrapPanel, 2);
+
+            if (mWithRemoveButton)
+            {
+                Image currentRemoveSiteImage = new Image();
+                currentRemoveSiteImage.Source = new BitmapImage(new Uri("Photos/red_cross_icon.png", UriKind.Relative));
+                currentRemoveSiteImage.Height = 34;
+                currentRemoveSiteImage.Width = 34;
+                currentRemoveSiteImage.Cursor = Cursors.Hand;
+                currentRemoveSiteImage.ToolTip = "Remove Site";
+                currentRemoveSiteImage.MouseLeftButtonDown += OnClickRemoveSite;
+
+                newSiteGrid.Children.Add(currentRemoveSiteImage);
+                Grid.SetColumn(currentRemoveSiteImage, 3);
+            }
+
+            return newSiteGrid;
+        }
+
+        private void OnClickAddAllSites(object sender, RoutedEventArgs e)
+        {
+            List<BASIC_STRUCTS.SITE_STRUCT> complaintSites = mission.complaint.GetComplaintsSites();
+
+            if (complaintSites == null || complaintSites.Count == 0)
+            {
+                MessageBox.Show("Select a complaint ticket first!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            Image addSiteImage = (Image)sitesStacKPanel.Children[sitesStacKPanel.Children.Count - 1];
+
+            int addedSites = 0;
+
+            // one pass per remaining site; the loop ends once every site of the
+            // complaint is on a row (duplicates are already rejected on save)
+            for (int guard = 0; guard < complaintSites.Count; guard++)
+            {
+                int nextSiteIndex = FindFirstUnusedSiteIndex(null);
+
+                if (nextSiteIndex == -1)
+                    break;
+
+                // fill a row that has no site picked yet before creating a new one
+                ComboBox targetSiteCombo = FindEmptySiteCombo();
+
+                if (targetSiteCombo == null)
+                {
+                    sitesStacKPanel.Children.Remove(addSiteImage);
+
+                    Grid newSiteGrid = BuildSiteRow(true);
+
+                    sitesStacKPanel.Children.Add(newSiteGrid);
+                    sitesStacKPanel.Children.Add(addSiteImage);
+
+                    ApplySiteRowDefaults(newSiteGrid);
+
+                    targetSiteCombo = GetSiteComboOfRow(newSiteGrid);
+                }
+
+                targetSiteCombo.IsEnabled = true;
+                targetSiteCombo.SelectedIndex = nextSiteIndex;
+
+                addedSites++;
+            }
+
+            if (addedSites == 0)
+                MessageBox.Show("All sites of this complaint are already added.", "Message", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            addSiteImage.BringIntoView();
         }
 
         private void InitializeReasonsOfInterferenceCombo()
@@ -457,90 +744,23 @@ namespace ntra_missions
 
             for(int i = 0; i < mission.GetSites().Count; i++)
             {
-                Grid newSiteGrid = new Grid();
+                bool withRemoveButton = i != 0 && missionCondition == BASIC_STRUCTS.MISSION_EDIT_CONDITION;
 
-                newSiteGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(100) });
+                Grid newSiteGrid = BuildSiteRow(withRemoveButton);
 
-                newSiteGrid.ColumnDefinitions.Add(new ColumnDefinition());
-                newSiteGrid.ColumnDefinitions.Add(new ColumnDefinition());
-                newSiteGrid.ColumnDefinitions.Add(new ColumnDefinition());
-                newSiteGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(50) });
-
-                WrapPanel currentSiteWrapPanel = new WrapPanel();
-                currentSiteWrapPanel.VerticalAlignment = VerticalAlignment.Center;
-                currentSiteWrapPanel.HorizontalAlignment = HorizontalAlignment.Center;
-
-                Label currentSiteLabel = new Label();
-                currentSiteLabel.Style = (Style)FindResource("labelStyleBlack");
-                currentSiteLabel.Content = "Site: ";
-
-                ComboBox currentSiteComboBox = new ComboBox();
-                currentSiteComboBox.Style = (Style)FindResource("comboBoxStyle");
-                currentSiteComboBox.IsEditable = true;
-                currentSiteComboBox.IsTextSearchEnabled = true;
-                currentSiteComboBox.IsTextSearchCaseSensitive = false;
-
-                for (int j = 0; j < mission.complaint.GetComplaintsSites().Count; j++)
+                if (withRemoveButton)
                 {
-                    currentSiteComboBox.Items.Add(mission.complaint.GetComplaintsSites()[j].site_number);
-                }
-
-                currentSiteWrapPanel.Children.Add(currentSiteLabel);
-                currentSiteWrapPanel.Children.Add(currentSiteComboBox);
-
-                
-                WrapPanel currentInteferenceWrapPanel = new WrapPanel();
-                currentInteferenceWrapPanel.VerticalAlignment = VerticalAlignment.Center;
-                currentInteferenceWrapPanel.HorizontalAlignment = HorizontalAlignment.Center;
-
-                Label currentInteferenceLabel = new Label();
-                currentInteferenceLabel.Style = (Style)FindResource("labelStyleBlack");
-                currentInteferenceLabel.Content = reasonOfIntLabel.Content;
-
-                ComboBox currentInteferenceComboBox = new ComboBox();
-                currentInteferenceComboBox.Style = (Style)FindResource("comboBoxStyle");
-                FillReasonsOfInterferenceCombo(ref currentInteferenceComboBox);
-
-                currentInteferenceWrapPanel.Children.Add(currentInteferenceLabel);
-                currentInteferenceWrapPanel.Children.Add(currentInteferenceComboBox);
-
-
-                WrapPanel currentCommentsWrapPanel = new WrapPanel();
-                currentCommentsWrapPanel.VerticalAlignment = VerticalAlignment.Center;
-                currentCommentsWrapPanel.HorizontalAlignment = HorizontalAlignment.Center;
-
-                Label currentCommentsLabel = new Label();
-                currentCommentsLabel.Style = (Style)FindResource("mediumLabelStyleBlack");
-                currentCommentsLabel.Content = "Comments: ";
-
-                TextBox currentCommentsTextBox = new TextBox();
-                currentCommentsTextBox.Style = (Style)FindResource("largeTextboxStyle");
-
-                currentCommentsWrapPanel.Children.Add(currentCommentsLabel);
-                currentCommentsWrapPanel.Children.Add(currentCommentsTextBox);
-
-                newSiteGrid.Children.Add(currentSiteWrapPanel);
-                Grid.SetColumn(currentSiteWrapPanel, 0);
-
-                newSiteGrid.Children.Add(currentInteferenceWrapPanel);
-                Grid.SetColumn(currentInteferenceWrapPanel, 1);
-
-                newSiteGrid.Children.Add(currentCommentsWrapPanel);
-                Grid.SetColumn(currentCommentsWrapPanel, 2);
-
-                if (i != 0 && missionCondition == BASIC_STRUCTS.MISSION_EDIT_CONDITION)
-                {
-                    Image currentRemoveSiteImage = new Image();
-                    currentRemoveSiteImage.Source = new BitmapImage(new Uri("Photos/red_cross_icon.png", UriKind.Relative));
-                    currentRemoveSiteImage.Height = 50;
-                    currentRemoveSiteImage.Width = 50;
-                    currentRemoveSiteImage.ToolTip = "Remove Site";
-                    currentRemoveSiteImage.MouseLeftButtonDown += OnClickRemoveSite;
+                    Image currentRemoveSiteImage = (Image)newSiteGrid.Children[3];
                     currentRemoveSiteImage.Tag = mission.GetSites()[i].site_serial;
-
-                    newSiteGrid.Children.Add(currentRemoveSiteImage);
-                    Grid.SetColumn(currentRemoveSiteImage, 3);
                 }
+
+                ComboBox currentSiteComboBox = GetSiteComboOfRow(newSiteGrid);
+
+                WrapPanel currentInteferenceWrapPanel = (WrapPanel)newSiteGrid.Children[1];
+                ComboBox currentInteferenceComboBox = (ComboBox)currentInteferenceWrapPanel.Children[1];
+
+                WrapPanel currentCommentsWrapPanel = (WrapPanel)newSiteGrid.Children[2];
+                TextBox currentCommentsTextBox = (TextBox)currentCommentsWrapPanel.Children[1];
 
                 currentSiteComboBox.SelectedItem = mission.GetSites()[i].site_name;
                 currentInteferenceComboBox.SelectedItem = mission.GetSites()[i].reason_of_interference;
@@ -554,7 +774,7 @@ namespace ntra_missions
                 }
 
                 sitesStacKPanel.Children.Add(newSiteGrid);
-            }    
+            }
 
             if(missionCondition == BASIC_STRUCTS.MISSION_EDIT_CONDITION)
             {
@@ -862,8 +1082,24 @@ namespace ntra_missions
                         currentSiteCombo.Items.Add(mission.complaint.GetComplaintsSites()[j].site_number);
                     }
 
-                    currentSiteCombo.IsEnabled = true; 
+                    currentSiteCombo.IsEnabled = true;
 
+                }
+
+                addAllSitesButton.IsEnabled = missionCondition != BASIC_STRUCTS.MISSION_VIEW_CONDITION
+                                           && mission.complaint.GetComplaintsSites().Count > 0;
+
+                // on a new mission, start the rows off on the first free site
+                if (missionCondition == BASIC_STRUCTS.MISSION_ADD_CONDITION)
+                {
+                    for (int i = 0; i < sitesStacKPanel.Children.Count - 1; i++)
+                    {
+                        Grid currentSiteGrid = sitesStacKPanel.Children[i] as Grid;
+                        if (currentSiteGrid == null)
+                            continue;
+
+                        ApplySiteRowDefaults(currentSiteGrid);
+                    }
                 }
             }
             else
@@ -878,6 +1114,8 @@ namespace ntra_missions
 
                     currentSiteCombo.IsEnabled = false;
                 }
+
+                addAllSitesButton.IsEnabled = false;
             }
         }
 
@@ -970,90 +1208,13 @@ namespace ntra_missions
 
             currentStackPanel.Children.Remove(currentImage);
 
-            Grid newSiteGrid = new Grid();
-
-            newSiteGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(100)});
-
-            newSiteGrid.ColumnDefinitions.Add(new ColumnDefinition());
-            newSiteGrid.ColumnDefinitions.Add(new ColumnDefinition());
-            newSiteGrid.ColumnDefinitions.Add(new ColumnDefinition());
-            newSiteGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(50)});
-
-            WrapPanel currentSiteWrapPanel = new WrapPanel();
-            currentSiteWrapPanel.VerticalAlignment = VerticalAlignment.Center;
-            currentSiteWrapPanel.HorizontalAlignment = HorizontalAlignment.Center;
-
-            Label currentSiteLabel = new Label();
-            currentSiteLabel.Style = (Style)FindResource("labelStyleBlack");
-            currentSiteLabel.Content = "Site: ";
-            
-            ComboBox currentSiteComboBox = new ComboBox();
-            currentSiteComboBox.Style = (Style)FindResource("comboBoxStyle");
-            currentSiteComboBox.IsEditable = true;
-            currentSiteComboBox.IsTextSearchEnabled = true;
-            currentSiteComboBox.IsTextSearchCaseSensitive = false;
-
-            for(int i = 0; i < mission.complaint.GetComplaintsSites().Count; i++)
-            {
-                currentSiteComboBox.Items.Add(mission.complaint.GetComplaintsSites()[i].site_number);
-            }
-
-            currentSiteWrapPanel.Children.Add(currentSiteLabel);
-            currentSiteWrapPanel.Children.Add(currentSiteComboBox);
-
-
-            WrapPanel currentInteferenceWrapPanel = new WrapPanel();
-            currentInteferenceWrapPanel.VerticalAlignment = VerticalAlignment.Center;
-            currentInteferenceWrapPanel.HorizontalAlignment = HorizontalAlignment.Center;
-
-            Label currentInteferenceLabel = new Label();
-            currentInteferenceLabel.Style = (Style)FindResource("labelStyleBlack");
-            currentInteferenceLabel.Content = reasonOfIntLabel.Content;
-
-            ComboBox currentInteferenceComboBox = new ComboBox();
-            currentInteferenceComboBox.Style = (Style)FindResource("comboBoxStyle");
-            FillReasonsOfInterferenceCombo(ref currentInteferenceComboBox);
-
-            currentInteferenceWrapPanel.Children.Add(currentInteferenceLabel);
-            currentInteferenceWrapPanel.Children.Add(currentInteferenceComboBox);
-
-
-            WrapPanel currentCommentsWrapPanel = new WrapPanel();
-            currentCommentsWrapPanel.VerticalAlignment = VerticalAlignment.Center;
-            currentCommentsWrapPanel.HorizontalAlignment = HorizontalAlignment.Center;
-
-            Label currentCommentsLabel = new Label();
-            currentCommentsLabel.Style = (Style)FindResource("mediumLabelStyleBlack");
-            currentCommentsLabel.Content = "Comments: ";
-
-            TextBox currentCommentsTextBox = new TextBox();
-            currentCommentsTextBox.Style = (Style)FindResource("largeTextboxStyle");
-
-            currentCommentsWrapPanel.Children.Add(currentCommentsLabel);
-            currentCommentsWrapPanel.Children.Add(currentCommentsTextBox);
-
-
-            Image currentRemoveSiteImage = new Image();
-            currentRemoveSiteImage.Source = new BitmapImage(new Uri("Photos/red_cross_icon.png", UriKind.Relative));
-            currentRemoveSiteImage.Height = 50;
-            currentRemoveSiteImage.Width = 50;
-            currentRemoveSiteImage.ToolTip = "Remove Site";
-            currentRemoveSiteImage.MouseLeftButtonDown += OnClickRemoveSite;
-
-            newSiteGrid.Children.Add(currentSiteWrapPanel);
-            Grid.SetColumn(currentSiteWrapPanel, 0);
-            
-            newSiteGrid.Children.Add(currentInteferenceWrapPanel);
-            Grid.SetColumn(currentInteferenceWrapPanel, 1);
-            
-            newSiteGrid.Children.Add(currentCommentsWrapPanel);
-            Grid.SetColumn(currentCommentsWrapPanel, 2);
-
-            newSiteGrid.Children.Add(currentRemoveSiteImage);
-            Grid.SetColumn(currentRemoveSiteImage, 3);
+            Grid newSiteGrid = BuildSiteRow(true);
 
             currentStackPanel.Children.Add(newSiteGrid);
             currentStackPanel.Children.Add(currentImage);
+
+            // pre-fill with the usual reason and the next site that is not taken yet
+            ApplySiteRowDefaults(newSiteGrid);
 
             currentImage.BringIntoView();
         }

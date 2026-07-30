@@ -18,11 +18,24 @@ namespace ntra_missions
         // are no parallel lists to keep in sync
         private readonly List<CheckBox> sectorCheckBoxes;
 
+        // per-site "All" checkbox and the sector boxes it drives
+        private readonly List<SiteSectorGroup> siteGroups;
+
+        // set while a tick is being cascaded so the handlers below don't
+        // re-enter each other (site box -> sectors -> site box -> ...)
+        private bool suppressCascade;
+
         // what each checkbox needs to update its sector in the DB
         private class SectorRef
         {
             public int SiteSerial;
             public string SectorNumber;
+        }
+
+        private class SiteSectorGroup
+        {
+            public CheckBox AllCheckBox;
+            public readonly List<CheckBox> Sectors = new List<CheckBox>();
         }
 
         public MissionFeedbackWindow(ref Employee mLoggedInUser, ref Missions mMission)
@@ -31,6 +44,7 @@ namespace ntra_missions
             mission = mMission;
 
             sectorCheckBoxes = new List<CheckBox>();
+            siteGroups = new List<SiteSectorGroup>();
 
             InitializeComponent();
 
@@ -41,10 +55,13 @@ namespace ntra_missions
         {
             sitesStackPanel.Children.Clear();
             sectorCheckBoxes.Clear();
+            siteGroups.Clear();
 
             for (int i = 0; i < mission.GetSites().Count; i++)
             {
                 int siteSerial = mission.GetSites()[i].site_serial;
+
+                SiteSectorGroup group = new SiteSectorGroup();
 
                 // sectors come from the complaint (they carry sector_number and
                 // the current status used to pre-tick the boxes)
@@ -81,16 +98,35 @@ namespace ntra_missions
                 Grid.SetColumn(siteInfoPanel, 0);
 
                 //////////////SECTORS//////////////////
-                TextBlock currentSectorLabel = new TextBlock
+                StackPanel sectorHeaderPanel = new StackPanel
                 {
-                    Text = "Enhanced sectors:",
-                    Style = (Style)FindResource("FieldLabelText"),
                     VerticalAlignment = VerticalAlignment.Center,
                     Margin = new Thickness(0, 0, 16, 0)
                 };
 
-                currentSiteGrid.Children.Add(currentSectorLabel);
-                Grid.SetColumn(currentSectorLabel, 1);
+                sectorHeaderPanel.Children.Add(new TextBlock
+                {
+                    Text = "Enhanced sectors:",
+                    Style = (Style)FindResource("FieldLabelText")
+                });
+
+                // ticks/unticks every sector of this site in one go
+                CheckBox siteAllCheckBox = new CheckBox();
+                siteAllCheckBox.Style = (Style)FindResource("checkBoxStyle");
+                siteAllCheckBox.Width = double.NaN;
+                siteAllCheckBox.Margin = new Thickness(0, 4, 0, 0);
+                siteAllCheckBox.Cursor = Cursors.Hand;
+                siteAllCheckBox.Content = "All";
+                siteAllCheckBox.ToolTip = "Tick every sector of this site";
+                siteAllCheckBox.Tag = group;
+                siteAllCheckBox.Checked += OnToggleSiteAll;
+                siteAllCheckBox.Unchecked += OnToggleSiteAll;
+
+                group.AllCheckBox = siteAllCheckBox;
+                sectorHeaderPanel.Children.Add(siteAllCheckBox);
+
+                currentSiteGrid.Children.Add(sectorHeaderPanel);
+                Grid.SetColumn(sectorHeaderPanel, 1);
 
                 WrapPanel sectorsInnerPanel = new WrapPanel { VerticalAlignment = VerticalAlignment.Center };
 
@@ -115,6 +151,10 @@ namespace ntra_missions
                         if (sector.sector_status_id == BASIC_STRUCTS.CLEARED_SECTOR_STATUS)
                             currentSectorCheckBox.IsChecked = true;
 
+                        currentSectorCheckBox.Checked += OnToggleSector;
+                        currentSectorCheckBox.Unchecked += OnToggleSector;
+
+                        group.Sectors.Add(currentSectorCheckBox);
                         sectorCheckBoxes.Add(currentSectorCheckBox);
                         sectorsInnerPanel.Children.Add(currentSectorCheckBox);
                     }
@@ -126,7 +166,96 @@ namespace ntra_missions
                 border.Child = currentSiteGrid;
 
                 sitesStackPanel.Children.Add(border);
+
+                // a site with no sectors has nothing to tick
+                siteAllCheckBox.IsEnabled = group.Sectors.Count > 0;
+
+                siteGroups.Add(group);
             }
+
+            SyncParentCheckBoxes();
+        }
+
+        // reflects the sector boxes back onto the per-site and master boxes:
+        // a parent is ticked only when every child under it is ticked
+        private void SyncParentCheckBoxes()
+        {
+            suppressCascade = true;
+
+            bool allSectors = sectorCheckBoxes.Count > 0;
+
+            for (int i = 0; i < siteGroups.Count; i++)
+            {
+                SiteSectorGroup group = siteGroups[i];
+
+                bool allInSite = group.Sectors.Count > 0;
+                for (int j = 0; j < group.Sectors.Count; j++)
+                {
+                    if (group.Sectors[j].IsChecked != true)
+                    {
+                        allInSite = false;
+                        break;
+                    }
+                }
+
+                group.AllCheckBox.IsChecked = allInSite;
+
+                if (!allInSite)
+                    allSectors = false;
+            }
+
+            selectAllCheckBox.IsChecked = allSectors;
+
+            suppressCascade = false;
+        }
+
+        private void OnToggleSelectAll(object sender, RoutedEventArgs e)
+        {
+            if (suppressCascade)
+                return;
+
+            bool ticked = selectAllCheckBox.IsChecked == true;
+
+            suppressCascade = true;
+
+            for (int i = 0; i < sectorCheckBoxes.Count; i++)
+                sectorCheckBoxes[i].IsChecked = ticked;
+
+            for (int i = 0; i < siteGroups.Count; i++)
+            {
+                if (siteGroups[i].Sectors.Count > 0)
+                    siteGroups[i].AllCheckBox.IsChecked = ticked;
+            }
+
+            suppressCascade = false;
+        }
+
+        private void OnToggleSiteAll(object sender, RoutedEventArgs e)
+        {
+            if (suppressCascade)
+                return;
+
+            CheckBox siteAllCheckBox = (CheckBox)sender;
+            SiteSectorGroup group = (SiteSectorGroup)siteAllCheckBox.Tag;
+
+            bool ticked = siteAllCheckBox.IsChecked == true;
+
+            suppressCascade = true;
+
+            for (int i = 0; i < group.Sectors.Count; i++)
+                group.Sectors[i].IsChecked = ticked;
+
+            suppressCascade = false;
+
+            SyncParentCheckBoxes();
+        }
+
+        private void OnToggleSector(object sender, RoutedEventArgs e)
+        {
+            if (suppressCascade)
+                return;
+
+            SyncParentCheckBoxes();
         }
 
         private void OnButtonClickSaveChanges(object sender, RoutedEventArgs e)

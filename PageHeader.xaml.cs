@@ -87,6 +87,11 @@ namespace ntra_missions
                 button.Tag = tag;
                 button.Style = (Style)FindResource(tag == CurrentTag ? "NavPillActive" : "NavPill");
 
+                // Inspection Missions is not in use yet: keep the button (and its
+                // navigation case) in code but collapsed so it takes no space.
+                if (tag == "Inspection")
+                    button.Visibility = Visibility.Collapsed;
+
                 if (tag == CurrentTag)
                     button.IsHitTestVisible = false;
                 else

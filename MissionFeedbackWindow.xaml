@@ -23,8 +23,20 @@
             </Grid>
         </Border>
 
-        <TextBlock Grid.Row="1" Margin="28,18,28,0" TextWrapping="Wrap" Style="{StaticResource FieldLabelText}"
-                   Text="Tick every sector that was enhanced (cleared) during this mission, then Save. Unticked sectors are recorded as still interfered."/>
+        <Grid Grid.Row="1" Margin="28,18,28,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock TextWrapping="Wrap" Style="{StaticResource FieldLabelText}" VerticalAlignment="Center"
+                       Text="Tick every sector that was enhanced (cleared) during this mission, then Save. Unticked sectors are recorded as still interfered."/>
+
+            <CheckBox Grid.Column="1" Name="selectAllCheckBox" Content="Select all sectors" Width="Auto"
+                      Style="{StaticResource checkBoxStyle}" VerticalAlignment="Center" Margin="16,0,0,0"
+                      ToolTip="Tick every sector of every site in this mission"
+                      Checked="OnToggleSelectAll" Unchecked="OnToggleSelectAll"/>
+        </Grid>
 
         <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
             <StackPanel Name="sitesStackPanel" Margin="28,16"/>

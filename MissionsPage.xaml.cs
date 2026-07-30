@@ -30,6 +30,7 @@ namespace ntra_missions
         private List<BASIC_STRUCTS.INTERFERENCE_MISSION_STRUCT> missions;
         private List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT> engineers;
         private List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT> serviceProviders;
+        private List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT> missionStatuses;
 
         private readonly ObservableCollection<MissionRow> missionRows;
         private ICollectionView missionsView;
@@ -42,6 +43,7 @@ namespace ntra_missions
             missions = new List<BASIC_STRUCTS.INTERFERENCE_MISSION_STRUCT>();
             engineers = new List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT>();
             serviceProviders = new List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT>();
+            missionStatuses = new List<BASIC_STRUCTS.KEY_VALUE_PAIR_STRUCT>();
             missionRows = new ObservableCollection<MissionRow>();
 
             loggedInUser = mLoggedInUser;
@@ -59,6 +61,9 @@ namespace ntra_missions
             if (!commonQueries.GetEngineers(ref engineers))
                 return;
 
+            if (!commonQueries.GetMissionStatus(ref missionStatuses))
+                return;
+
             missionsView = CollectionViewSource.GetDefaultView(missionRows);
             missionsView.Filter = FilterMission;
             missionsList.ItemsSource = missionsView;
@@ -67,6 +72,7 @@ namespace ntra_missions
             InitializeMonthCombo();
             InitializeEmployeeCombo();
             InitializeServiceProviderCombo();
+            InitializeStatusCombo();
 
             RebuildRows();
         }
@@ -96,6 +102,12 @@ namespace ntra_missions
         {
             for (int i = 0; i < serviceProviders.Count; i++)
                 serviceProviderComboBox.Items.Add(serviceProviders[i].value);
+        }
+
+        private void InitializeStatusCombo()
+        {
+            for (int i = 0; i < missionStatuses.Count; i++)
+                statusComboBox.Items.Add(missionStatuses[i].value);
         }
 
         private void RebuildRows()
@@ -196,6 +208,12 @@ namespace ntra_missions
             if (serviceProviderCheckBox.IsChecked == true && serviceProviderComboBox.SelectedIndex != -1)
             {
                 if (row.CompanySerial != serviceProviders[serviceProviderComboBox.SelectedIndex].key)
+                    return false;
+            }
+
+            if (statusCheckBox.IsChecked == true && statusComboBox.SelectedIndex != -1)
+            {
+                if (row.StatusId != missionStatuses[statusComboBox.SelectedIndex].key)
                     return false;
             }
 
@@ -458,6 +476,18 @@ namespace ntra_missions
             serviceProviderComboBox.SelectedIndex = -1;
         }
 
+        private void OnCheckStatusCheckBox(object sender, RoutedEventArgs e)
+        {
+            statusComboBox.IsEnabled = true;
+            statusComboBox.SelectedIndex = 0;
+        }
+
+        private void OnUncheckStatusCheckBox(object sender, RoutedEventArgs e)
+        {
+            statusComboBox.IsEnabled = false;
+            statusComboBox.SelectedIndex = -1;
+        }
+
         private void OnTextChangedSearchTextBox(object sender, TextChangedEventArgs e)
         {
             RefreshView();
@@ -479,6 +509,11 @@ namespace ntra_missions
         }
 
         private void OnSelChangedServiceProviderCombo(object sender, SelectionChangedEventArgs e)
+        {
+            RefreshView();
+        }
+
+        private void OnSelChangedStatusCombo(object sender, SelectionChangedEventArgs e)
         {
             RefreshView();
         }

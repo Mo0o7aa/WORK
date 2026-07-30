@@ -100,7 +100,16 @@
         </ScrollViewer>
 
         <ScrollViewer Grid.Row="2" Margin="24,16" Name="interferenceScrollViewer" Visibility="Visible" VerticalScrollBarVisibility="Auto">
-            <Border Style="{StaticResource CardBorder}" Padding="24">
+            <Border Style="{StaticResource CardBorder}" Padding="28,22">
+            <!--
+                NOTE: the code-behind walks this tree by index.
+                  * mainGrid.Children[0..2]  must stay the three engineer grids,
+                    each with Children[0]=CheckBox and Children[1]=ComboBox.
+                  * complaintGrid.Children[0]/[1] must stay the company / ticket
+                    WrapPanels, each with Children[1] = the ComboBox.
+                  * the "+" images must stay the LAST child of their StackPanel.
+                Grid.Row/Column let us lay things out freely without reordering markup.
+            -->
             <Grid Name="mainGrid">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -108,127 +117,207 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="100"/>
-                    <RowDefinition Height="100"/>
-                    <RowDefinition Height="100"/>
-                    <RowDefinition />
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <Grid Grid.Row="0" Grid.Column="0" >
+                <!-- ===== engineer slots: MUST remain children 0,1,2 of mainGrid ===== -->
+                <Grid Grid.Row="1" Grid.Column="0" Margin="0,0,10,0">
                     <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <CheckBox Grid.Row="0" Style="{StaticResource checkBoxStyle2}" Content="Engineer 1" HorizontalAlignment="Center" HorizontalContentAlignment="Center" IsChecked="True" IsEnabled="False"/>
-                    <ComboBox Grid.Row="1" Style="{StaticResource comboBoxStyle}" Name="engineer1ComboBox" SelectionChanged="OnSelChangedEngineer1Combo"/>
+                    <CheckBox Grid.Row="0" Style="{StaticResource checkBoxStyle2}" Content="Engineer 1"
+                              HorizontalAlignment="Left" HorizontalContentAlignment="Left" Width="Auto"
+                              IsChecked="True" IsEnabled="False"/>
+                    <ComboBox Grid.Row="1" Style="{StaticResource comboBoxStyle}" Name="engineer1ComboBox"
+                              Width="Auto" HorizontalAlignment="Stretch" Margin="0,6,0,0"
+                              SelectionChanged="OnSelChangedEngineer1Combo"/>
                 </Grid>
 
-                <Grid Grid.Row="0" Grid.Column="1" >
+                <Grid Grid.Row="1" Grid.Column="1" Margin="10,0">
                     <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <CheckBox Grid.Row="0" Style="{StaticResource checkBoxStyle2}" Name="engineer2CheckBox" Content="Engineer 2" HorizontalAlignment="Center" HorizontalContentAlignment="Center" Checked="OnCheckEngineer2" Unchecked="OnUncheckEngineer2"/>
-                    <ComboBox Grid.Row="1" Style="{StaticResource comboBoxStyle}" Name="engineer2ComboBox" Visibility="Collapsed" SelectionChanged="OnSelChangedEngineer2Combo"/>
+                    <CheckBox Grid.Row="0" Style="{StaticResource checkBoxStyle2}" Name="engineer2CheckBox" Content="Engineer 2"
+                              HorizontalAlignment="Left" HorizontalContentAlignment="Left" Width="Auto"
+                              Checked="OnCheckEngineer2" Unchecked="OnUncheckEngineer2"/>
+                    <ComboBox Grid.Row="1" Style="{StaticResource comboBoxStyle}" Name="engineer2ComboBox"
+                              Width="Auto" HorizontalAlignment="Stretch" Margin="0,6,0,0"
+                              Visibility="Collapsed" SelectionChanged="OnSelChangedEngineer2Combo"/>
                 </Grid>
 
-                <Grid Grid.Row="0" Grid.Column="2" >
+                <Grid Grid.Row="1" Grid.Column="2" Margin="10,0,0,0">
                     <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <CheckBox Grid.Row="0" Style="{StaticResource checkBoxStyle2}" Name="engineer3CheckBox" Content="Engineer 3" HorizontalAlignment="Center" HorizontalContentAlignment="Center" Checked="OnCheckEngineer3" Unchecked="OnUncheckEngineer3"/>
-                    <ComboBox Grid.Row="1" Style="{StaticResource comboBoxStyle}" Name="engineer3ComboBox" Visibility="Collapsed" SelectionChanged="OnSelChangedEngineer3Combo"/>
+                    <CheckBox Grid.Row="0" Style="{StaticResource checkBoxStyle2}" Name="engineer3CheckBox" Content="Engineer 3"
+                              HorizontalAlignment="Left" HorizontalContentAlignment="Left" Width="Auto"
+                              Checked="OnCheckEngineer3" Unchecked="OnUncheckEngineer3"/>
+                    <ComboBox Grid.Row="1" Style="{StaticResource comboBoxStyle}" Name="engineer3ComboBox"
+                              Width="Auto" HorizontalAlignment="Stretch" Margin="0,6,0,0"
+                              Visibility="Collapsed" SelectionChanged="OnSelChangedEngineer3Combo"/>
                 </Grid>
 
-                <WrapPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center">
-                    <Label Content="Vehicle: " Style="{StaticResource mediumLabelStyleBlack}"/>
-                    <ComboBox Name="vehicleComboBox" Style="{StaticResource comboBoxStyle}" SelectionChanged="OnSelChangedVehicleCombo"/>
-                </WrapPanel>
+                <!-- ===== everything below is free to be reordered ===== -->
 
-                <WrapPanel Grid.Row="1" Grid.Column="2" VerticalAlignment="Center">
-                    <Label Content="Status: " Style="{StaticResource mediumLabelStyleBlack}"/>
-                    <ComboBox Name="statusComboBox" Style="{StaticResource comboBoxStyle}" SelectionChanged="OnSelChangedStatusCombo" />
-                </WrapPanel>
-
-                <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" VerticalScrollBarVisibility="Auto" Margin="12">
-                    
-                        <StackPanel Name="equipmentStackPanel">
-                            <Grid >
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition Width="30"/>
-                                </Grid.ColumnDefinitions>
-
-                                <Label Grid.Row="0" Grid.Column="0" Style="{StaticResource mediumLabelStyleBlack}" Content="Type" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center"/>
-                                <Label Grid.Row="0" Grid.Column="1" Style="{StaticResource mediumLabelStyleBlack}" Content="Name" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center"/>
-
-                            </Grid>
-
-                            <Grid Height="70">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition Width="30"/>
-                                </Grid.ColumnDefinitions>
-
-                                <ComboBox Grid.Row="1" Grid.Column="0" Name="typeComboBox" Style="{StaticResource miniComboBoxStyle}" SelectionChanged="OnSelChangedTypeCombo"/>
-                                <ComboBox Grid.Row="1" Grid.Column="1" Name="handheldComboBox" Style="{StaticResource miniComboBoxStyle}" IsEnabled="False"/>
-
-                            </Grid>
-
-                            <Image Source="Photos/plus_icon.png" Grid.Row="2" Grid.ColumnSpan="2" Height="30" Width="30" VerticalAlignment="Center" HorizontalAlignment="Center" ToolTip="Add Item" MouseLeftButtonDown="OnClickAddEquipment" Margin="12"/>
-
-                        </StackPanel>
-                </ScrollViewer>
-
-                <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Vertical">
-                    <WrapPanel  VerticalAlignment="Center" Margin="12">
-                        <Label Content="Start Date: " Style="{StaticResource mediumLabelStyleBlack}"/>
-                        <DatePicker Name="missionStartDatePicker" Style="{StaticResource datePickerStyle}" IsTodayHighlighted="True"/>
-                    </WrapPanel>
-                    <WrapPanel  VerticalAlignment="Center" Margin="12">
-                        <Label Content="End Date: " Style="{StaticResource mediumLabelStyleBlack}"/>
-                        <DatePicker Name="missionEndDatePicker" Style="{StaticResource datePickerStyle}" IsTodayHighlighted="True"/>
-                    </WrapPanel>
+                <!-- section: team -->
+                <StackPanel Grid.Row="0" Grid.ColumnSpan="3" Margin="0,0,0,12">
+                    <TextBlock Text="Mission Team" Style="{StaticResource CardTitleText}"/>
+                    <Border Height="1" Background="{StaticResource CardBorderBrush}" Margin="0,8,0,0"/>
                 </StackPanel>
 
+                <!-- section: details -->
+                <StackPanel Grid.Row="2" Grid.ColumnSpan="3" Margin="0,26,0,12">
+                    <TextBlock Text="Mission Details" Style="{StaticResource CardTitleText}"/>
+                    <Border Height="1" Background="{StaticResource CardBorderBrush}" Margin="0,8,0,0"/>
+                </StackPanel>
 
-                <WrapPanel Grid.Row="2" Grid.Column="2" VerticalAlignment="Center">
-                    <Label Content="Comments: " Style="{StaticResource mediumLabelStyleBlack}"/>
-                    <TextBox Name="commentTextBox" Style="{StaticResource largeTextboxStyle}"/>
-                </WrapPanel>
+                <StackPanel Grid.Row="3" Grid.Column="0" Margin="0,0,10,0">
+                    <TextBlock Text="Vehicle" Style="{StaticResource FieldLabelText}"/>
+                    <ComboBox Name="vehicleComboBox" Style="{StaticResource comboBoxStyle}"
+                              Width="Auto" HorizontalAlignment="Stretch" Margin="0,6,0,0"
+                              SelectionChanged="OnSelChangedVehicleCombo"/>
+                </StackPanel>
 
-                <Border Grid.Row="3" BorderThickness="1" BorderBrush="#DDE2EE" CornerRadius="12" Margin="12" Grid.ColumnSpan="3" Background="White">
-                    <Grid Name="complaintGrid" Margin="0,12,0,0">
+                <StackPanel Grid.Row="3" Grid.Column="1" Margin="10,0">
+                    <TextBlock Text="Status" Style="{StaticResource FieldLabelText}"/>
+                    <ComboBox Name="statusComboBox" Style="{StaticResource comboBoxStyle}"
+                              Width="Auto" HorizontalAlignment="Stretch" Margin="0,6,0,0"
+                              SelectionChanged="OnSelChangedStatusCombo"/>
+                </StackPanel>
+
+                <Grid Grid.Row="3" Grid.Column="2" Margin="10,0,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                        <TextBlock Text="Start Date" Style="{StaticResource FieldLabelText}"/>
+                        <DatePicker Name="missionStartDatePicker" Style="{StaticResource datePickerStyle}"
+                                    Width="Auto" HorizontalAlignment="Stretch" Margin="0,6,0,0" IsTodayHighlighted="True"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                        <TextBlock Text="End Date" Style="{StaticResource FieldLabelText}"/>
+                        <DatePicker Name="missionEndDatePicker" Style="{StaticResource datePickerStyle}"
+                                    Width="Auto" HorizontalAlignment="Stretch" Margin="0,6,0,0" IsTodayHighlighted="True"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- section: equipment + comments -->
+                <StackPanel Grid.Row="4" Grid.ColumnSpan="2" Margin="0,26,10,10">
+                    <TextBlock Text="Equipment" Style="{StaticResource CardTitleText}"/>
+                    <Border Height="1" Background="{StaticResource CardBorderBrush}" Margin="0,8,0,0"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="4" Grid.Column="2" Margin="10,26,0,10">
+                    <TextBlock Text="Mission Comments" Style="{StaticResource CardTitleText}"/>
+                    <Border Height="1" Background="{StaticResource CardBorderBrush}" Margin="0,8,0,0"/>
+                </StackPanel>
+
+                <Border Grid.Row="5" Grid.ColumnSpan="2" Style="{StaticResource RowCardBorder}" Margin="0,0,10,0" Padding="12">
+                    <ScrollViewer MaxHeight="220" VerticalScrollBarVisibility="Auto">
+                        <StackPanel Name="equipmentStackPanel">
+                            <Grid Margin="0,0,0,4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="30"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0" Style="{StaticResource FieldLabelText}" Text="Type" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" Style="{StaticResource FieldLabelText}" Text="Name" HorizontalAlignment="Center"/>
+                            </Grid>
+
+                            <Grid Height="44">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="30"/>
+                                </Grid.ColumnDefinitions>
+
+                                <ComboBox Grid.Column="0" Name="typeComboBox" Style="{StaticResource miniComboBoxStyle}"
+                                          Width="Auto" HorizontalAlignment="Stretch" Margin="0,0,6,0"
+                                          SelectionChanged="OnSelChangedTypeCombo"/>
+                                <ComboBox Grid.Column="1" Name="handheldComboBox" Style="{StaticResource miniComboBoxStyle}"
+                                          Width="Auto" HorizontalAlignment="Stretch" Margin="6,0,0,0" IsEnabled="False"/>
+                            </Grid>
+
+                            <Image Source="Photos/plus_icon.png" Height="26" Width="26" VerticalAlignment="Center"
+                                   HorizontalAlignment="Center" ToolTip="Add Item" Cursor="Hand"
+                                   MouseLeftButtonDown="OnClickAddEquipment" Margin="8"/>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+
+                <Border Grid.Row="5" Grid.Column="2" Style="{StaticResource RowCardBorder}" Margin="10,0,0,0" Padding="12">
+                    <TextBox Name="commentTextBox" Style="{StaticResource largeTextboxStyle}"
+                             Width="Auto" HorizontalAlignment="Stretch" Height="190"
+                             ToolTip="General notes about the mission"/>
+                </Border>
+
+                <!-- section: complaint + sites -->
+                <StackPanel Grid.Row="6" Grid.ColumnSpan="3" Margin="0,26,0,12">
+                    <TextBlock Text="Complaint &amp; Affected Sites" Style="{StaticResource CardTitleText}"/>
+                    <Border Height="1" Background="{StaticResource CardBorderBrush}" Margin="0,8,0,0"/>
+                </StackPanel>
+
+                <Border Grid.Row="7" Grid.ColumnSpan="3" Style="{StaticResource RowCardBorder}" Padding="16">
+                    <Grid Name="complaintGrid">
                         <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
 
-                        <WrapPanel Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Label Style="{StaticResource mediumLabelStyleBlack}" Content="Company: "/>
-                            <ComboBox Style="{StaticResource comboBoxStyle}" Name="companyComboBox" IsEditable="True" IsTextSearchCaseSensitive="False" IsTextSearchEnabled="True" SelectionChanged="OnSelChangedCompanyCombo"/>
+                        <!-- company MUST stay complaintGrid.Children[0] -->
+                        <WrapPanel Grid.Column="0" Orientation="Vertical" Margin="0,0,10,0">
+                            <Label Style="{StaticResource mediumLabelStyleBlack}" Content="Company" Padding="0,0,0,4"/>
+                            <ComboBox Style="{StaticResource comboBoxStyle}" Name="companyComboBox" Width="320"
+                                      HorizontalAlignment="Left" IsEditable="True" IsTextSearchCaseSensitive="False"
+                                      IsTextSearchEnabled="True" SelectionChanged="OnSelChangedCompanyCombo"/>
                         </WrapPanel>
 
-                        <WrapPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Label Style="{StaticResource mediumLabelStyleBlack}" Content="Ticket No: " ToolTip="Complaint Ticket Number"/>
-                            <ComboBox Style="{StaticResource comboBoxStyle}" Name="ticketComboBox" SelectionChanged="OnSelChangedTicketCombo" IsEditable="True" IsTextSearchEnabled="True" IsTextSearchCaseSensitive="False" IsEnabled="False" LostFocus="OnLostFocusTicketNumberCombo"/>
+                        <!-- ticket MUST stay complaintGrid.Children[1] -->
+                        <WrapPanel Grid.Column="1" Orientation="Vertical" Margin="10,0,0,0">
+                            <Label Style="{StaticResource mediumLabelStyleBlack}" Content="Ticket No" Padding="0,0,0,4"
+                                   ToolTip="Complaint Ticket Number"/>
+                            <ComboBox Style="{StaticResource comboBoxStyle}" Name="ticketComboBox" Width="320"
+                                      HorizontalAlignment="Left" SelectionChanged="OnSelChangedTicketCombo" IsEditable="True"
+                                      IsTextSearchEnabled="True" IsTextSearchCaseSensitive="False" IsEnabled="False"
+                                      LostFocus="OnLostFocusTicketNumberCombo"/>
                         </WrapPanel>
 
-                        <StackPanel Grid.ColumnSpan="2" Grid.Row="1" Name="sitesStacKPanel">
-                            <Grid Name="sitesGrid">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="100"/>
-                                </Grid.RowDefinitions>
+                        <!-- sites toolbar: lives OUTSIDE sitesStacKPanel on purpose,
+                             that panel's last child has to stay the "+" image -->
+                        <Grid Grid.Row="1" Grid.ColumnSpan="2" Margin="0,22,0,6">
+                            <TextBlock Text="Affected sites" Style="{StaticResource FieldLabelText}"
+                                       HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                            <Button Name="addAllSitesButton" Content="Add All Sites" Style="{StaticResource SecondaryButton}"
+                                    HorizontalAlignment="Right" Padding="14,6" IsEnabled="False"
+                                    ToolTip="Add every site on this complaint that is not already listed"
+                                    Click="OnClickAddAllSites"/>
+                        </Grid>
+
+                        <StackPanel Grid.ColumnSpan="2" Grid.Row="2" Name="sitesStacKPanel">
+                            <Grid Name="sitesGrid" Margin="0,4">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition/>
                                     <ColumnDefinition/>
@@ -236,24 +325,30 @@
                                     <ColumnDefinition Width="50"/>
                                 </Grid.ColumnDefinitions>
 
-                                <WrapPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                                    <Label Style="{StaticResource labelStyleBlack}" Content="Site: "/>
-                                    <ComboBox Name="siteCombo" Style="{StaticResource comboBoxStyle}" IsTextSearchEnabled="True" IsTextSearchCaseSensitive="True" IsEditable="True" IsEnabled="False"/>
+                                <WrapPanel VerticalAlignment="Center" Orientation="Vertical" Margin="0,0,10,0">
+                                    <Label Style="{StaticResource labelStyleBlack}" Content="Site" Padding="0,0,0,4"/>
+                                    <ComboBox Name="siteCombo" Style="{StaticResource comboBoxStyle}" Width="Auto" MinWidth="200"
+                                              HorizontalAlignment="Left" IsTextSearchEnabled="True"
+                                              IsTextSearchCaseSensitive="True" IsEditable="True" IsEnabled="False"/>
                                 </WrapPanel>
 
-                                <WrapPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                    <Label Style="{StaticResource labelStyleBlack}" Content="Reason &#10;of Int: " Name="reasonOfIntLabel"/>
-                                    <ComboBox Name="reasonOfInterfereneCombo" Style="{StaticResource comboBoxStyle}"/>
+                                <WrapPanel Grid.Column="1" VerticalAlignment="Center" Orientation="Vertical" Margin="10,0">
+                                    <Label Style="{StaticResource labelStyleBlack}" Content="Reason of Int." Name="reasonOfIntLabel" Padding="0,0,0,4"/>
+                                    <ComboBox Name="reasonOfInterfereneCombo" Style="{StaticResource comboBoxStyle}"
+                                              Width="Auto" MinWidth="200" HorizontalAlignment="Left"/>
                                 </WrapPanel>
 
-                                <WrapPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                    <Label Style="{StaticResource mediumLabelStyleBlack}" Content="Comment:"/>
-                                    <TextBox Name="siteCommentsTextBox" Style="{StaticResource largeTextboxStyle}"  />
+                                <WrapPanel Grid.Column="2" VerticalAlignment="Center" Orientation="Vertical" Margin="10,0,0,0">
+                                    <Label Style="{StaticResource mediumLabelStyleBlack}" Content="Comment" Padding="0,0,0,4"/>
+                                    <TextBox Name="siteCommentsTextBox" Style="{StaticResource largeTextboxStyle}"
+                                             Width="Auto" MinWidth="220" Height="60" HorizontalAlignment="Left"/>
                                 </WrapPanel>
 
                             </Grid>
 
-                            <Image Source="Photos/plus_icon.png" Height="30" Width="30" VerticalAlignment="Center" HorizontalAlignment="Center" ToolTip="Add Site" MouseLeftButtonDown="OnClickAddSite" Margin="12"/>
+                            <Image Source="Photos/plus_icon.png" Height="26" Width="26" VerticalAlignment="Center"
+                                   HorizontalAlignment="Center" ToolTip="Add Site" Cursor="Hand"
+                                   MouseLeftButtonDown="OnClickAddSite" Margin="8"/>
 
                         </StackPanel>
                     </Grid>

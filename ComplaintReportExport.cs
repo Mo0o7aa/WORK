@@ -19,9 +19,78 @@ namespace ntra_missions
 
         private const string ArabicFont = "Arial";
 
+        /// <summary>
+        /// Arabic names of the governorates, kept here on purpose: the report has to
+        /// read in Arabic but the cities table stores English names only, and that
+        /// table is shared with the rest of the app. Keys are normalised (lower case,
+        /// no spaces or dashes) and a few alternative spellings are included so a
+        /// differently-typed city name still resolves.
+        /// </summary>
+        private static readonly Dictionary<string, string> ArabicCities =
+            new Dictionary<string, string>
+        {
+            { "cairo",           "القاهرة" },
+            { "alexandria",      "الإسكندرية" },
+            { "asyut",           "أسيوط" },
+            { "assiut",          "أسيوط" },
+            { "aswan",           "أسوان" },
+            { "beheira",         "البحيرة" },
+            { "behera",          "البحيرة" },
+            { "benisuef",        "بني سويف" },
+            { "benisweif",       "بني سويف" },
+            { "dakahlia",        "الدقهلية" },
+            { "dakahliya",       "الدقهلية" },
+            { "damietta",        "دمياط" },
+            { "faiyum",          "الفيوم" },
+            { "fayoum",          "الفيوم" },
+            { "gharbia",         "الغربية" },
+            { "giza",            "الجيزة" },
+            { "ismailia",        "الإسماعيلية" },
+            { "ismailiya",       "الإسماعيلية" },
+            { "kafrelsheikh",    "كفر الشيخ" },
+            { "kafrelshiekh",    "كفر الشيخ" },
+            { "luxor",           "الأقصر" },
+            { "matruh",          "مطروح" },
+            { "marsamatruh",     "مطروح" },
+            { "minya",           "المنيا" },
+            { "menya",           "المنيا" },
+            { "monufia",         "المنوفية" },
+            { "menoufia",        "المنوفية" },
+            { "newvalley",       "الوادي الجديد" },
+            { "northsinai",      "شمال سيناء" },
+            { "portsaid",        "بورسعيد" },
+            { "qalyubia",        "القليوبية" },
+            { "qaliubiya",       "القليوبية" },
+            { "qena",            "قنا" },
+            { "redsea",          "البحر الأحمر" },
+            { "sharqia",         "الشرقية" },
+            { "sharkia",         "الشرقية" },
+            { "sohag",           "سوهاج" },
+            { "southsinai",      "جنوب سيناء" },
+            { "suez",            "السويس" },
+        };
+
         public ComplaintReportExport()
         {
             commonQueries = new CommonQueries();
+        }
+
+        /// <summary>
+        /// Arabic name of a governorate, falling back to whatever the database
+        /// holds when the city is not in the table above.
+        /// </summary>
+        private static string ArabicCity(string city)
+        {
+            if (string.IsNullOrWhiteSpace(city))
+                return "";
+
+            string key = city.Replace(" ", "").Replace("-", "").Replace("_", "").ToLowerInvariant();
+
+            string arabicName;
+            if (ArabicCities.TryGetValue(key, out arabicName))
+                return arabicName;
+
+            return city;
         }
 
         private static string ArabicDayName(DateTime date)
@@ -101,7 +170,7 @@ namespace ntra_missions
                 .ToList();
 
             string company = complaint.GetCompanyName();
-            string city = sites[0].city;
+            string city = ArabicCity(sites[0].city);
             string region = sites[0].region;
 
             Word.Application app = null;
@@ -171,6 +240,10 @@ namespace ntra_missions
                         if (string.IsNullOrWhiteSpace(comment))
                             comment = "-";
                         AddParagraph(doc, comment, 14, false, right, true);
+
+                        // per-site notes recorded on this mission, one block per site
+                        AddMissionSiteComments(doc, mission, right);
+
                         AddSpacer(doc);
                     }
                 }
@@ -195,6 +268,30 @@ namespace ntra_missions
 
                 MessageBox.Show("Failed to generate the report:\n" + ex.Message,
                     "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        /// <summary>
+        /// Appends "المحطة رقم &lt;site&gt;" followed by that site's comment, for every
+        /// site of the mission that actually carries one. Sites without a comment
+        /// are skipped, and a mission with no commented site adds nothing at all.
+        /// </summary>
+        private static void AddMissionSiteComments(Word.Document doc,
+            BASIC_STRUCTS.INTERFERENCE_MISSION_STRUCT mission, Word.WdParagraphAlignment right)
+        {
+            if (mission.sites == null)
+                return;
+
+            for (int i = 0; i < mission.sites.Count; i++)
+            {
+                BASIC_STRUCTS.MISSION_SITE_STRUCT site = mission.sites[i];
+
+                if (string.IsNullOrWhiteSpace(site.comment))
+                    continue;
+
+                // site numbers stay in English, they are not translatable
+                AddParagraph(doc, "المحطة رقم " + (site.site_name ?? ""), 14, true, right, true);
+                AddParagraph(doc, site.comment, 14, false, right, true);
             }
         }
 

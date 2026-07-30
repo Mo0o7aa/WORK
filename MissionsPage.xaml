@@ -50,7 +50,12 @@
                     <CheckBox Name="serviceProviderCheckBox" Content="Service provider" Style="{StaticResource checkBoxStyle}" Width="Auto"
                               Checked="OnCheckServiceProviderCheckBox" Unchecked="OnUncheckServiceProviderCheckBox"/>
                     <ComboBox Name="serviceProviderComboBox" Style="{StaticResource miniComboBoxStyle}" Width="Auto" HorizontalAlignment="Stretch"
-                              Margin="0,6,0,0" IsEnabled="False" SelectionChanged="OnSelChangedServiceProviderCombo"/>
+                              Margin="0,6,0,14" IsEnabled="False" SelectionChanged="OnSelChangedServiceProviderCombo"/>
+
+                    <CheckBox Name="statusCheckBox" Content="Status" Style="{StaticResource checkBoxStyle}" Width="Auto"
+                              Checked="OnCheckStatusCheckBox" Unchecked="OnUncheckStatusCheckBox"/>
+                    <ComboBox Name="statusComboBox" Style="{StaticResource miniComboBoxStyle}" Width="Auto" HorizontalAlignment="Stretch"
+                              Margin="0,6,0,0" IsEnabled="False" SelectionChanged="OnSelChangedStatusCombo"/>
                 </StackPanel>
             </Border>
 
