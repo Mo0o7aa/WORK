@@ -81,7 +81,17 @@ namespace ntra_missions
 
         public const int MOBILE_OPERATOR = 1;
 
-        public const String FOLDER_SHARE_PATH = @"\\GIZA-ASAMEH\Giza Software\Attachments\";
+        /// <summary>
+        /// Root of the shared attachments folder. Resolution moved to
+        /// <see cref="AttachmentsStorage"/> so every workstation can reach the share
+        /// (mapped drive or UNC) instead of only the machine that hosts it.
+        /// Kept under the old name for the existing call sites.
+        /// </summary>
+        public static String FOLDER_SHARE_PATH
+        {
+            get { return AttachmentsStorage.Root ?? @"\\GIZA-ASAMEH\Giza Software\Attachments\"; }
+        }
+
         public struct SQL_COLUMN_COUNT_STRUCT
         {
             public int sql_int;

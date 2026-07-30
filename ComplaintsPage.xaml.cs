@@ -34,6 +34,8 @@ namespace ntra_missions
         private readonly ObservableCollection<ComplaintRow> complaintRows;
         private ICollectionView complaintsView;
 
+        private bool attachmentWarningShown;
+
         public ComplaintsPage(ref Employee mLoggedInUser)
         {
             loggedInUser = mLoggedInUser;
@@ -107,16 +109,36 @@ namespace ntra_missions
 
             Task.Run(() =>
             {
+                // Enumerate the Complaints folder ONCE. Probing each complaint folder
+                // with Directory.Exists() reported "false" for a refused connection
+                // just as it does for a folder that was never created, so a share or
+                // credential problem showed up as "no attachments" and no error.
+                Dictionary<string, DirectoryInfo> folders;
+
+                try
+                {
+                    folders = AttachmentsStorage.ListCategoryFolders(AttachmentsStorage.COMPLAINTS_FOLDER);
+                }
+                catch (Exception exception)
+                {
+                    ReportAttachmentProblem(exception.Message + Environment.NewLine +
+                        Environment.NewLine + AttachmentsStorage.DescribeContext());
+                    return;
+                }
+
+                List<string> failures = new List<string>();
+
                 foreach (ComplaintRow row in rows)
                 {
+                    DirectoryInfo folder;
+
+                    if (string.IsNullOrEmpty(row.ComplaintId) || !folders.TryGetValue(row.ComplaintId, out folder))
+                        continue;
+
                     try
                     {
-                        string folder = BASIC_STRUCTS.FOLDER_SHARE_PATH + @"Complaints\" + row.ComplaintId + @"\";
+                        FileInfo[] files = folder.GetFiles();
 
-                        if (!commonFunctions.CheckDirectory(folder))
-                            continue;
-
-                        FileInfo[] files = commonFunctions.ListFilesInFolder(folder);
                         ComplaintRow targetRow = row;
 
                         Dispatcher.BeginInvoke(new Action(() =>
@@ -128,17 +150,42 @@ namespace ntra_missions
                                 {
                                     FileName = file.Name,
                                     FullPath = file.FullName,
-                                    CanDelete = targetRow.CanEdit
+                                    // complaints are shared: any engineer may remove
+                                    CanDelete = targetRow.CanManageAttachments
                                 });
                             }
                         }));
                     }
-                    catch
+                    catch (Exception exception)
                     {
-                        // share unreachable — show the complaint without attachments
+                        if (!failures.Contains(exception.Message))
+                            failures.Add(exception.Message);
                     }
                 }
+
+                if (failures.Count > 0)
+                {
+                    ReportAttachmentProblem(string.Join(Environment.NewLine, failures) +
+                        Environment.NewLine + Environment.NewLine + AttachmentsStorage.DescribeContext());
+                }
             });
+        }
+
+        // One warning per page load, on the UI thread — otherwise a broken share
+        // would pop a dialog for every single complaint row.
+        private void ReportAttachmentProblem(string mDetails)
+        {
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                if (attachmentWarningShown)
+                    return;
+
+                attachmentWarningShown = true;
+
+                MessageBox.Show("The attachments folder could not be read, so attached files are not shown."
+                    + Environment.NewLine + Environment.NewLine + mDetails,
+                    "Attachments", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }));
         }
 
         private bool FilterComplaint(object item)
@@ -296,6 +343,16 @@ namespace ntra_missions
                 if (!complaint.InitializeComplaint(row.CompanySerial, row.ComplaintSerial))
                     return;
 
+                string folder = AttachmentsStorage.GetComplaintFolder(complaint.GetComplaintId());
+
+                if (folder == null)
+                {
+                    MessageBox.Show("The attachments folder is not reachable, so the files were not uploaded."
+                        + Environment.NewLine + Environment.NewLine + AttachmentsStorage.LastError,
+                        "Attachments", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
                 bool failed = false;
 
                 for (int i = 0; i < fileDialog.FileNames.Length; i++)
@@ -305,12 +362,15 @@ namespace ntra_missions
 
                     try
                     {
-                        commonFunctions.CreateDirectory(BASIC_STRUCTS.FOLDER_SHARE_PATH + @"Complaints\" + complaint.GetComplaintId());
-                        File.Copy(filePath, BASIC_STRUCTS.FOLDER_SHARE_PATH + @"Complaints\" + complaint.GetComplaintId() + @"\" + fileName);
+                        AttachmentsStorage.EnsureFolder(folder);
+                        File.Copy(filePath, folder + fileName, true);
                     }
-                    catch
+                    catch (Exception exception)
                     {
-                        MessageBox.Show(fileName + " upload failed please try again later!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        // show why: "try again later" hid permission problems for good
+                        MessageBox.Show(fileName + " could not be uploaded."
+                            + Environment.NewLine + Environment.NewLine + exception.Message,
+                            "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         failed = true;
                     }
                 }
@@ -318,6 +378,7 @@ namespace ntra_missions
                 if (failed == false)
                     MessageBox.Show("Upload complete!", "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
+                attachmentWarningShown = false;
                 LoadAttachmentsAsync();
             }
         }

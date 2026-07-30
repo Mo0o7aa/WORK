@@ -147,8 +147,9 @@
                                         <Button Style="{StaticResource RowButtonFilled}" Content="Edit" Tag="{Binding}" Click="OnClickEditComplaint"
                                                 Visibility="{Binding EditVisibility}"/>
                                         <Button Style="{StaticResource RowButton}" Content="Add Mission" Tag="{Binding}" Click="OnClickAddMissionButton"/>
-                                        <Button Style="{StaticResource RowButton}" Content="Attach File" Tag="{Binding}" Click="OnClickAttachFile"
-                                                Visibility="{Binding EditVisibility}"/>
+                                        <!-- attaching is open to every user: only editing the
+                                             complaint itself stays restricted to its creator -->
+                                        <Button Style="{StaticResource RowButton}" Content="Attach File" Tag="{Binding}" Click="OnClickAttachFile"/>
                                         <Button Style="{StaticResource RowButton}" Content="Export Excel" Tag="{Binding}" Click="OnClickExportExcel"/>
                                         <Button Style="{StaticResource RowButton}" Content="Export KML" Tag="{Binding}" Click="OnClickExportMap"/>
                                         <Button Style="{StaticResource RowButtonFilled}" Content="Word Report" Tag="{Binding}" Click="OnClickWordReport"/>

@@ -189,8 +189,10 @@
                                         <Button Style="{StaticResource RowButtonFilled}" Content="Edit" Tag="{Binding}" Click="OnClickEdit"
                                                 Visibility="{Binding EditVisibility}"/>
                                         <Button Style="{StaticResource RowButton}" Content="Add Feedback" Tag="{Binding}" Click="OnClickFeedback"/>
+                                        <!-- attaching/removing is limited to the engineers who went
+                                             on this mission; everyone else can still review the files -->
                                         <Button Style="{StaticResource RowButton}" Content="Attach File" Tag="{Binding}" Click="OnClickAttachFile"
-                                                Visibility="{Binding EditVisibility}"/>
+                                                Visibility="{Binding AttachVisibility}"/>
                                         <Button Style="{StaticResource RowButton}" Content="Word Export" Tag="{Binding}" Click="OnClickWordExport"/>
                                     </StackPanel>
                                 </Grid>

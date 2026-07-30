@@ -148,6 +148,14 @@ namespace ntra_missions
         {
             get { return CanEdit ? Visibility.Visible : Visibility.Collapsed; }
         }
+
+        // Complaints are the shared, dynamic side: any engineer may attach and
+        // remove files, unlike missions which are restricted to their own team.
+        public bool CanManageAttachments
+        {
+            get { return true; }
+        }
+
         public List<string> SiteNumbers { get; set; }
         public ObservableCollection<FileRow> Attachments { get; private set; }
 
@@ -218,6 +226,17 @@ namespace ntra_missions
         {
             get { return CanEdit ? Visibility.Visible : Visibility.Collapsed; }
         }
+
+        // Attachments on a mission belong to the engineers who actually went on it:
+        // they attach and remove, every other engineer can review but not change.
+        // Deliberately NOT added_by — a mission is logged by one engineer on behalf
+        // of the whole team.
+        public bool CanManageAttachments { get; set; }
+        public Visibility AttachVisibility
+        {
+            get { return CanManageAttachments ? Visibility.Visible : Visibility.Collapsed; }
+        }
+
         public ObservableCollection<FileRow> Attachments { get; private set; }
 
         public MissionRow(BASIC_STRUCTS.INTERFERENCE_MISSION_STRUCT mission, int loggedInUserId)
@@ -245,6 +264,8 @@ namespace ntra_missions
                     EngineerKeys.Add(engineer.key);
                 }
             }
+
+            CanManageAttachments = EngineerKeys.Contains(loggedInUserId);
 
             Sites = new List<MissionSiteRow>();
             SiteNames = new List<string>();
